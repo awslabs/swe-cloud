@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-sfn-eventbridge-workflow-schedule-sync"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = []
+modal_vm_runtime = true
+tags = ["aws", "sfn", "eventbridge", "sts", "cli", "configuration-sync", "resource-reconciliation"]
+difficulty_explanation = "The candidate must rebuild a Jsonnet-driven CLI that plans, applies and imports state machines and schedules without a local state file. Across 44 test functions, text diffs, JSON reports and AWS state must agree on optional nulls, remote defaults, tag reconciliation, immutable type changes and explicit deletion flags. Target filtering, exact confirmation rules, import failures that preserve files and partial applies that leave a created machine behind add sequencing requirements."
+expert_time_estimate_hours = 24.0
+
+[metadata.source]
+kind = "program"
+project = "riseshia/fubura"
+url = "https://github.com/riseshia/fubura"
+revision = "10ccc44574a20d6b2c4a06c110a93bb502b200e6"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 2
+memory_mb = 4096
+storage_mb = 12288
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 2
+memory_mb = 4096
+storage_mb = 12288
+build_timeout_sec = 1800

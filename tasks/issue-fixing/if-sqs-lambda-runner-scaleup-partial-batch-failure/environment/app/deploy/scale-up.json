@@ -1,0 +1,78 @@
+{
+  "_comment": "Deployed settings of the scale-up function and its build queue (prod, us-east-1). Mirrors modules/runners/scale-up.tf and the root main.tf of the upstream module.",
+  "lambda": {
+    "function_name": "ghr-scale-up",
+    "handler": "control_plane.lambda_handler.scale_up_handler",
+    "timeout_seconds": 8,
+    "reserved_concurrent_executions": 1
+  },
+  "iam_role": {
+    "_comment": "The function's execution role (modules/runners/policies/lambda-scale-up.json + the event source mapping's SQS statement). Nothing else is granted: the job-retry queue and its sqs:SendMessage statement are not deployed here.",
+    "role_name": "ghr-scale-up-lambda",
+    "statements": [
+      {
+        "sid": "EventSourceMapping",
+        "actions": [
+          "sqs:ReceiveMessage",
+          "sqs:GetQueueAttributes",
+          "sqs:DeleteMessage"
+        ],
+        "resources": [
+          "arn:aws:sqs:us-east-1:*:ghr-queued-builds"
+        ]
+      },
+      {
+        "sid": "RunnerParameters",
+        "actions": [
+          "ssm:GetParameter",
+          "ssm:GetParameters",
+          "ssm:GetParametersByPath",
+          "ssm:PutParameter",
+          "ssm:DeleteParameter",
+          "ssm:AddTagsToResource"
+        ],
+        "resources": [
+          "arn:aws:ssm:us-east-1:*:parameter${SSM_TOKEN_PATH}/*"
+        ]
+      },
+      {
+        "sid": "Logs",
+        "actions": [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        "resources": [
+          "arn:aws:logs:us-east-1:*:log-group:/aws/lambda/ghr-scale-up:*"
+        ]
+      }
+    ]
+  },
+  "event_source_mapping": {
+    "queue": "ghr-queued-builds",
+    "batch_size": 10,
+    "maximum_batching_window_in_seconds": 2,
+    "function_response_types": [
+      "ReportBatchItemFailures"
+    ]
+  },
+  "build_queue": {
+    "visibility_timeout_seconds": 15,
+    "message_retention_seconds": 86400,
+    "redrive_policy": {
+      "dead_letter_queue": "ghr-queued-builds-dlq",
+      "max_receive_count": 3
+    }
+  },
+  "environment": {
+    "ENVIRONMENT": "ghr",
+    "ENABLE_ORGANIZATION_RUNNERS": "true",
+    "ENABLE_EPHEMERAL_RUNNERS": "true",
+    "ENABLE_JIT_CONFIG": "true",
+    "RUNNERS_MAXIMUM_COUNT": "4",
+    "RUNNER_LABELS": "self-hosted,linux,x64",
+    "RUNNER_GROUP_NAME": "Default",
+    "RUNNER_NAME_PREFIX": "ghr-",
+    "SSM_TOKEN_PATH": "/ghr/runners",
+    "SCALE_ERRORS": "[\"UnfulfillableCapacity\",\"MaxSpotInstanceCountExceeded\",\"TargetCapacityLimitExceededException\",\"RequestLimitExceeded\",\"ResourceLimitExceeded\",\"MaxSpotFleetRequestCountExceeded\",\"InsufficientInstanceCapacity\",\"InsufficientCapacityOnHost\"]"
+  }
+}

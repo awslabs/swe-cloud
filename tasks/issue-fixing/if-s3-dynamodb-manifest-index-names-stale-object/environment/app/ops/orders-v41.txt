@@ -1,0 +1,52 @@
+warehouse/orders version 41 — captured 2026-10-22 09:40 UTC by the on-call (prod, read-only)
+==========================================================================================
+
+$ stratactl resolve --dataset warehouse/orders --version 41          # query service, 0.14.2
+error: Manifest generation mismatch for version 41: index row records '3b1f0c52-9a7e-4f43-8d0e-55a1c2e7b9d4', object store returned 'e86d47a0-1c3b-4b5e-a2f9-0f6c3d8e2a71'
+(exit 2)
+
+Same result from the batch fleet (0.14.1) and from a laptop; it has failed this way on every
+attempt since 02:14 UTC on 2026-10-22.
+
+$ aws dynamodb get-item --table-name strata-manifests --consistent-read \
+    --key '{"base_uri":{"S":"s3://strata-warehouse/warehouse/orders"},"version":{"N":"41"}}'
+{
+    "Item": {
+        "base_uri":   {"S": "s3://strata-warehouse/warehouse/orders"},
+        "version":    {"N": "41"},
+        "path":       {"S": "warehouse/orders/_versions/41.manifest"},
+        "size":       {"N": "48213"},
+        "committer":  {"S": "orders-loader"},
+        "generation": {"S": "3b1f0c52-9a7e-4f43-8d0e-55a1c2e7b9d4"}
+    }
+}
+
+$ aws s3api list-object-versions --bucket strata-warehouse --prefix warehouse/orders/_versions/41.manifest
+Versions:
+  Key                                                                 VersionId                             IsLatest  Size   LastModified              ETag
+  warehouse/orders/_versions/41.manifest                              e86d47a0-1c3b-4b5e-a2f9-0f6c3d8e2a71  true      48213  2026-10-22T02:14:08.512Z  "5e0b9d1f2c7a48e3b6f1d0a9c8e7b6a5"
+  warehouse/orders/_versions/41.manifest                              3b1f0c52-9a7e-4f43-8d0e-55a1c2e7b9d4  false     48213  2026-10-22T02:14:07.904Z  "5e0b9d1f2c7a48e3b6f1d0a9c8e7b6a5"
+  warehouse/orders/_versions/41.manifest-0d6f2b7e-...-9f31c4a2e8b0    4a9e1d03-7b2c-4f6a-9e8d-1c0b3a2f5e47  true      48213  2026-10-22T02:14:07.611Z  "5e0b9d1f2c7a48e3b6f1d0a9c8e7b6a5"
+DeleteMarkers:
+  warehouse/orders/_versions/41.manifest-0d6f2b7e-...-9f31c4a2e8b0    7f2c9b10-3e4d-4a5b-8c6d-2e1f0a9b8c7d  true             2026-10-22T02:14:09.236Z
+
+$ aws s3api get-object ... --version-id 3b1f0c52-9a7e-4f43-8d0e-55a1c2e7b9d4 v41-old.bin
+$ aws s3api get-object ... --version-id e86d47a0-1c3b-4b5e-a2f9-0f6c3d8e2a71 v41-cur.bin
+$ cmp v41-old.bin v41-cur.bin && echo identical
+identical
+
+Logs around the commit (UTC, 2026-10-22):
+  02:14:07.611  orders-loader      PutObject   warehouse/orders/_versions/41.manifest-0d6f2b7e-...   200
+  02:14:07.633  orders-loader      PutItem     (base_uri=.../warehouse/orders, version=41)            200
+  02:14:07.880  query-7f9c         Query       latest of .../warehouse/orders                         200   path=41.manifest-0d6f2b7e-...
+  02:14:07.904  orders-loader      CopyObject  -> warehouse/orders/_versions/41.manifest              200
+  02:14:07.931  orders-loader      HeadObject  warehouse/orders/_versions/41.manifest                 200
+  02:14:08.512  query-7f9c         CopyObject  -> warehouse/orders/_versions/41.manifest              200   (gateway queue time 598 ms)
+  02:14:08.540  query-7f9c         HeadObject  warehouse/orders/_versions/41.manifest                 200
+  02:14:08.566  query-7f9c         PutItem     (version=41)                                           200
+  02:14:09.207  orders-loader      PutItem     (version=41)                                           200   (gateway queue time 1270 ms)
+  02:14:09.236  orders-loader      DeleteObject warehouse/orders/_versions/41.manifest-0d6f2b7e-...   204
+
+Other versions that failed the same way in the last two weeks, all of which cleared up on their own
+within a second or two (dashboards showed a red tile, then recovered on refresh):
+  warehouse/events v118, v131;  warehouse/sessions v9;  warehouse/orders v37

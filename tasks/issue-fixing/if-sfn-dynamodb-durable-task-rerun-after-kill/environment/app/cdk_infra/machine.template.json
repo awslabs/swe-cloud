@@ -1,0 +1,40 @@
+{
+ "Outputs": {
+  "MachineArn": {
+   "Value": {
+    "Ref": "Machine"
+   }
+  }
+ },
+ "Parameters": {
+  "Definition": {
+   "Type": "String"
+  },
+  "MachineName": {
+   "Type": "String"
+  },
+  "RoleArn": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Machine": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Machine"
+   },
+   "Properties": {
+    "DefinitionString": {
+     "Ref": "Definition"
+    },
+    "RoleArn": {
+     "Ref": "RoleArn"
+    },
+    "StateMachineName": {
+     "Ref": "MachineName"
+    },
+    "StateMachineType": "STANDARD"
+   },
+   "Type": "AWS::StepFunctions::StateMachine"
+  }
+ }
+}

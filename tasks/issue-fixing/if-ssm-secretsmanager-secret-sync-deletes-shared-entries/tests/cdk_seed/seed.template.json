@@ -1,0 +1,103 @@
+{
+ "Parameters": {
+  "Value0": {
+   "NoEcho": true,
+   "Type": "String"
+  },
+  "Value1": {
+   "NoEcho": true,
+   "Type": "String"
+  },
+  "Value2": {
+   "NoEcho": true,
+   "Type": "String"
+  },
+  "Value3": {
+   "NoEcho": true,
+   "Type": "String"
+  },
+  "Value4": {
+   "NoEcho": true,
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Parameter0": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Parameter0"
+   },
+   "Properties": {
+    "Name": "/LEGACY_BILLING_URL",
+    "Tags": {
+     "owner": "ops"
+    },
+    "Type": "String",
+    "Value": {
+     "Ref": "Value0"
+    }
+   },
+   "Type": "AWS::SSM::Parameter"
+  },
+  "Parameter1": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Parameter1"
+   },
+   "Properties": {
+    "Name": "/SENTRY_DSN",
+    "Tags": {
+     "owner": "ops"
+    },
+    "Type": "String",
+    "Value": {
+     "Ref": "Value1"
+    }
+   },
+   "Type": "AWS::SSM::Parameter"
+  },
+  "Parameter2": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Parameter2"
+   },
+   "Properties": {
+    "Name": "/STATUSPAGE_KEY",
+    "Type": "String",
+    "Value": {
+     "Ref": "Value2"
+    }
+   },
+   "Type": "AWS::SSM::Parameter"
+  },
+  "Parameter3": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Parameter3"
+   },
+   "Properties": {
+    "Name": "/FRAUD_SCORE_THRESHOLD",
+    "Tags": {
+     "owner": "risk"
+    },
+    "Type": "String",
+    "Value": {
+     "Ref": "Value3"
+    }
+   },
+   "Type": "AWS::SSM::Parameter"
+  },
+  "Parameter4": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Parameter4"
+   },
+   "Properties": {
+    "Name": "/ops/oncall/ROTATION",
+    "Tags": {
+     "owner": "ops"
+    },
+    "Type": "String",
+    "Value": {
+     "Ref": "Value4"
+    }
+   },
+   "Type": "AWS::SSM::Parameter"
+  }
+ }
+}

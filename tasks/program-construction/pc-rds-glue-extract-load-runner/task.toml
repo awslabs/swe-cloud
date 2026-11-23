@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-rds-glue-extract-load-runner"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["postgres"]
+modal_vm_runtime = true
+tags = ["aws", "rds", "glue", "s3", "cli", "data-replication", "incremental-loading", "schema-evolution"]
+difficulty_explanation = "Reconstruct an extract-and-load CLI that merges replication defaults and overrides, expands wildcard streams and writes PostgreSQL, S3 files or Glue-registered Iceberg tables. Refresh, truncate, incremental and snapshot modes have target-specific rules for high-water marks, keyed merges, duplicate preservation, schema evolution and failed writes. Type rendering, column casing, file naming and splitting, stale-object replacement and catalog commit detection must remain correct across repeated runs and source changes."
+expert_time_estimate_hours = 38.0
+
+[metadata.source]
+kind = "program"
+project = "slingdata-io/sling-cli"
+url = "https://github.com/slingdata-io/sling-cli"
+revision = "7641892e24a7023c8012069596698970c7b3e041"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

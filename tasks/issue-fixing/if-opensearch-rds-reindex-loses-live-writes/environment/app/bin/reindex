@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Full reindex behind the alias. Usage: bin/reindex --alias products --schema-version 2
+export PYTHONPATH="$(cd "$(dirname "$0")/.." && pwd)${PYTHONPATH:+:$PYTHONPATH}"
+exec python3 -m search_sync.reindex "$@"

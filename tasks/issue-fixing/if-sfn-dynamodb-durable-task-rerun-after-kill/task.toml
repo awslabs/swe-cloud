@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-sfn-dynamodb-durable-task-rerun-after-kill"
+description = "A durable task worker must reconnect to its Step Functions run after any kill, restart after a stop, and never rerun a success."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "stepfunctions", "dynamodb", "crash-recovery", "write-ahead-intent", "idempotency", "eventual-consistency"]
+difficulty_explanation = "Port of Airflow's ResumableJobMixin/GlueJobOperator durable execution onto Step Functions + DynamoDB. The record's execution_arn must name a run before StartExecution can be accepted (a try killed after the ack would otherwise leave a duplicate or an orphan the record-driven reconciler cannot stop), and once it is written ahead, 'recorded but not found' becomes ambiguous under DescribeExecution's eventual consistency, so the retry must re-issue the same name and input rather than pick a fresh one. The opposite evidence needs the opposite rule: where the deployed version (start first, record after) may have left an unrecorded start, or an earlier try died before reaching AWS, nothing can be re-issued by name, so the try must search for the task instance's executions until the listing has had time to catch up and then start the job; failing closed wedges the task instance for good, starting at once duplicates the in-flight run. Stops must fail the try and be restarted under a new name, a success must never rerun, names must not collide across dag runs. The verifier drives lost-ack, kill-after-ack and kill-before-AWS SIGKILLs, console stops, seeded deployed-version states, a lagging read path and the reconciler through per-try proxies."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "pull-request"
+project = "apache/airflow"
+url = "https://github.com/apache/airflow/pull/71211"
+revision = "6ba8d5a85cba9e32f07ca8b995d101c0ea860b04"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

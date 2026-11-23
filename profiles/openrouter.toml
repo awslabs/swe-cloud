@@ -1,0 +1,10 @@
+# OpenRouter for the LLM, local Docker for the task sandboxes.
+
+[llm]
+route = "openrouter"
+api_key_env = "OPENROUTER_API_KEY"
+api_key_required = true
+# No default model: pass the OpenRouter model id with --model.
+
+[sandbox]
+environment = "docker"

@@ -1,0 +1,40 @@
+{
+ "Parameters": {
+  "KeyName": {
+   "Type": "String"
+  },
+  "TableName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Table": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Table"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": {
+       "Ref": "KeyName"
+      },
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": {
+       "Ref": "KeyName"
+      },
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Ref": "TableName"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  }
+ }
+}

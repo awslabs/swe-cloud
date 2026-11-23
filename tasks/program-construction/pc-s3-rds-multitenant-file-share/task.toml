@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-s3-rds-multitenant-file-share"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["postgres"]
+modal_vm_runtime = true
+tags = ["aws", "s3", "rds", "http-api", "multi-tenant", "file-sharing", "quota-accounting", "capability-authorization", "s3-sse", "s3-multipart", "ttl-expiry", "data-cleanup", "feature-flags", "zip-archives", "streaming", "admin-api", "cli"]
+difficulty_explanation = "The candidate must rebuild a broad file-sharing server and its maintenance CLI with PostgreSQL metadata and exact file bytes in S3. Its 165 test functions cover session, XSRF and token authentication, creating-token ownership, upload capabilities and per-user quotas, and also S3 storage options (prefix-less and legacy keys, bucket creation, multipart part size, SSE-S3 and per-file SSE-C keys, versioned deletes), TTL rules, expiry and the clean command, the upload and account feature flags, file size and count limits, zip archives, streaming and one-shot downloads, download headers, the admin API and impersonation, the CLI login flow, and file, user and export/import subcommands. Each area has exact refusal texts and side effects that must agree across HTTP, CLI, Postgres and S3."
+expert_time_estimate_hours = 60.0
+
+[metadata.source]
+kind = "program"
+project = "root-gg/plik"
+url = "https://github.com/root-gg/plik"
+revision = "d32ca8fa78e7a37fb2f731b37cc599652b8aa780"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

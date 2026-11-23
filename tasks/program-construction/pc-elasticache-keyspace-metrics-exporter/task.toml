@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-elasticache-keyspace-metrics-exporter"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["valkey"]
+modal_vm_runtime = true
+tags = ["aws", "elasticache", "metrics-exporter", "prometheus", "keyspace-scanning", "lua", "stream-consumers"]
+difficulty_explanation = "The candidate must reconstruct a Prometheus HTTP exporter for selected Valkey keys, key groups, streams and Lua script results. Exact lookups and scans differ for missing keys, while type-dependent sizes, numeric parsing, database prefixes and escaped names determine the complete metric label sets. Ordered Lua capture patterns and deterministic memory-based overflow must agree across scan batches. Script failures, read-only execution and temporary scrape overrides must produce the expected partial metrics and collection status."
+expert_time_estimate_hours = 20.0
+
+[metadata.source]
+kind = "program"
+project = "oliver006/redis_exporter"
+url = "https://github.com/oliver006/redis_exporter"
+revision = "9f6a2d1ecbc004851498bac7fc79e18793581979"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

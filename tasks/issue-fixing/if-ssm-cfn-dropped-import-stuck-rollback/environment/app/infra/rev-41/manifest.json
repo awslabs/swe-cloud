@@ -1,0 +1,17 @@
+{
+  "app": "storefront",
+  "revision": "rev-41",
+  "stacks": [
+    {
+      "name": "SharedNetwork",
+      "template": "SharedNetwork.template.json"
+    },
+    {
+      "name": "Storefront",
+      "template": "Storefront.template.json",
+      "dependsOn": [
+        "SharedNetwork"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+ "_comment": "Q&A page content (site/faq.html). Answers are HTML, kept word for word from the published /faq/ page. A group's desc is shown under its title when not empty.",
+ "groups": [
+  {
+   "id": "general",
+   "title": "About SWE-Cloud",
+   "desc": "Questions that apply to both task types.",
+   "items": [
+    {
+     "id": "what",
+     "q": "What is SWE-Cloud?",
+     "a": "<p>SWE-Cloud is a coding benchmark that tests whether agents can fix and build programs that run on AWS. It has 100 tasks of two kinds. In the 60 <b>issue-fixing</b> tasks, the agent repairs a reported defect in a working AWS-backed service. In the 40 <b>program-construction</b> tasks, the agent builds a program from its documentation and a reference executable it can run but not read. Five of those 40 are <b>multi-tenant</b> programs.</p><p>Every task runs in a sealed container with local emulation of the AWS services it uses, so it needs no AWS account and no network. Hidden tests judge the agent's code by its behavior and by the state it leaves in those services.</p>"
+    },
+    {
+     "id": "vs-coding",
+     "q": "How does SWE-Cloud differ from other coding benchmarks?",
+     "a": "<p><b>The cloud is part of the system under test.</b> Repository-repair and program-rebuilding benchmarks test code mostly on its own. In SWE-Cloud the application and the AWS services it calls form one running system: messages are redelivered, conditional writes are rejected, leases expire, and processes are killed halfway through a write. A fix that looks right in isolation but loses a message on redelivery fails.</p><p><b>Tests check outcomes, not code.</b> Hidden tests start the agent's real processes, push them through races, retries, crashes and failovers, then read tables, buckets, queues and streams directly. They never inspect the patch or trust what the program reports about itself.</p>"
+    },
+    {
+     "id": "vs-cloud",
+     "q": "How does SWE-Cloud differ from other cloud and infrastructure-as-code benchmarks?",
+     "a": "<p>Cloud and infrastructure-as-code benchmarks mostly measure whether a model can set up, operate or describe cloud infrastructure. Some ask for a new or updated CloudFormation, Terraform or CDK template from a change request and check it with linters or a model judge. Others give an agent access to a live AWS account and check its diagnosis of a problem or the resources it creates.</p><p>SWE-Cloud asks a software-engineering question instead: is the program that runs on top of the infrastructure correct under concurrency and failure? The resources are given, and what is graded is the application code. In the 60 <b>issue-fixing</b> tasks, the agent repairs a reported defect in a working AWS-backed service. In the 40 <b>program-construction</b> tasks, it builds a program from its documentation and a reference executable it can run but not read.</p><p>Instead of a live account, every task runs in a sealed container with local emulation of the AWS services it uses, so it needs no AWS account and no network. Hidden tests judge the agent's code by its behavior and by the state it leaves in those services, not by reading a template or asking a model.</p>"
+    },
+    {
+     "id": "offline",
+     "q": "How does SWE-Cloud emulate AWS services offline?",
+     "a": "<p>Each task image includes a pinned copy of <a href=\"https://github.com/floci-io/floci\">Floci</a>, an open-source local emulator of the AWS APIs. Programs and tests use the standard AWS SDKs and CLI with a local endpoint and dummy credentials. For services built around a data engine (RDS, ElastiCache, MSK, OpenSearch and Amazon MQ), the emulator runs the matching open-source engine in a private container network inside the task, so queries, consumer groups and indexes behave like the real thing. Tasks grade only behavior the emulator reproduces faithfully.</p>"
+    },
+    {
+     "id": "harness",
+     "q": "Why one agent harness, and not Claude Code, Codex or other vendor agents?",
+     "a": "<p>The score should reflect the model. Every model runs in the same agent loop with the same budgets: Terminus 2, the generic terminal agent that ships with <a href=\"https://github.com/harbor-framework/harbor\">Harbor</a>. It sends shell commands and reads their output, with no task-specific tools or prompts.</p><p>Vendor agents are tuned for their own models and change from release to release, so a cross-model table would mix model and scaffold effects. We plan to add support for more vendor-agnostic harnesses in the future.</p>"
+    },
+    {
+     "id": "contamination",
+     "q": "What about contamination and memorization?",
+     "a": "<p>The issue-fixing code bases are written for the benchmark. They are small services, 140 to 1,500 lines of Python (about 530 at the median), that reproduce a documented failure mechanism. They are not copies of an upstream project, so remembering an upstream patch does not apply. The program-construction references are real open-source programs that a model may have seen in training. The agent never sees their source and cannot fetch it, and it must match the reference's outputs, errors and stored state on 30 to 180 hidden tests. Recalled code rarely matches at that level of detail. The sandbox is also sealed from the internet, so an agent cannot download upstream source or look up a public fix. We do not claim contamination is zero.</p>"
+    }
+   ]
+  },
+  {
+   "id": "if",
+   "title": "Issue-fixing tasks",
+   "desc": "",
+   "items": [
+    {
+     "id": "if-what",
+     "q": "What does the agent get in an issue-fixing task?",
+     "a": "<p>A working service in <code>/app</code>, usually several cooperating processes, plus the AWS services it uses and an incident report written the way an on-call engineer would write it: what was observed in production, not where the bug is. The agent must find the cause and fix it without weakening the service's contract. Shortcuts such as raising thresholds or declining to act are tested for and fail.</p>"
+    },
+    {
+     "id": "if-grounding",
+     "q": "How are the issue-fixing tasks grounded?",
+     "a": "<p>Each task is modelled on a documented real failure. In 51 of the 60, the source is a failure publicly reported, fixed or proposed in an open-source project that runs on AWS. The other 9 come from published design documents, engineering articles, an incident postmortem and a systems research paper.</p><p>The failure mechanism is kept and the code is rewritten as a compact service around it. Each task page has a \"Real-world basis\" section that says what kind of source the task is modelled on. The project's name is left out, so the task cannot be solved by looking up the fix.</p>"
+    },
+    {
+     "id": "if-vs-swebench",
+     "q": "How do issue-fixing tasks relate to SWE-bench-style tasks?",
+     "a": "<p>The shape is the same as <a href=\"https://www.swebench.com/\">SWE-bench</a>: a code base and an issue go in, a patch comes out, and hidden tests decide. The differences:</p><ul><li><b>The code is purpose-built,</b> not an upstream repository at a past commit, so there is no upstream patch to recall.</li><li><b>The issue describes symptoms</b> of a production incident, not a bug report that points at the faulty code.</li><li><b>The bug sits where code meets AWS semantics,</b> such as visibility timeouts, conditional writes, fencing tokens, consumer-group rebalances and rollbacks.</li><li><b>The tests are adversarial schedules,</b> not the unit tests of a fixing pull request. They pause processes at chosen points, let others overtake, then release or kill them.</li></ul><p>Many fixes change a protocol in several places at once and must satisfy requirements that pull against each other.</p>"
+    },
+    {
+     "id": "if-state",
+     "q": "How is the AWS state of an issue-fixing task set up?",
+     "a": "<p>The emulator starts empty. Resources are created in two places: by the service's own setup script, which the agent can run while developing, and by the hidden tests, which provision fresh resources before each test. The agent's development state therefore never reaches grading.</p><p>In 45 of the 60 tasks, those resources are declared in an <a href=\"https://aws.amazon.com/cdk/\">AWS CDK</a> app (TypeScript). Its synthesized CloudFormation template is deployed into the emulator through CloudFormation. In 23 of the 45, the service's own setup uses the CDK app too, so the agent can read and run it. The remaining 15 tasks create resources with SDK calls, mostly because their engine-backed services cannot be created faithfully through the emulator's CloudFormation. The \"AWS CDK\" tag on the task list marks the 45.</p>"
+    },
+    {
+     "id": "if-tests",
+     "q": "How are the fixes tested?",
+     "a": "<p>The tests run the service's real processes against fresh resources. A process announces named pause points, and the tests hold it at one, let other processes overtake it, then release it or kill it with SIGKILL. Afterwards they read the services directly to check safety (nothing lost, duplicated or rolled back) and progress (nothing stuck). Every task is checked so that its reference fix passes and the unfixed service fails.</p>"
+    }
+   ]
+  },
+  {
+   "id": "pc",
+   "title": "Program-construction tasks",
+   "desc": "",
+   "items": [
+    {
+     "id": "pc-what",
+     "q": "What does the agent get in a program-construction task?",
+     "a": "<p>A working program at <code>/reference/program</code> that it can run as often as it likes but cannot read, interface guides in <code>/docs</code> that describe the surface and leave the details open, and an empty <code>/app</code>. It writes its own implementation in any installed language (Python, Go, Rust, C and C++ toolchains are available offline), plus a <code>/app/build.sh</code> that produces <code>/app/program</code>. The hidden tests run that program against fresh AWS resources and compare its outputs, errors and stored state with the reference's.</p>"
+    },
+    {
+     "id": "pc-vs-programbench",
+     "q": "How do program-construction tasks relate to ProgramBench?",
+     "a": "<p>The core idea comes from <a href=\"https://programbench.com/\">ProgramBench</a>: rebuild a program from its executable and documentation, with no source, no internet and an execute-only binary, judged by behavioral tests, with credit only for a full pass. The offered languages follow ProgramBench's.</p><p>The programs are what differs. SWE-Cloud's run on AWS, so much of their observable behavior is the state they leave behind: objects, items, messages, schema changes. The tests compare that state, not only standard output. Many are long-running services and daemons rather than one-shot command-line tools, so the tests also start, restart and stop them. The interface guide fixes the in-scope features and how results are compared, including which nondeterminism is ignored. Each task has 30 to 180 tests written from controlled experiments on the reference and then reviewed.</p>"
+    },
+    {
+     "id": "pc-reference",
+     "q": "Where do the reference programs come from, and how are they chosen?",
+     "a": "<p>Each reference is a pinned release of an open-source program that people run against AWS. We do not ship a downloaded binary. We build each reference ourselves from the upstream source at a recorded commit, in an offline, reproducible build that yields a single Linux x86-64 executable. The 40 references are 27 Go, 9 Rust, 3 C and 1 C++ programs. The upstream license and notices travel with each task, and the agent never receives the source.</p><p>A program qualifies when:</p><ul><li>it reaches AWS only through public APIs and works against the local emulator;</li><li>its effects (outputs, errors, stored state) can be tested reliably, with any nondeterminism covered by stated comparison rules;</li><li>it builds offline into one self-contained executable.</li></ul><p>From the qualified pool, 35 were picked for spread across program types (stream processors, schema migration tools, secrets and credential tools, gateways, operator CLIs and more) and AWS services, with one task per upstream project and difficulty measured on several models. The 5 multi-tenant tasks were added on top for tenant isolation, per-tenant keys, quotas and cache namespacing.</p>"
+    },
+    {
+     "id": "pc-hacking",
+     "q": "How do you prevent reward hacking, such as submitting the reference itself?",
+     "a": "<p>Several layers, each enforced by the environment rather than by the instructions:</p><ul><li><b>The reference is execute-only.</b> The agent works as an unprivileged user that can run the binary but not read it, so it cannot simply copy it.</li><li><b>Grading has no reference.</b> Tests run in a fresh container that receives only <code>/app</code> and contains no copy of the reference, so a wrapper that calls it fails every test.</li><li><b>No network.</b> The upstream source and prebuilt releases cannot be downloaded.</li><li><b>Controls must fail.</b> Before a task is accepted, the reference has to pass its suite twice, and an empty program and a program that delegates to the reference both have to fail.</li></ul><p>The instructions also forbid copying, disassembling or decompiling the reference, and agent trajectories were reviewed for such attempts during auditing.</p>"
+    },
+    {
+     "id": "pc-solvable",
+     "q": "Can program-construction tasks be fully solved?",
+     "a": "<p>Yes. The reference passes every test, and everything the tests check can be observed by running it: the agent can create resources, call the reference and inspect what it leaves behind. The interface guide states how results are judged. Matching every detail is still hard, which is why full passes are rare and the share of tests passed is reported alongside.</p>"
+    }
+   ]
+  }
+ ]
+}

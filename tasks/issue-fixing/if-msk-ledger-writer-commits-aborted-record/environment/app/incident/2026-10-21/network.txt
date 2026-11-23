@@ -1,0 +1,7 @@
+NET-7714 (network team), summary as of 2026-10-22 09:40 UTC
+
+21:13-21:31 UTC on 2026-10-21: intermittent stalls on established TCP connections between the writer
+subnet (wr-a-03 included) and the MSK broker subnet. Cause: a firewall appliance in the path buffered
+traffic under load instead of dropping it. Segments were held for between a few seconds and ~40 s and
+then forwarded; no resets were sent. Connections opened during the window were mostly unaffected.
+Appliance replaced 21:31. No further action on the network side.

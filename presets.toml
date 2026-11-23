@@ -1,0 +1,19 @@
+# Named run shapes for `swecloud run --preset <name>`. A preset can only choose the agent,
+# the number of attempts and how many tasks to run; every other setting comes from
+# protocol.toml. Flags given on the command line win over the preset.
+
+[full]
+# The evaluation protocol as is: every task, protocol attempts (3), protocol harness.
+description = "the full protocol; the only preset whose scores are reportable"
+
+[oracle]
+# Reference solutions, no LLM. Every task should score 1; one that does not is broken on this host.
+description = "reference solutions, one attempt per task"
+agent = "oracle"
+n_attempts = 1
+
+[smoke]
+# A quick end-to-end check of a model route before a full run.
+description = "two tasks, one attempt each"
+n_tasks = 2
+n_attempts = 1

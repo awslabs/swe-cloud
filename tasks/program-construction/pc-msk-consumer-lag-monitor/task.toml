@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-msk-consumer-lag-monitor"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["kafka"]
+modal_vm_runtime = true
+tags = ["aws", "msk", "daemon", "kafka", "consumer-lag", "sliding-window", "offset-replay", "http-api"]
+difficulty_explanation = "The candidate must reconstruct a Kafka monitoring daemon that reads internal offset commits, polls broker offsets and serves group histories and health through HTTP. Commit decoding, bounded windows, close-commit merging and startup replay determine stored lag, while progress, history completeness and retained broker offsets distinguish warnings, stalls, stops and rewinds. Evaluation caching, read-triggered expiry, filters and topic or group deletion must preserve exact response shapes and history slots. Configuration endpoints, environment overrides and PID-file exclusion add process-level requirements."
+expert_time_estimate_hours = 28.0
+
+[metadata.source]
+kind = "program"
+project = "linkedin/Burrow"
+url = "https://github.com/linkedin/Burrow"
+revision = "93eaa9ab26fe52719ebac97a890f6e8387fc8eda"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

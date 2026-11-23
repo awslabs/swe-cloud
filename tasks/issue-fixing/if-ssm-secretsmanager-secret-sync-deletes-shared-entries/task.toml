@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-ssm-secretsmanager-secret-sync-deletes-shared-entries"
+description = "Secret-sync CLI for SSM Parameter Store and Secrets Manager deletes and orphans entries on shared destinations; fix ownership so cleanup and isolation both hold on preemptible runners."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "ssm", "secretsmanager", "ownership", "crash-safety", "secret-sync"]
+difficulty_explanation = "One predicate, 'is this entry mine?', decides both cleanup (delete what the sync created and no longer wants; remove everything it created) and isolation (never touch hand-made, other syncs' or same-named entries). The starter derives it from names (Infisical #7530 / #3136 behaviour) and writes its ownership tag in a follow-up call. Runs can be SIGKILLed between any two AWS calls, so the ownership record has to arrive in the creating call, and an untagged entry with the desired name and value must still be treated as foreign. Console deletes in Secrets Manager only schedule the deletion, so a hidden scheduled secret still holds its name and tags and the predicate has to cover it. Replies to applied writes get lost and the SDK resends the call; meanwhile teams taking over a dropped key create their own entry the moment the name is free. A resent delete then removes the newcomer, so a delete may only be re-sent after the name's owner has been re-read (SSM, where the name is the only handle) or must address the deleted incarnation (Secrets Manager ARN), and every retried write has to judge its outcome from AWS state rather than from the error the retry got."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "pull-request"
+project = "Infisical/infisical"
+url = "https://github.com/Infisical/infisical/pull/7530"
+revision = "843036e3826193fb20a2d17e863831c0aac032df"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

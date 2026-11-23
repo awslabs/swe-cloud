@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-dynamodb-scheduler-failover-overlapping-jobs"
+description = "A forbid-concurrency job scheduler loses exclusive running state across a scheduler replacement while abandoned work blocks progress; both must be fixed together."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "dynamodb", "scheduler", "leases", "failover"]
+difficulty_explanation = "One durable per-job running claim governs both sides of a failover: treating it as absent lets a surviving body overlap (the reported incident), treating it as permanent strands the job whose worker stopped renewing. The verifier holds one body for 22s across a leader kill, a scheduler restart with empty memory and a stale-token completion replay, while the other job's worker is frozen rather than killed: its claim must be released and its slot run elsewhere, and when the frozen worker resumes with permission already waiting it must not act on the claim it no longer holds."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "distribworks/dkron"
+url = "https://github.com/distribworks/dkron/issues/1569"
+revision = "10bdfc72f72accdbe45df33d70c8feb659e4fd92"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

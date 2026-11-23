@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-s3-build-cache-referenced-blobs-expire"
+description = "Disk-cached bazel-remote S3 proxy: hot CAS blobs age out under AC entries that still reference them"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "s3", "lifecycle", "cache", "bazel-remote", "last-modified"]
+difficulty_explanation = "One S3 LastModified per object decides both reclamation and whether an AC entry outlives its outputs. The PR-era refresh hook only sees S3 lookups, but hot blobs are answered from a replica's disk; the fix must learn and keep each blob's S3 age without per-hit S3 traffic, deduplicate, survive throttled copies and a replica restart, answer lease checks truthfully on a replica whose own evidence of the blob is stale while the other replica keeps it alive, never touch AC entries, and still let unused blobs expire."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "pull-request"
+project = "buchgr/bazel-remote"
+url = "https://github.com/buchgr/bazel-remote/pull/935"
+revision = "1605e32b5921d05e373407b98b3c021e40c277da"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

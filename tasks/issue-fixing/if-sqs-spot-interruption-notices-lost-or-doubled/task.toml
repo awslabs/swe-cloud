@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-sqs-spot-interruption-notices-lost-or-doubled"
+description = "Node termination handler replicas of two clusters and a third consumer share one spot-interruption SQS queue: notices are lost, late, or drained twice."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "sqs", "visibility-timeout", "node-termination-handler", "spot", "kubernetes"]
+difficulty_explanation = "One number per message, its SQS visibility, is the only exclusion between stateless replicas and the only way work comes back after a replica dies or declines a message. Drains (40-75 s) outlast any static visibility that still lets a SIGKILLed replica's node be taken over within the interruption deadline, and other clusters' notices on the shared queue must be neither deleted nor buried. The verifier runs five replicas over two clusters plus a third owner, publishes notices before the owning cluster is up, kills the replica draining one node after its second eviction, cuts another draining replica off from the cluster API (requests hang unanswered while its SQS access keeps working, so a heartbeat that renews regardless of progress holds the notice hostage), and sheds one cluster-API lookup with a 503."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "aws/aws-node-termination-handler"
+url = "https://github.com/aws/aws-node-termination-handler/issues/408"
+revision = "be7b2ed586440390d278ca4719990e941cd0596b"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 900.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-sns-s3-fan-out-intermittent-delivery-loss"
+description = "Repair intermittent fan-out delivery loss while preserving the dispatch storage SLO"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "sns", "sqs", "s3", "durability"]
+difficulty_explanation = "A shared body now couples recoverable publication, immutable retry identity, per-projection completion and restartable reclamation: an unknown SNS outcome may outlive the body itself."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "Particular/NServiceBus.AmazonSQS"
+url = "https://github.com/Particular/NServiceBus.AmazonSQS/issues/251"
+revision = "b1c179806c24bfe124daf8bffe4d7e0ac7d35adb"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

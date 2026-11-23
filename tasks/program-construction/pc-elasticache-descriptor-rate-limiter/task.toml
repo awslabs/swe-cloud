@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-elasticache-descriptor-rate-limiter"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["valkey"]
+modal_vm_runtime = true
+tags = ["aws", "elasticache", "daemon", "rate-limiting", "descriptor-matching", "fixed-window", "grpc", "config-reload"]
+difficulty_explanation = "The candidate must reconstruct a descriptor-based HTTP and gRPC rate-limit service with shared Valkey counters. Nested exact, wildcard and key-only matching interacts with named replacements, unlimited rules, shadow mode, ordered charges and refunds. Counter keys, window alignment, expiry refresh, jitter and split storage must match alongside response defaults and reset durations. Configuration merging, invalid configurations and file or symlink reloads must preserve the expected live counter behavior."
+expert_time_estimate_hours = 24.0
+
+[metadata.source]
+kind = "program"
+project = "envoyproxy/ratelimit"
+url = "https://github.com/envoyproxy/ratelimit"
+revision = "11a831bdeed53039a5f4335daa6a7b31ee48a20f"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-mq-dynamodb-long-teardown-double-run"
+description = "VM destroyer workers on an Amazon MQ queue with a 60 s delivery-ack timeout lose consumers and double-run long teardowns."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["rabbitmq"]
+tags = ["aws", "amazon-mq", "rabbitmq", "dynamodb", "consumer-timeout", "lease", "at-least-once"]
+difficulty_explanation = "Job ownership lives in an unacked delivery that the broker's 60 s consumer timeout reclaims mid-teardown (double run, lost consumer). Fixing it means acking quickly yet keeping each job durably pending across a worker crash, owned while its teardown prints progress (minutes), and released within 45 s once it goes silent while the worker stays connected. Graded live against a real RabbitMQ 3.13 with a long, a hung (SIGSTOP) and a crashed (SIGKILL) teardown among short ones."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "postmortem"
+project = "CircleCI"
+url = "https://discuss.circleci.com/t/postmortem-may-21-2021-delay-in-starting-docker-jobs-machine-remote-docker-environments-blocked/40274"
+date = "2021-06-03"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1500.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

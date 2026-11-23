@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Decision record: destination availability during consumer failures",
+  "description": "The platform reads this record before the request in request-destination-availability.md is accepted or closed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requirements_compatible",
+    "chosen_policy",
+    "max_inflight_per_destination",
+    "explanation"
+  ],
+  "properties": {
+    "requirements_compatible": {
+      "type": "boolean",
+      "description": "Can the requested behaviour and the ordered tier's contract both hold for one destination?"
+    },
+    "chosen_policy": {
+      "type": "string",
+      "enum": ["strict_order", "concurrent_progress"],
+      "description": "The behaviour the service implements once this decision is recorded."
+    },
+    "max_inflight_per_destination": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "How many deliveries to one destination may be awaiting the receiver's acknowledgement at the same time."
+    },
+    "explanation": {
+      "type": "string",
+      "minLength": 120,
+      "description": "Why. Cite what you observed: the events involved, what the service did with them, and what each answer rests on."
+    }
+  }
+}

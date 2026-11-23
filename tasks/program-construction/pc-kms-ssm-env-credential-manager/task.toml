@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-kms-ssm-env-credential-manager"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = []
+modal_vm_runtime = true
+tags = ["aws", "kms", "ssm", "secretsmanager", "sts", "cli", "secret-management", "credential-leases"]
+difficulty_explanation = "The candidate must reconstruct a secret-management CLI spanning inline KMS ciphertext, SSM parameters, Secrets Manager values and cached STS role credentials. Config discovery, inherited and layered profiles, provider references and missing-value policy determine both resolution and the destination of writes. Exports, child environments, temporary secret files, redaction and batch resolution must agree across commands. Imports and re-encryption must preserve files on failure, while lease reuse, revocation, backend changes and encrypted ledger storage remain consistent across invocations."
+expert_time_estimate_hours = 36.0
+
+[metadata.source]
+kind = "program"
+project = "jdx/fnox"
+url = "https://github.com/jdx/fnox"
+revision = "2627b559531abed8fa270fbaa00371abb60ae2df"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 2
+memory_mb = 4096
+storage_mb = 12288
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 2
+memory_mb = 4096
+storage_mb = 12288
+build_timeout_sec = 1800

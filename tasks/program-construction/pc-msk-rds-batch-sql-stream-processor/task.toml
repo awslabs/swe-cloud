@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-msk-rds-batch-sql-stream-processor"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["postgres", "kafka"]
+modal_vm_runtime = true
+tags = ["aws", "msk", "rds", "cli", "stream-processing", "event-time-windows", "consumer-offsets", "dead-letter-queue"]
+difficulty_explanation = "Reconstruct a configurable SQL pipeline that batches MSK records, infers columns in memory or on disk, and writes typed results to Kafka, PostgreSQL or stdout. Event-time windows must handle watermarks across silent partitions, grace, late rows and offsets held until output is safe, while sink failures require batch rollback and correct redelivery. Malformed-record and SQL error policies, signal draining, timed flushes and ordered configuration diagnostics add separate observable contracts."
+expert_time_estimate_hours = 38.0
+
+[metadata.source]
+kind = "program"
+project = "turbolytics/sql-flow"
+url = "https://github.com/turbolytics/sql-flow"
+revision = "8ba670918775c1f20bbbe402f8ad1216df8c0dc7"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

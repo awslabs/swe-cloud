@@ -1,0 +1,88 @@
+{
+ "Outputs": {
+  "DlqArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "DLQ",
+     "Arn"
+    ]
+   }
+  },
+  "DlqUrl": {
+   "Value": {
+    "Ref": "DLQ"
+   }
+  },
+  "QueueArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Queue",
+     "Arn"
+    ]
+   }
+  },
+  "QueueUrl": {
+   "Value": {
+    "Ref": "Queue"
+   }
+  }
+ },
+ "Parameters": {
+  "DlqName": {
+   "Type": "String"
+  },
+  "MaxReceiveCount": {
+   "Type": "String"
+  },
+  "QueueName": {
+   "Type": "String"
+  },
+  "RetentionPeriod": {
+   "Type": "Number"
+  },
+  "VisibilityTimeout": {
+   "Type": "Number"
+  }
+ },
+ "Resources": {
+  "DLQ": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/DLQ"
+   },
+   "Properties": {
+    "QueueName": {
+     "Ref": "DlqName"
+    }
+   },
+   "Type": "AWS::SQS::Queue"
+  },
+  "Queue": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Queue"
+   },
+   "Properties": {
+    "MessageRetentionPeriod": {
+     "Ref": "RetentionPeriod"
+    },
+    "QueueName": {
+     "Ref": "QueueName"
+    },
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "DLQ",
+       "Arn"
+      ]
+     },
+     "maxReceiveCount": {
+      "Ref": "MaxReceiveCount"
+     }
+    },
+    "VisibilityTimeout": {
+     "Ref": "VisibilityTimeout"
+    }
+   },
+   "Type": "AWS::SQS::Queue"
+  }
+ }
+}

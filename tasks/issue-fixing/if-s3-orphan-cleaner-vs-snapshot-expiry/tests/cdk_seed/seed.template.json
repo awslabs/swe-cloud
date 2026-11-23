@@ -1,0 +1,20 @@
+{
+ "Parameters": {
+  "BucketName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Lake": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Lake"
+   },
+   "Properties": {
+    "BucketName": {
+     "Ref": "BucketName"
+    }
+   },
+   "Type": "AWS::S3::Bucket"
+  }
+ }
+}

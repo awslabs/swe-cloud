@@ -1,0 +1,41 @@
+{
+ "Parameters": {
+  "TableName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Checkpoints": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Checkpoints"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "StreamArn",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "ShardID",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "StreamArn",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "ShardID",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": {
+     "Ref": "TableName"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  }
+ }
+}

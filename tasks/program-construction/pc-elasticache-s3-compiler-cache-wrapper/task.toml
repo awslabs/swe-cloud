@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-elasticache-s3-compiler-cache-wrapper"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["valkey"]
+modal_vm_runtime = true
+tags = ["aws", "elasticache", "s3", "compiler-wrapper", "daemon", "cache-invalidation", "multilevel-cache", "binary-formats"]
+difficulty_explanation = "The candidate must reconstruct a background compiler cache that classifies GCC C invocations, derives equivalent cache keys and restores exact output files and diagnostics. Meaningful preprocessing changes must invalidate entries while equivalent paths, compiler aliases and output locations share them, including dependency files and split debug outputs. Ordered Valkey and S3 lookups, backfills, read-only modes, TTLs and storage-error policies must agree with global and per-level statistics. Entries must use the documented ZIP and zstd layout and remain usable across concurrent compilations and server restarts."
+expert_time_estimate_hours = 36.0
+
+[metadata.source]
+kind = "program"
+project = "mozilla/sccache"
+url = "https://github.com/mozilla/sccache"
+revision = "965c01943a40c9df96264474bbe28ba98f2e1487"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

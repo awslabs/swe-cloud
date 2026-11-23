@@ -1,0 +1,20 @@
+{
+ "Parameters": {
+  "BucketName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Objects": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Objects"
+   },
+   "Properties": {
+    "BucketName": {
+     "Ref": "BucketName"
+    }
+   },
+   "Type": "AWS::S3::Bucket"
+  }
+ }
+}

@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-elasticache-job-concurrency-slots-leak"
+description = "Python port of gocraft/work on ElastiCache Valkey: MaxConcurrency slots leak on lost releases, lost claims and killed pools without ever under-counting live jobs"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["valkey"]
+tags = ["aws", "elasticache", "valkey", "job-queue", "concurrency-limit", "lua", "ambiguous-failure"]
+difficulty_explanation = "One Valkey counter gates MaxConcurrency. Units must come back after SIGKILLed pools, after a release whose request never reached Valkey and after a claim whose reply was lost, while a release whose reply was lost must not be given back twice and a 40 s job keeps its unit; a reset looks the same to the pool in every case. A pool process killed alone leaves its runner going, and that runner may not be killed or its job run again, so the claim must be held by something that outlives the pool process, for exactly as long as the runner lives, and given back through the same resets when it exits."
+expert_time_estimate_hours = 6.0
+
+[metadata.source]
+kind = "issue"
+project = "gocraft/work"
+url = "https://github.com/gocraft/work/issues/192"
+revision = "5959e69ad211c5ca37ffdf3ede02e35a5ae41d98"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

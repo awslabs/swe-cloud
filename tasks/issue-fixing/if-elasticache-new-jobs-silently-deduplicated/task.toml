@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-elasticache-new-jobs-silently-deduplicated"
+description = "Valkey (ElastiCache) job queue keeps deduplicating new jobs against jobs that are finished or gone after an outage with worker crashes"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["valkey"]
+tags = ["aws", "elasticache", "valkey", "lua", "job-queue", "deduplication", "stall-recovery", "keep-last"]
+difficulty_explanation = "One Valkey key, dq:<q>:de:<id>, decides whether an add is a duplicate, and in keep-last mode a second key, dq:<q>:dn:<id>, holds the data of the job that must run after the current one. The de key must hold for as long as its owner is in flight (through a SIGKILLed worker, stall requeue and retry backoff, and while a live handler still holds its lock) and stop holding as soon as the owner will not run again by any path, including ones that never run the release code: finished, record deleted, or its id taken out of the wait or active list by hand. Throttle-mode keys hold until they expire. No TTL satisfies both; the add must judge the owner atomically from what makes a job run (its lock, its place in wait/active/delayed), not from the state label. The kept data couples to every one of those paths: the stall-limit failure (an in-band leak that skips finalization) must also hand the kept data over, a job whose id was taken out of the active list must still be finalized when its handler completes (the starter refuses), keep-last must treat a lock-holding job as running even when the active list says otherwise, and reclaiming an id from a gone owner must discard the data kept for it, or older data runs after newer."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "taskforcesh/bullmq"
+url = "https://github.com/taskforcesh/bullmq/issues/4311"
+revision = "7a8127fa24b9bf76f05a6d67a31fd50c71e3eb7e"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

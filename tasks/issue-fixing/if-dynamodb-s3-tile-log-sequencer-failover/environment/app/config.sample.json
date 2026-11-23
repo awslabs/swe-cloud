@@ -1,0 +1,15 @@
+{
+  "worker_id": "worker-a",
+  "origin": "example.com/testlog",
+  "table": "checkpoints",
+  "log_id": "9f2a7c1d5b8046ade1f0c3b7d5a2e8f14c6b0d9e2a5f8c3b1d7e4a0f5c8b2d6e",
+  "bucket": "tilelog",
+  "prefix": "log",
+  "ddb_endpoint": "http://localhost:4566",
+  "s3_endpoint": "http://localhost:4566",
+  "listen_host": "127.0.0.1",
+  "listen_port": 8080,
+  "control_socket": "",
+  "checkpoint_time_step": 1,
+  "tile_width": 4
+}

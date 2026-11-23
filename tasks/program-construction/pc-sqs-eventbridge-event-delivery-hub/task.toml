@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-sqs-eventbridge-event-delivery-hub"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["postgres", "valkey"]
+modal_vm_runtime = true
+tags = ["aws", "sqs", "eventbridge", "rds", "elasticache", "daemon", "multi-tenant", "retries"]
+difficulty_explanation = "The candidate must reconstruct a tenant event service with REST management, SQS ingestion and fan-out, migrations and persistent delivery history. Its 60 test functions inspect exact validation errors, tenant-token scope, topic and JSON filters, encrypted Valkey records, PostgreSQL schemas and rows, and destination message formats. Asynchronous logging must remain consistent with duplicate detection, retry schedules and delay floors, failure-based disabling, cursor pagination and recovery after restart."
+expert_time_estimate_hours = 40.0
+
+[metadata.source]
+kind = "program"
+project = "hookdeck/outpost"
+url = "https://github.com/hookdeck/outpost"
+revision = "224bff249f844adfb1d784212628410a4d9060db"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

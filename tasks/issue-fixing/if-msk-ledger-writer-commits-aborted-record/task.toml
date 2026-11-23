@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-msk-ledger-writer-commits-aborted-record"
+description = "A transactional ledger writer on MSK commits a timed-out record from an aborted attempt; fence it without fencing the standby"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["kafka"]
+tags = ["aws", "msk", "kafka", "redpanda", "transactions", "producer-epoch", "zombie-fencing"]
+difficulty_explanation = "After a delivery timeout the stalled Produce can still be appended at the same producer epoch; abort-and-retry at that epoch lets it fold into the retry's transaction. Only a newer epoch in place before the next transaction makes it harmless, and the bump must be presented with the writer's own producer id and epoch: the existing re-initialisation path is the new-instance call that fences a standby taking over during the recovery. That guarded bump is itself a hazard for the live writer: the coordinator aborts an open transaction on the producer id alone, so a stale instance's recovery can abort the standby's transaction, and the standby then sees INVALID_PRODUCER_EPOCH on its next Produce. It must find out from the coordinator whether it was replaced rather than exit as fenced. The verifier holds and replays the request after the next AddPartitionsToTxn, starts the standby while the active is recovering, and lands that recovery both between and inside the standby's transactions."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "apache/kafka"
+url = "https://issues.apache.org/jira/browse/KAFKA-14053"
+revision = "a7c7c9764f33fe256fe9c1d3322e667192ccf381"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

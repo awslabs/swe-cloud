@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-kms-secretsmanager-key-retired-under-live-secret"
+description = "A port of aws-nuke schedules a CMK for deletion in the same sweep that fails to delete a protected secret encrypted under it."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "kms", "secretsmanager", "s3", "aws-nuke", "deletion-ordering", "termination"]
+difficulty_explanation = "The key-retirement decision must be made per key at removal time from live account state (consumers that failed to delete, are kept by config, appeared after the scan, or could not be read), failing closed; holding keys then breaks libnuke's give-up rule, which counts held items as progress, so the run loop must also be changed to stop with exit 3 while still retiring keys freed earlier in the same sweep. Three sweeps under protection, throttling, a late writer and a transient unreadable bucket, graded on KMS key state, consumer decryptability, backups and an ordering audit."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "ekristen/aws-nuke"
+url = "https://github.com/ekristen/aws-nuke/issues/1025"
+revision = "8967ecbed26ed4017c578ae2a28cf85b0d0ea1e3"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 900.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

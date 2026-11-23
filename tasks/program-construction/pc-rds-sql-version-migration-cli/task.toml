@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-rds-sql-version-migration-cli"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["postgres"]
+modal_vm_runtime = true
+tags = ["aws", "rds", "s3", "cli", "schema-migration", "dirty-state", "advisory-locking"]
+difficulty_explanation = "Reconstruct a versioned SQL migration CLI that discovers local or paginated S3 sources, orders versions numerically and supports step limits, goto, force, drop and file creation. Missing migration directions, whole-file versus semicolon-split execution and failed up or down operations must leave the correct version, dirty flag and partial database effects. Custom or quoted history tables and current schemas determine lock scope, so concurrent runs on one history serialize while independent histories proceed."
+expert_time_estimate_hours = 26.0
+
+[metadata.source]
+kind = "program"
+project = "golang-migrate/migrate"
+url = "https://github.com/golang-migrate/migrate"
+revision = "504568a3cbd23b8754760f55a3d89aec1b0c4963"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

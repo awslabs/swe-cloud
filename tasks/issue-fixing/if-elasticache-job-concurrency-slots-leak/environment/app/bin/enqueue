@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+"""Enqueue `process` jobs the way the producers do: LPUSH of the job JSON onto <ns>:jobs:<type>."""
+
+import argparse
+import json
+import os
+import sys
+import time
+import uuid
+
+import redis
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--count", type=int, default=1)
+    parser.add_argument("--duration-ms", type=int, default=400)
+    args = parser.parse_args()
+    namespace = os.environ.get("NAMESPACE", "work")
+    job_type = os.environ.get("JOB_TYPE", "process")
+    client = redis.Redis(host=os.environ.get("VALKEY_HOST", "localhost"), port=int(os.environ.get("VALKEY_PORT", "6379")))
+    queue = f"{namespace}:jobs:{job_type}"
+    for _ in range(args.count):
+        job = {"name": job_type, "id": uuid.uuid4().hex[:24], "t": int(time.time()), "args": {"duration_ms": args.duration_ms}}
+        client.lpush(queue, json.dumps(job, separators=(",", ":")))
+    print(f"enqueued {args.count} onto {queue}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

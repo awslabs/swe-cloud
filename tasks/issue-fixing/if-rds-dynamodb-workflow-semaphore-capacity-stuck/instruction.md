@@ -1,0 +1,5 @@
+Workflows have stopped making progress after database maintenance. The controllers stay healthy, but some shared semaphores have permanently lost capacity. Operators found completed workflows still occupying slots and have been deleting database rows by hand. Restarting the deployment has not reliably cleared the backlog.
+
+Repair the controller in `/app` so it recovers and drains work without manual SQL or process restarts after connectivity returns. Keep the shared semaphore guarantees and existing deployment interface. Work already executing must remain protected even when its controller is unavailable. This deployment spans separate clusters; a change must be safe for the other cluster too.
+
+`README.md` describes how to provision and run the service; `operations.md` contains the operating requirements. Modify the application, retaining its CLI and the pause announcements it emits. Controllers are separate processes launched in fresh working directories with `PYTHONPATH=/app`; local files are not shared state. The executor is external and is not part of this repair.

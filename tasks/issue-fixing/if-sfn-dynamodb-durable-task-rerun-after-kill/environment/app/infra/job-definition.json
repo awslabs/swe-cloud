@@ -1,0 +1,8 @@
+{
+  "Comment": "Local stand-in for the warehouse load job: takes a while, then succeeds.",
+  "StartAt": "Load",
+  "States": {
+    "Load": {"Type": "Wait", "Seconds": 20, "Next": "Done"},
+    "Done": {"Type": "Succeed"}
+  }
+}

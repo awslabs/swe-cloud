@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# docserver --instance-id I1 --http-port 7101   (needs PG_DSN, VALKEY_URL, KEY_PREFIX)
+export PYTHONPATH="/app${PYTHONPATH:+:$PYTHONPATH}"
+exec python3 -m docserver "$@"

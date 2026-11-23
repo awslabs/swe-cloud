@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-rds-elasticache-customer-model-relay"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["postgres", "valkey"]
+modal_vm_runtime = true
+tags = ["aws", "rds", "elasticache", "http-gateway", "multi-tenant", "quota-accounting", "cache-expiry", "channel-routing", "rate-limiting", "admin-api", "redemption-codes", "session-auth", "server-sent-events", "usage-pricing"]
+difficulty_explanation = "The candidate must reconstruct a model API relay backed by PostgreSQL and Valkey: customer token and account management with registration and login sessions, an OpenAI-style relay for chat (plain and streamed), completions, embeddings, moderations, images, speech and model listing, and an administrator API for users and roles, channels and channel tests, redemption codes, top-ups, logs and root-only options. Across 151 test functions, validation and role guards, per-model and per-endpoint pricing with its rounding, group-based channel priority, low-balance reservation, log filters and option effects must match. Valkey holds expiring token, user and group-model entries plus the per-client request histories behind two rate limits, so cache contents, lifetimes and 429 refusals are graded alongside exact tenant-specific totals under concurrency."
+expert_time_estimate_hours = 60.0
+
+[metadata.source]
+kind = "program"
+project = "songquanpeng/one-api"
+url = "https://github.com/songquanpeng/one-api"
+revision = "3915ce9814b8261a1ab13ed93adec58b463cd75c"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

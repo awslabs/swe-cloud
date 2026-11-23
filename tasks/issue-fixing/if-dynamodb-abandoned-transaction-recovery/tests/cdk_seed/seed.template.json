@@ -1,0 +1,87 @@
+{
+ "Parameters": {
+  "ImageTableName": {
+   "Type": "String"
+  },
+  "ItemTableName": {
+   "Type": "String"
+  },
+  "TxTableName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Images": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Images"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "img",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "img",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Ref": "ImageTableName"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "Items": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Items"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "item_id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "item_id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Ref": "ItemTableName"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "Transactions": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Transactions"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "txid",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "txid",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Ref": "TxTableName"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  }
+ }
+}

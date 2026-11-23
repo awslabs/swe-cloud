@@ -1,0 +1,27 @@
+{
+ "Outputs": {
+  "QueueUrl": {
+   "Value": {
+    "Ref": "Queue"
+   }
+  }
+ },
+ "Parameters": {
+  "QueueName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Queue": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Queue"
+   },
+   "Properties": {
+    "QueueName": {
+     "Ref": "QueueName"
+    }
+   },
+   "Type": "AWS::SQS::Queue"
+  }
+ }
+}

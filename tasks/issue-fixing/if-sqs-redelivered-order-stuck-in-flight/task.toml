@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-sqs-redelivered-order-stuck-in-flight"
+description = "An SQS consumer parks a redelivered in-progress message with its heartbeat running and settles only the stale first delivery, so the order stays in flight forever."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "sqs", "visibility-timeout", "receipt-handle", "redelivery", "dead-letter-queue"]
+difficulty_explanation = "Once SQS redelivers an in-progress message, only the newest receipt handle acts: that lease must be kept renewed for as long as the first copy runs (or the message hot-loops into the DLQ) and must then carry the first copy's outcome, while the in-flight slot is left clean before the release becomes visible, because with an immediate redeliver delay the release itself produces a new delivery that lands in the same slot before the release call returns. The newest lease also has to survive slow SQS answers: the starter schedules each heartbeat 0.7 x VisibilityTimeout after the previous call returned, so with multi-second responses every redelivered copy lapses again and the held orders are received into the dead-letter queue. Exposed live through a gateway that drops heartbeats, gives each delivery its own handle, ignores superseded handles, answers visibility extensions seconds late and delays release responses."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "MassTransit/MassTransit"
+url = "https://github.com/MassTransit/MassTransit/issues/5915"
+revision = "1a56bc49bec19037fa6a418c53a2c95ae9b309aa"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

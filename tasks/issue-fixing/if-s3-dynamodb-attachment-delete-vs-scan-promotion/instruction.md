@@ -1,0 +1,5 @@
+Support has reopened a storage incident: an attachment discarded from an account sometimes becomes downloadable again after the UI has acknowledged removal. The scan backlog was high during the incident. We also have reports of clean uploads remaining in staging after a worker restart.
+
+Repair the attachment service in `/app`. A successful removal must stay removed, including when a delayed upload arrives. Keep clean, still-wanted attachments downloadable and make retries and expiry maintenance safe. Preserve the command and message interfaces in `OPERATIONS.md`.
+
+Run `bash /usr/local/bin/start_floci.sh` to ensure the local AWS endpoint is up. `/app/attachments --help` describes the entry points; `/app/OPERATIONS.md` covers resource setup and operation. Workers run as separate processes with separate working directories: local files are not shared coordination or recovery state. All AWS calls must honor `AWS_ENDPOINT_URL`, including when it points to an operator's HTTP relay. Keep requests observable through that endpoint. Do not modify the emulator or its boot script.

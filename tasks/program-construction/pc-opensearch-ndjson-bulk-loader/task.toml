@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-opensearch-ndjson-bulk-loader"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["opensearch"]
+modal_vm_runtime = true
+tags = ["aws", "opensearch", "cli", "bulk-loading", "document-ids", "concurrency"]
+difficulty_explanation = "Reconstruct a parallel NDJSON loader with nested and composite document IDs, index/create/update actions, mappings, ingest pipelines and purge workflows. Exact numeric ID spelling, reserved ID removal, gzip input and an ignored unterminated final line affect what reaches the index. Malformed JSON and unusable IDs can discard different portions of a batch, while partial bulk failures must preserve earlier writes and leave the expected refresh and replica settings."
+expert_time_estimate_hours = 20.0
+
+[metadata.source]
+kind = "program"
+project = "miku/esbulk"
+url = "https://github.com/miku/esbulk"
+revision = "f655c43fc904f6d7b14862a7caa8811952b64202"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

@@ -1,0 +1,33 @@
+{
+ "Parameters": {
+  "TableName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Records": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Records"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "logID",
+      "AttributeType": "B"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "logID",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Ref": "TableName"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  }
+ }
+}

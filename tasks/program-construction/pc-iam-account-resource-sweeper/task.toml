@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-iam-account-resource-sweeper"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = []
+modal_vm_runtime = true
+tags = ["aws", "iam", "sts", "kms", "cloudformation", "cli", "resource-cleanup", "retention-filters"]
+difficulty_explanation = "The candidate must reconstruct an account cleanup CLI covering eleven resource types, with account and alias safeguards, dry-run reports and repeated deletion rounds. Resource-specific identifiers and properties feed exact, glob, regex, date and inverted filters whose presets, global rules and optional groups combine differently. KMS pending deletion and service grants, protected CloudFormation stacks and AWS-managed resources require distinct removal outcomes. Refused accounts and failed filter scans must leave all resources untouched."
+expert_time_estimate_hours = 24.0
+
+[metadata.source]
+kind = "program"
+project = "ekristen/aws-nuke"
+url = "https://github.com/ekristen/aws-nuke"
+revision = "d7e7d673def05cabc6fcf7520b7e5bd976332c76"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 2
+memory_mb = 4096
+storage_mb = 12288
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 2
+memory_mb = 4096
+storage_mb = 12288
+build_timeout_sec = 1800

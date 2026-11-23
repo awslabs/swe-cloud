@@ -1,0 +1,152 @@
+{
+ "Outputs": {
+  "Key0Id": {
+   "Value": {
+    "Ref": "Key0"
+   }
+  },
+  "Key1Id": {
+   "Value": {
+    "Ref": "Key1"
+   }
+  },
+  "Key2Id": {
+   "Value": {
+    "Ref": "Key2"
+   }
+  }
+ },
+ "Parameters": {
+  "Label": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Alias": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Alias"
+   },
+   "Properties": {
+    "AliasName": {
+     "Fn::Join": [
+      "",
+      [
+       "alias/seal-",
+       {
+        "Ref": "Label"
+       }
+      ]
+     ]
+    },
+    "TargetKeyId": {
+     "Ref": "Key0"
+    }
+   },
+   "Type": "AWS::KMS::Alias"
+  },
+  "Entries": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Entries"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "seal_entries"
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "Key0": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Key0"
+   },
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "seal-",
+       {
+        "Ref": "Label"
+       },
+       "-0"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::KMS::Key"
+  },
+  "Key1": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Key1"
+   },
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "seal-",
+       {
+        "Ref": "Label"
+       },
+       "-1"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::KMS::Key"
+  },
+  "Key2": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Key2"
+   },
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "seal-",
+       {
+        "Ref": "Label"
+       },
+       "-2"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::KMS::Key"
+  },
+  "Meta": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Meta"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "seal_meta"
+   },
+   "Type": "AWS::DynamoDB::Table"
+  }
+ }
+}

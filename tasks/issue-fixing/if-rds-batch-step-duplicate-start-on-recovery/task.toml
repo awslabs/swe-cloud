@@ -1,0 +1,39 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+[task]
+name = "swe-cloud/if-rds-batch-step-duplicate-start-on-recovery"
+description = "Repair recovery of delegated batch steps without compromising attempt isolation"
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["postgres"]
+tags = ["aws", "rds", "postgres", "orchestration"]
+difficulty_explanation = "Admission, pending Job deadlines, worker contact and uncertain batch commits must remain consistent across overlapping executor restarts, connection loss and late worker startup or return, and parallel branch failure draining before terminal run publication."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "dagster-io/dagster"
+url = "https://github.com/dagster-io/dagster/issues/33755"
+revision = "a6918d45fad0b6c585d439730e3f9826912867f3"
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1800.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

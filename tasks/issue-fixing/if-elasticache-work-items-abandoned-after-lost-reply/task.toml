@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-elasticache-work-items-abandoned-after-lost-reply"
+description = "Executors abandon items whose Valkey lease call lost its reply; recover them promptly without double runs"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["kafka", "valkey"]
+tags = ["aws", "elasticache", "valkey", "lua", "lease", "work-queue", "ambiguous-commit"]
+difficulty_explanation = "A lease committed in Valkey whose reply is lost must be recovered by its live executor within the dispatch SLO, which needs lease acquisition that recognises the caller's own client-generated lease ID; at the same time every release (requeue, dequeue, scavenge) must be conditional on the lease the caller actually observed, so an item held by another fleet, a long step with seconds-slow extensions, and a dead executor's item each still run exactly once. Every queue time must also be kept on the shard's clock: the lease ID's timestamp is minted by the executor but judged by everyone against the shard's TIME, and executor host clocks are seconds off it. Exposed by a proxy that loses a committed reply, drops a call while another fleet takes the item, slows one item's calls, and kills a holder, plus an uncoordinated scavenger pass, on executor hosts whose clocks run 3-4 s behind the shard. The step call has the same problem: the step runner sits behind a load balancer that answers 504 to long requests while the run carries on, and runs are keyed by (item_id, lease_id), so an executor must re-attach under the lease it started the run with (not the rotated one), and that run key must be kept in Valkey across scavenging and a change of holder (a host that dies right after its step finished must not cause a second run) but dropped on a deliberate requeue after a failed step."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "pull-request"
+project = "inngest/inngest"
+url = "https://github.com/inngest/inngest/pull/4948"
+revision = "3c3c7666fd48a452db8e209a2077d1aed7aee875"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

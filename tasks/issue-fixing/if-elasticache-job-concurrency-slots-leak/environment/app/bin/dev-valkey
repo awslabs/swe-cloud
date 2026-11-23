@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+"""Create (or reuse) a development Valkey cluster through ElastiCache and print `export` lines for it.
+
+    eval "$(/app/bin/dev-valkey)"      # sets VALKEY_HOST and VALKEY_PORT for bin/pool and bin/enqueue
+
+The first cluster takes a minute while the engine image is pulled.
+"""
+
+import sys
+import time
+
+import boto3
+from botocore.config import Config
+
+CLUSTER_ID = sys.argv[1] if len(sys.argv) > 1 else "work-dev"
+
+
+def main() -> int:
+    client = boto3.client("elasticache", config=Config(read_timeout=600, retries={"max_attempts": 1}))
+    try:
+        client.describe_cache_clusters(CacheClusterId=CLUSTER_ID)
+    except client.exceptions.CacheClusterNotFoundFault:
+        client.create_cache_cluster(CacheClusterId=CLUSTER_ID, Engine="redis", CacheNodeType="cache.t3.micro", NumCacheNodes=1)
+    deadline = time.time() + 600
+    while time.time() < deadline:
+        cluster = client.describe_cache_clusters(CacheClusterId=CLUSTER_ID, ShowCacheNodeInfo=True)["CacheClusters"][0]
+        nodes = cluster.get("CacheNodes") or []
+        if cluster.get("CacheClusterStatus") == "available" and nodes and nodes[0].get("Endpoint"):
+            endpoint = nodes[0]["Endpoint"]
+            print(f"export VALKEY_HOST={endpoint['Address']} VALKEY_PORT={endpoint['Port']}")
+            return 0
+        time.sleep(1)
+    print(f"cluster {CLUSTER_ID} did not become available", file=sys.stderr)
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

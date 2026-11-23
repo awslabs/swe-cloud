@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-s3-registry-delete-leaves-dangling-tags"
+description = "Registry manifest DELETE leaves unpullable, undeletable tags after crashes and S3 errors; fix it without stranding concurrent pushes"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "s3", "conditional-writes", "registry", "crash-recovery", "concurrency"]
+difficulty_explanation = "Two stateless registry replicas share an S3 link layout. A digest DELETE must stay retryable to completion across a crash or 500s (so the revision link must outlive tag cleanup and a retry must recognise an interrupted delete), and a push that tags the same digest on the other replica mid-delete must never end as a tag naming a deleted revision. The obvious reorder (upstream PR #4959) fixes the first and opens the second; the one revision-link key has to carry both meanings, with write-then-check on both sides and conditional commit. Graded by SIGKILL and fail-500 faults and by parking each side before every S3 call while the other runs."
+expert_time_estimate_hours = 5.0
+
+[metadata.source]
+kind = "issue"
+project = "distribution/distribution"
+url = "https://github.com/distribution/distribution/issues/3191"
+revision = "f01dfc400e8f872421fa08884e88bd6d4d56f247"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1500.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

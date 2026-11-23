@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-dynamodb-sqs-unique-job-loses-edits"
+description = "Unique-until-processing refresh jobs on DynamoDB + SQS lose edits after overlap put-backs; fix it worker-side, with the dispatcher frozen, without bringing back the duplicate-job cascade"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "dynamodb", "sqs", "distributed-locks", "job-queue", "laravel-port"]
+difficulty_explanation = "The dedup lock is released before a job's refresh starts; whether a later SQS delivery of the same message may delete it decides both no-lost-edits (a job put back by the overlap guard runs on delivery >= 2 and must release) and no-duplicates (a retry after a started-and-failed delivery, or a stale copy whose lock lapsed and was retaken, must not delete the newer dispatch's lock). Delivery count cannot tell these apart, and the fix is worker-only: the message carries no owner, so the worker has to recognise the lock its own dispatch took from what the frozen dispatcher already writes, including for a copy whose lock lapsed before it was ever delivered."
+expert_time_estimate_hours = 3.0
+
+[metadata.source]
+kind = "issue"
+project = "laravel/framework"
+url = "https://github.com/laravel/framework/issues/60042"
+revision = "f7bb6626286778935920541741bd91e7102467d6"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 900.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

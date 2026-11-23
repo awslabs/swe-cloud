@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-kms-s3-document-reader-rollout-failures"
+description = "Repair a KMS-backed document rollout without interrupting the legacy fleet."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "kms", "s3", "migration"]
+difficulty_explanation = "Retained threshold sharings must provide direct failover coverage under Decrypt-only KMS permissions without changing all-group legacy reconstruction as uniform contexts activate groups; publication also contends with old writers, crashes and competing reconcilers."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "pull-request"
+project = "getsops/sops"
+url = "https://github.com/getsops/sops/pull/435"
+revision = "8f804bce1c96267fac61278e98f462f9413cda37"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

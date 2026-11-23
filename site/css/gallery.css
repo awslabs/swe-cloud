@@ -1,0 +1,38 @@
+/* Task gallery. Uses the colours and header of site.css (AWS console theme). */
+.gal{max-width:1180px;margin:0 auto;padding:24px}
+.gal h1{font:700 26px/1.25 var(--display,var(--font));margin:0 0 6px}
+.gal .lede{color:var(--muted);margin:0 0 18px;max-width:80ch;line-height:1.55}
+.gtop{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.gtabs{display:inline-flex;border:2px solid var(--ink);border-radius:999px;padding:2px;gap:2px}
+.gtabs a{padding:5px 14px;border-radius:999px;text-decoration:none;color:var(--ink)!important;font-weight:700;font-size:14px}
+.gtabs a[aria-current="true"]{background:var(--ink);color:#fff!important}
+.gsearch{flex:1;max-width:340px;padding:7px 12px;border:1px solid var(--line);border-radius:8px;font:inherit;background:var(--surface)}
+.gcount{color:var(--muted);font-size:13px}
+.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.tcard{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;text-decoration:none;color:var(--ink)!important;transition:border-color .12s,box-shadow .12s}
+.tcard:hover{border-color:var(--accent);box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.tcard h3{margin:0;font-size:16px;line-height:1.35}
+.tcard p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.5}
+.tcard .slug{font:500 11.5px var(--mono);color:var(--muted);word-break:break-all}
+.chips2{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto}
+.chips2 span{font-size:11.5px;border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--muted)}
+.chips2 span.k{border-color:var(--accent);color:var(--accent)}
+.tdet{max-width:900px;margin:0 auto}
+.tdet .back{display:inline-block;margin-bottom:14px;font-size:14px}
+.tdet .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 18px;font-size:13px;color:var(--muted)}
+.md{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px 28px;line-height:1.6;font-size:15px}
+.md h1{font-size:24px;margin:0 0 10px}
+.md h2{font-size:18px;margin:26px 0 8px;padding-top:14px;border-top:1px solid var(--line)}
+.md h3{font-size:16px;margin:18px 0 6px}
+.md p{margin:0 0 12px}
+.md ul,.md ol{margin:0 0 12px;padding-left:22px}
+.md li{margin:3px 0}
+.md code{font:500 .88em var(--mono);background:var(--code-bg,#f4f4f6);border:1px solid var(--line);border-radius:4px;padding:0 4px}
+.md pre{background:var(--term-bg,#0f141a);color:var(--term-ink,#e9ebed);border-radius:8px;padding:12px 14px;overflow-x:auto}
+.md pre code{background:none;border:0;color:inherit;padding:0}
+.md img{display:block;max-width:100%;height:auto;margin:14px auto;border:1px solid var(--line);border-radius:8px;background:#fff}
+.md table{border-collapse:collapse;width:100%;margin:6px 0 14px;font-size:14px}
+.md th,.md td{border-bottom:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.md td:first-child{color:var(--muted);white-space:nowrap}
+.gerr{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--fault);border-radius:8px;padding:16px 20px}
+.gerr code{font-family:var(--mono)}

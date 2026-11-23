@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-secretsmanager-secret-cache-proxy"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = []
+modal_vm_runtime = true
+tags = ["aws", "secretsmanager", "sts", "http-proxy", "caching", "prefetch", "ttl"]
+difficulty_explanation = "The candidate must reconstruct a token-protected HTTP proxy with configurable secret caching, startup validation and prefetching. Its 62 test functions distinguish cache keys, expiry revalidation, staging-label moves, write-order eviction and stale-value fallback by checking both returned documents and AWS call sequences. Exact request decoding, error translation, binary and timestamp formats, connection limits and paginated prefetch capacity must also agree."
+expert_time_estimate_hours = 28.0
+
+[metadata.source]
+kind = "program"
+project = "aws/aws-workload-credentials-provider"
+url = "https://github.com/aws/aws-workload-credentials-provider"
+revision = "f76ef6f80ae1614fc29856967bbd1a431791422b"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 2
+memory_mb = 4096
+storage_mb = 12288
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 2
+memory_mb = 4096
+storage_mb = 12288
+build_timeout_sec = 1800

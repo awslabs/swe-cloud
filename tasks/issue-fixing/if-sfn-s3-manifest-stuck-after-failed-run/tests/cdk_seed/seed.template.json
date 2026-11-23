@@ -1,0 +1,94 @@
+{
+ "Outputs": {
+  "MachineArn": {
+   "Value": {
+    "Ref": "Machine"
+   }
+  },
+  "QueueUrl": {
+   "Value": {
+    "Ref": "Queue"
+   }
+  }
+ },
+ "Parameters": {
+  "Name": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Bucket": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Bucket"
+   },
+   "Properties": {
+    "BucketName": {
+     "Ref": "Name"
+    }
+   },
+   "Type": "AWS::S3::Bucket"
+  },
+  "Machine": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Machine"
+   },
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Sub": [
+      "{\"StartAt\":\"Generate\",\"States\":{\"Generate\":{\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::sqs:sendMessage.waitForTaskToken\",\"Parameters\":{\"QueueUrl\":\"${QueueUrl}\",\"MessageBody\":{\"input.$\":\"$\",\"execution_arn.$\":\"$$.Execution.Id\",\"task_token.$\":\"$$.Task.Token\"}},\"TimeoutSeconds\":900,\"End\":true}}}",
+      {
+       "QueueUrl": {
+        "Ref": "Queue"
+       }
+      }
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "Role",
+      "Arn"
+     ]
+    },
+    "StateMachineName": {
+     "Ref": "Name"
+    },
+    "StateMachineType": "STANDARD"
+   },
+   "Type": "AWS::StepFunctions::StateMachine"
+  },
+  "Queue": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Queue"
+   },
+   "Properties": {
+    "QueueName": {
+     "Ref": "Name"
+    }
+   },
+   "Type": "AWS::SQS::Queue"
+  },
+  "Role": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Role"
+   },
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": {
+     "Ref": "Name"
+    }
+   },
+   "Type": "AWS::IAM::Role"
+  }
+ }
+}

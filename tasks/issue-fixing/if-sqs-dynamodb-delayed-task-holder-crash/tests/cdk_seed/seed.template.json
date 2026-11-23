@@ -1,0 +1,67 @@
+{
+ "Outputs": {
+  "QueueUrl": {
+   "Value": {
+    "Ref": "Queue"
+   }
+  }
+ },
+ "Parameters": {
+  "QueueName": {
+   "Type": "String"
+  },
+  "RetentionSeconds": {
+   "Type": "Number"
+  },
+  "TableName": {
+   "Type": "String"
+  },
+  "VisibilityTimeout": {
+   "Type": "Number"
+  }
+ },
+ "Resources": {
+  "Queue": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Queue"
+   },
+   "Properties": {
+    "DelaySeconds": 0,
+    "MessageRetentionPeriod": {
+     "Ref": "RetentionSeconds"
+    },
+    "QueueName": {
+     "Ref": "QueueName"
+    },
+    "VisibilityTimeout": {
+     "Ref": "VisibilityTimeout"
+    }
+   },
+   "Type": "AWS::SQS::Queue"
+  },
+  "Tasks": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Tasks"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Ref": "TableName"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  }
+ }
+}

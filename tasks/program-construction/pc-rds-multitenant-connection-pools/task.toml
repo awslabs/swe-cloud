@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-rds-multitenant-connection-pools"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["postgres"]
+modal_vm_runtime = true
+tags = ["aws", "rds", "daemon", "multi-tenant", "postgresql-protocol", "connection-pooling", "transaction-isolation", "load-balancing", "sharding", "read-write-splitting", "admin-console", "config-reload", "tls", "query-cancellation"]
+difficulty_explanation = "The candidate must rebuild a PostgreSQL wire-protocol pooler with tenant-specific authentication, backend roles and databases, and bounded transaction and session pools. Its 159 test functions inspect MD5, trust and TLS logins, simple and extended query forwarding, prepared statements and cancel requests, result sets, notices, SQLSTATE errors and transaction status, as well as backend reuse, checkout, idle, statement and lifetime timeouts, session resets and rollback after disconnect. Routing spans default_role balancing, query-classifying read/write splitting across two RDS instances, least-busy balancing, banning of unreachable replicas, and shards chosen by number, PostgreSQL-compatible key hashing, query comments or default_shard. An admin console reports pools, clients, servers, statistics and bans and pauses, reloads and shuts the pooler down; SIGHUP, autoreload, SIGINT draining and configuration validation are compared too, while concurrent tenants must remain independent."
+expert_time_estimate_hours = 90.0
+
+[metadata.source]
+kind = "program"
+project = "postgresml/pgcat"
+url = "https://github.com/postgresml/pgcat"
+revision = "3796e26402924f892b06d8b2425c1815e08a1404"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

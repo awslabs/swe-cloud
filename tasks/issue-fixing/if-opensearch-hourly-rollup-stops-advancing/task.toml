@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-opensearch-hourly-rollup-stops-advancing"
+description = "Repair an incremental OpenSearch hourly materialization that stops advancing."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["opensearch"]
+tags = ["aws", "opensearch", "incremental", "checkpoints"]
+difficulty_explanation = "Bounded incremental discovery must reconcile rolling-window admission, expiry after source archival, retained revocations and old writes, with durable finite delivery across partial bulk admission, newer retry clocks, interruption, concurrent ingestion and abandoned workers whose requests outlive ownership handoff."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "opensearch-project/index-management"
+url = "https://github.com/opensearch-project/index-management/issues/1400"
+revision = "fe33d7d61e776abe0b14a6cc62350199dfb2947c"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

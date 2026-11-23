@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-msk-s3-topic-to-table-ingester"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["kafka"]
+modal_vm_runtime = true
+tags = ["aws", "msk", "s3", "dynamodb", "cli", "delta-lake", "checkpointing", "schema-coercion"]
+difficulty_explanation = "Reconstruct an ingester that transforms MSK JSON into schema-typed Parquet files and records files and application-specific offsets in an S3 Delta transaction log coordinated through DynamoDB. Batch size, file thresholds and latency interact with bounded termination, including runs that consume a final message without committing it. Recovery must honor stored and explicit seek offsets, checkpoint-only history and concurrent schema changes, while dead letters, nested coercion, partition values and lock expiry retain their own formats."
+expert_time_estimate_hours = 36.0
+
+[metadata.source]
+kind = "program"
+project = "delta-io/kafka-delta-ingest"
+url = "https://github.com/delta-io/kafka-delta-ingest"
+revision = "4d2ed76995f797519ccac3e04915203052e3fbe6"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

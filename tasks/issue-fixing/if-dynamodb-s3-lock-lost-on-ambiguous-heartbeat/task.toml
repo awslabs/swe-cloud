@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-dynamodb-s3-lock-lost-on-ambiguous-heartbeat"
+description = "A DynamoDB lease lock gives up a lock its holder still owns after an ambiguous heartbeat, and a replaced holder still gets writes into the S3 ledger after failover."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "dynamodb", "s3", "lease-lock", "fencing", "heartbeat"]
+difficulty_explanation = "One lock-item field (recordVersionNumber) decides both obligations: a heartbeat that was applied but reported failed must be resolved against the stored item (across several heartbeat periods and every attempted version tag) so the holder keeps its lock, while a holder that was partitioned, frozen or had a write held in flight must never land a ledger write behind its successor, which needs a conditional write and a decision made after the read. The fencing that repairs the second only holds if the fence really grows on every acquisition, and the client's release-on-SIGTERM (a port of the Go client's delete-on-release) deletes the item so the next acquirer starts over at fence 1; the deploy handover has to stay fast, and the same brownout can make the standby's acquiring write ambiguous too. Verified live with a per-worker fault proxy (dropped responses, 500-after-commit, blackholed DynamoDB, held S3 requests), SIGSTOP and rolling SIGTERM restarts."
+expert_time_estimate_hours = 6.0
+
+[metadata.source]
+kind = "issue"
+project = "cirello-io/dynamolock"
+url = "https://github.com/cirello-io/dynamolock/issues/446"
+revision = "277066feced951c4f33620e6175ac1152caef39c"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

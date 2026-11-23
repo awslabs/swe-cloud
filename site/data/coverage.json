@@ -1,0 +1,409 @@
+{
+  "_comment": "What the tasks cover. Each task is in exactly one subcategory; counts must match the tasks lists (issue fixing 60, program construction 40). Task ids omit the if-/pc- prefix and show on hover. aws_services: [service, number of tasks that use it].",
+  "issue_fixing": [
+    {
+      "category": "Message delivery semantics",
+      "subcategories": [
+        {
+          "name": "Duplicate processing on redelivery",
+          "count": 5,
+          "tasks": [
+            "dynamodb-order-dispatch-durable-replay-duplicates",
+            "dynamodb-sqs-review-worker-duplicates-on-redelivery",
+            "kinesis-dynamodb-dedup-worker-handoff-duplicates",
+            "sqs-dynamodb-duplicate-form-notification-emails",
+            "sqs-relay-redelivers-held-messages"
+          ]
+        },
+        {
+          "name": "Message loss",
+          "count": 5,
+          "tasks": [
+            "msk-audit-publisher-loses-records-on-deadline",
+            "sns-s3-fan-out-intermittent-delivery-loss",
+            "sqs-spot-interruption-notices-lost-or-doubled",
+            "elasticache-new-jobs-silently-deduplicated",
+            "rds-sqs-outbox-relay-skips-long-transaction-events"
+          ]
+        },
+        {
+          "name": "Orphaned in-flight messages",
+          "count": 4,
+          "tasks": [
+            "sqs-redelivered-order-stuck-in-flight",
+            "elasticache-work-items-abandoned-after-lost-reply",
+            "sqs-dynamodb-delayed-task-holder-crash",
+            "sqs-lambda-runner-scaleup-partial-batch-failure"
+          ]
+        },
+        {
+          "name": "Ordering violations and sequence gaps",
+          "count": 3,
+          "tasks": [
+            "sqs-dynamodb-webhook-misordered-during-outage",
+            "dynamodb-order-feed-gaps-after-failover",
+            "opensearch-s3-event-sink-gaps-and-duplicates"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Concurrency control",
+      "subcategories": [
+        {
+          "name": "Lost updates",
+          "count": 5,
+          "tasks": [
+            "dynamodb-sqs-unique-job-loses-edits",
+            "elasticache-rds-collab-docs-lose-edits-on-close",
+            "secretsmanager-secret-history-lost-concurrent-writers",
+            "s3-dynamodb-commit-log-version-overwritten",
+            "ssm-dynamodb-custom-fields-vanish-during-sync"
+          ]
+        },
+        {
+          "name": "Lock and lease safety",
+          "count": 4,
+          "tasks": [
+            "dynamodb-s3-lock-lost-on-ambiguous-heartbeat",
+            "s3-lock-dangling-on-ambiguous-responses",
+            "dynamodb-scheduler-failover-overlapping-jobs",
+            "elb-dynamodb-multicluster-target-group-evictions"
+          ]
+        },
+        {
+          "name": "Atomicity of multi-step writes",
+          "count": 4,
+          "tasks": [
+            "dynamodb-abandoned-transaction-recovery",
+            "msk-ledger-writer-commits-aborted-record",
+            "s3-dynamodb-journal-loses-records-on-rollback",
+            "opensearch-rds-reindex-loses-live-writes"
+          ]
+        },
+        {
+          "name": "Concurrency limit accounting",
+          "count": 3,
+          "tasks": [
+            "elasticache-job-concurrency-slots-leak",
+            "rds-dynamodb-workflow-semaphore-capacity-stuck",
+            "rds-elasticache-flow-retries-crash-at-concurrency-cap"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Failure recovery and progress",
+      "subcategories": [
+        {
+          "name": "Checkpoint and offset progress",
+          "count": 5,
+          "tasks": [
+            "msk-ledger-consumer-loses-progress-on-scale-out",
+            "msk-consumer-group-stalls-during-rolling-deploy",
+            "opensearch-hourly-rollup-stops-advancing",
+            "s3-sink-stuck-restoring-same-checkpoint",
+            "sfn-dynamodb-command-projection-stall"
+          ]
+        },
+        {
+          "name": "Stuck reconciliation after errors",
+          "count": 4,
+          "tasks": [
+            "route53-zone-sync-stuck-on-failing-record",
+            "s3-backup-destination-wedged-by-crash",
+            "sfn-s3-manifest-stuck-after-failed-run",
+            "ssm-cfn-dropped-import-stuck-rollback"
+          ]
+        },
+        {
+          "name": "Re-execution after a crash",
+          "count": 4,
+          "tasks": [
+            "mq-dynamodb-long-teardown-double-run",
+            "rds-batch-step-duplicate-start-on-recovery",
+            "sfn-dynamodb-durable-task-rerun-after-kill",
+            "dynamodb-interrupted-approval-double-purchase"
+          ]
+        },
+        {
+          "name": "Failover consistency",
+          "count": 3,
+          "tasks": [
+            "dynamodb-s3-tile-log-sequencer-failover",
+            "s3-replicator-rolls-back-acked-commits",
+            "s3-dynamodb-chunk-retention-across-failover"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Data lifecycle and versioning",
+      "subcategories": [
+        {
+          "name": "Retention and garbage collection",
+          "count": 5,
+          "tasks": [
+            "s3-build-cache-referenced-blobs-expire",
+            "s3-orphan-cleaner-vs-snapshot-expiry",
+            "s3-replica-expiry-deletes-running-backup",
+            "s3-dynamodb-attachment-delete-vs-scan-promotion",
+            "ssm-secretsmanager-secret-sync-deletes-shared-entries"
+          ]
+        },
+        {
+          "name": "Key rotation and rollout compatibility",
+          "count": 4,
+          "tasks": [
+            "kms-dynamodb-seal-key-retirement-breaks-reads",
+            "kms-s3-document-reader-rollout-failures",
+            "kms-secretsmanager-key-retired-under-live-secret",
+            "secretsmanager-dynamodb-deploy-breaks-rotated-secret"
+          ]
+        },
+        {
+          "name": "Dangling references",
+          "count": 2,
+          "tasks": [
+            "s3-registry-delete-leaves-dangling-tags",
+            "s3-dynamodb-manifest-index-names-stale-object"
+          ]
+        }
+      ]
+    }
+  ],
+  "program_construction": [
+    {
+      "category": "Application services",
+      "subcategories": [
+        {
+          "name": "Gateways, proxies and connection pools",
+          "count": 5,
+          "tasks": [
+            "elasticache-http-websocket-gateway",
+            "s3-multitenant-object-gateway",
+            "rds-multitenant-connection-pools",
+            "rds-elasticache-customer-model-relay",
+            "elasticache-s3-compiler-cache-wrapper"
+          ]
+        },
+        {
+          "name": "Real-time messaging and job brokers",
+          "count": 3,
+          "tasks": [
+            "elasticache-rds-realtime-channel-server",
+            "sqs-eventbridge-event-delivery-hub",
+            "rds-background-job-broker"
+          ]
+        },
+        {
+          "name": "Feature flags and rate limiting",
+          "count": 3,
+          "tasks": [
+            "elasticache-sqs-feature-flag-evaluator",
+            "rds-kinesis-feature-flag-evaluator",
+            "elasticache-descriptor-rate-limiter"
+          ]
+        },
+        {
+          "name": "Multi-tenant business applications",
+          "count": 3,
+          "tasks": [
+            "s3-rds-multitenant-file-share",
+            "rds-tenant-customer-directory",
+            "rds-s3-mailing-list-manager"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Operations and security tooling",
+      "subcategories": [
+        {
+          "name": "Telemetry forwarding and retention",
+          "count": 3,
+          "tasks": [
+            "cloudwatch-opensearch-log-forwarder",
+            "cloudwatch-otlp-metrics-forwarder",
+            "opensearch-trace-store-lifecycle-tool"
+          ]
+        },
+        {
+          "name": "Monitoring and alerting",
+          "count": 3,
+          "tasks": [
+            "elasticache-keyspace-metrics-exporter",
+            "msk-consumer-lag-monitor",
+            "opensearch-query-alert-daemon"
+          ]
+        },
+        {
+          "name": "Secret storage and resolution",
+          "count": 3,
+          "tasks": [
+            "kms-yaml-secrets-store-cli",
+            "ssm-secretsmanager-reference-resolver",
+            "secretsmanager-secret-cache-proxy"
+          ]
+        },
+        {
+          "name": "Credential brokering",
+          "count": 2,
+          "tasks": [
+            "sts-credential-vault-broker",
+            "kms-ssm-env-credential-manager"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Data pipelines",
+      "subcategories": [
+        {
+          "name": "Stream processing",
+          "count": 3,
+          "tasks": [
+            "kinesis-dynamodb-stream-pipeline-runner",
+            "msk-rds-batch-sql-stream-processor",
+            "msk-s3-topic-to-table-ingester"
+          ]
+        },
+        {
+          "name": "Batch loading and database copy",
+          "count": 3,
+          "tasks": [
+            "rds-glue-extract-load-runner",
+            "opensearch-ndjson-bulk-loader",
+            "rds-parallel-database-cloner"
+          ]
+        },
+        {
+          "name": "Event indexing and messaging clients",
+          "count": 2,
+          "tasks": [
+            "sqs-opensearch-object-event-indexer",
+            "msk-topic-produce-consume-cli"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Infrastructure and schema management",
+      "subcategories": [
+        {
+          "name": "Resource reconciliation and cleanup",
+          "count": 4,
+          "tasks": [
+            "eventbridge-schedule-config-sync-cli",
+            "sfn-eventbridge-workflow-schedule-sync",
+            "route53-dns-record-reconciler",
+            "iam-account-resource-sweeper"
+          ]
+        },
+        {
+          "name": "Database schema migration",
+          "count": 3,
+          "tasks": [
+            "rds-declarative-schema-sync-cli",
+            "rds-online-ddl-migration-planner",
+            "rds-sql-version-migration-cli"
+          ]
+        }
+      ]
+    }
+  ],
+  "aws_services": [
+    [
+      "DynamoDB",
+      29
+    ],
+    [
+      "S3",
+      29
+    ],
+    [
+      "RDS",
+      21
+    ],
+    [
+      "SQS",
+      16
+    ],
+    [
+      "ElastiCache",
+      13
+    ],
+    [
+      "MSK",
+      8
+    ],
+    [
+      "OpenSearch",
+      8
+    ],
+    [
+      "Secrets Manager",
+      8
+    ],
+    [
+      "Parameter Store",
+      8
+    ],
+    [
+      "KMS",
+      7
+    ],
+    [
+      "STS",
+      7
+    ],
+    [
+      "Step Functions",
+      4
+    ],
+    [
+      "CloudFormation",
+      3
+    ],
+    [
+      "EventBridge",
+      3
+    ],
+    [
+      "Kinesis",
+      3
+    ],
+    [
+      "CloudWatch",
+      2
+    ],
+    [
+      "IAM",
+      2
+    ],
+    [
+      "Route 53",
+      2
+    ],
+    [
+      "SNS",
+      2
+    ],
+    [
+      "Amazon MQ",
+      1
+    ],
+    [
+      "Glue",
+      1
+    ],
+    [
+      "Lambda",
+      1
+    ],
+    [
+      "Load Balancer",
+      1
+    ]
+  ]
+}

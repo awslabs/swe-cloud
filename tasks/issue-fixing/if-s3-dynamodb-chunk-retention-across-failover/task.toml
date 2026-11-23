@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-s3-dynamodb-chunk-retention-across-failover"
+description = "Fix the retention compactor so published deletion work survives placement failover without outrunning any index table's cached readers"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "s3", "dynamodb", "retention", "failover"]
+difficulty_explanation = "Two coupled obligations over one deletion marker: pending deletion work must survive a killed placement and complete by a finite deadline (obligation A), while no authorized chunk may be deleted before the configured grace has been honored after the last index retirement that stopped serving it — this run's flip or another table's turnover, whichever released the chunk last, including a turnover whose successor snapshot lists the chunk again (obligation B). Sharing the marker alone makes the successor sweep immediately from a stale creation timestamp and break readers; anchoring the grace at this run's own publication alone deletes a chunk another table still serves; freezing the anchor at a chunk's first release deletes a chunk that table re-listed the moment its final turnover lands; and no fix may re-arm per incarnation, because the budget must still be met across two kills. The verifier drives two SIGKILLs at operation boundaries plus the neighboring table's mid-run turnovers, and grades both sides."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "design"
+project = "grafana/loki"
+url = "https://grafana.com/docs/loki/latest/operations/storage/retention/"
+revision = "4fa045d3807f4de0543b06e6ce79b89afb741adc"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

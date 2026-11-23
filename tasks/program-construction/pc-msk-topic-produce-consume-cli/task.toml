@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-msk-topic-produce-consume-cli"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["kafka"]
+modal_vm_runtime = true
+tags = ["aws", "msk", "cli", "binary-framing", "consumer-offsets", "transactions"]
+difficulty_explanation = "Reconstruct a Kafka CLI with producer, simple consumer, balanced group and metadata modes. Production must preserve binary payloads, delimiters across read boundaries, key precedence, null versus empty values, ordered duplicate headers and transactional visibility. Consumption must reproduce byte-exact format tokens and JSON envelopes, resolve absolute, relative, stored and timestamp offsets, and coordinate stopping conditions across empty partitions with committed group progress."
+expert_time_estimate_hours = 24.0
+
+[metadata.source]
+kind = "program"
+project = "edenhill/kcat"
+url = "https://github.com/edenhill/kcat"
+revision = "9ca33cdbb8cb1f762d118ef76f96711125ccb091"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

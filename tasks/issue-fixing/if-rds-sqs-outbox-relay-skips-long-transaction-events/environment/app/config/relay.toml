@@ -1,0 +1,13 @@
+[relay]
+# Seconds between polls when the last poll found nothing new to send.
+poll_interval_seconds = 0.25
+# Rows read per poll.
+batch_limit = 500
+# Every message goes to this one FIFO group, so the queue delivers in send order.
+group_id = "outbox"
+
+[gaps]
+# A missing position that has held the relay for this long is treated as a write that rolled
+# back, and the relay steps over it (INC-2207: the relay sat behind a rolled-back write for
+# 41 minutes).
+stale_gap_seconds = 10

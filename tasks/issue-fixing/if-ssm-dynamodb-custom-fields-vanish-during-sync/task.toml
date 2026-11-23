@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-ssm-dynamodb-custom-fields-vanish-during-sync"
+description = "AFT custom-field SSM sync destroys and regresses fields under overlapping, stale and interrupted provisioning executions"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "ssm", "dynamodb", "concurrency"]
+difficulty_explanation = "One delete set, computed from one record image, decides both liveness (removed fields must disappear) and safety (kept fields must never be absent or regress, including when an older execution runs late or has a request in flight). SSM has no multi-name transaction and no version precondition, so the ordering must be built by the sync itself across processes, with an exclusion lease bounded below by the endpoint stall and above by the retry deadline."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "aws-ia/terraform-aws-control_tower_account_factory"
+url = "https://github.com/aws-ia/terraform-aws-control_tower_account_factory/issues/531"
+revision = "8dec0e28a8ff6f075c5352b48972cb6350044998"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

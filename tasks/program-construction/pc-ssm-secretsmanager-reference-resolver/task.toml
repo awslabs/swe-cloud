@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-ssm-secretsmanager-reference-resolver"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = []
+modal_vm_runtime = true
+tags = ["aws", "ssm", "secretsmanager", "kms", "cli", "configuration-expansion", "environment-variables"]
+difficulty_explanation = "The candidate must reconstruct four CLI commands that resolve AWS references in documents, strings and child environments. The 53 test functions pin down nested expression boundaries, whole-value type preservation versus embedded rendering, paginated SSM prefix maps, secret version selection and KMS encryption contexts. Missing-key policies, YAML document traversal, shell quoting, environment inheritance and failures that suppress all output require consistent behavior across commands."
+expert_time_estimate_hours = 22.0
+
+[metadata.source]
+kind = "program"
+project = "helmfile/vals"
+url = "https://github.com/helmfile/vals"
+revision = "3fb0c8c2e95db9e05192ae54ef14f0f65894b0c5"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 2
+memory_mb = 4096
+storage_mb = 12288
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 2
+memory_mb = 4096
+storage_mb = 12288
+build_timeout_sec = 1800

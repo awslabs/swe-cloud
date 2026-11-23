@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-sqs-dynamodb-webhook-misordered-during-outage"
+description = "An ordered-delivery service delivers destinations out of order during consumer failures; repair the dispatch policy and settle the availability request."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "sqs", "dynamodb", "delivery-ordering"]
+difficulty_explanation = "One destination's pending stream couples two obligations: strict order with retention of rejected work, and the product request to keep delivering later events while the head fails. The graded schedule drives a live rejecting head with dispositions running, parks and inspects the stream mid-outage, reloads the process, starts a replacement at once against the stopped process's still-invisible receive, and answers one report of accepted work later than that receive's visibility - so the dispatch policy, the drain decision and the receipt lifecycle are decided against real queue state, and the availability request is settled in a decision record rather than implemented."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "article"
+project = "Svix blog"
+url = "https://www.svix.com/blog/fifo-ordered-webhooks-delivery"
+date = "2025-02-20"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

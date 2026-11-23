@@ -1,0 +1,32 @@
+{
+ "Parameters": {
+  "InstanceName": {
+   "Type": "String"
+  },
+  "MasterPassword": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Database": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Database"
+   },
+   "Properties": {
+    "AllocatedStorage": "20",
+    "DBInstanceClass": "db.t3.micro",
+    "DBInstanceIdentifier": {
+     "Ref": "InstanceName"
+    },
+    "DBName": "batchdb",
+    "Engine": "postgres",
+    "EngineVersion": "16.3",
+    "MasterUserPassword": {
+     "Ref": "MasterPassword"
+    },
+    "MasterUsername": "master"
+   },
+   "Type": "AWS::RDS::DBInstance"
+  }
+ }
+}

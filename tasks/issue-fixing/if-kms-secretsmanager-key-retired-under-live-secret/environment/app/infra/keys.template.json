@@ -1,0 +1,75 @@
+{
+ "Outputs": {
+  "AppArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "App",
+     "Arn"
+    ]
+   }
+  },
+  "AppId": {
+   "Value": {
+    "Ref": "App"
+   }
+  },
+  "CacheArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Cache",
+     "Arn"
+    ]
+   }
+  },
+  "CacheId": {
+   "Value": {
+    "Ref": "Cache"
+   }
+  }
+ },
+ "Parameters": {
+  "Prefix": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "App": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/App"
+   },
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "Prefix"
+       },
+       " app data"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::KMS::Key"
+  },
+  "Cache": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Cache"
+   },
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "Prefix"
+       },
+       " cache"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::KMS::Key"
+  }
+ }
+}

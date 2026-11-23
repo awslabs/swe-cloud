@@ -1,0 +1,27 @@
+warehouse/events version 12 — nightly-merge reported a conflict for a version it had committed
+==============================================================================================
+
+Job log (nightly-merge, 2026-10-24):
+  03:02:11.204  stratactl commit --dataset warehouse/events --version 12 --manifest-file batch-0412.json --committer nightly-merge
+                {"status": "conflict", "version": 12}          (exit 3)
+  03:02:11.209  conflict on v12: re-planning batch-0412 against latest
+  03:02:13.877  stratactl commit --dataset warehouse/events --version 13 --manifest-file batch-0412-r1.json --committer nightly-merge
+                {"status": "committed", "version": 13, ...}    (exit 0)
+
+  batch-0412 is now in the table twice (v12 and v13); downstream row counts doubled for that
+  partition until we compacted it out by hand.
+
+Gateway log for the first attempt (endpoint used by nightly-merge):
+  03:02:10.051  PutObject   warehouse/events/_versions/12.manifest-c41e9a0d-...     200
+  03:02:10.072  PutItem     (version=12)                                           200
+  03:02:10.103  CopyObject  -> warehouse/events/_versions/12.manifest              200
+  03:02:10.119  HeadObject  warehouse/events/_versions/12.manifest                 200
+  03:02:10.140  PutItem     (version=12)                                           500 InternalServerError
+  03:02:10.522  PutItem     (version=12)                                           500 InternalServerError
+  03:02:11.181  PutItem     (version=12)                                           500 InternalServerError
+  03:02:11.196  GetItem     (version=12)                                           200
+
+State afterwards:
+  index row v12: path = warehouse/events/_versions/12.manifest-c41e9a0d-...  committer = nightly-merge
+  warehouse/events/_versions/12.manifest exists and holds batch-0412's manifest; the staging
+  object is still there. The next resolve of warehouse/events (query service, 03:05) finalized v12.

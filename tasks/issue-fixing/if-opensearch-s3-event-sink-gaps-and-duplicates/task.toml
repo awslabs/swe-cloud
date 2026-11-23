@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-opensearch-s3-event-sink-gaps-and-duplicates"
+description = "Repair intermittent loss and duplicate delivery in an OpenSearch event sink"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["opensearch"]
+tags = ["aws", "opensearch", "s3", "deduplication"]
+difficulty_explanation = "Shared durable identities must coordinate concurrent workers, per-worker recovery, uncertain remote writes and near-real-time evidence while peers continue delivery."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "pull-request"
+project = "opensearch-project/data-prepper"
+url = "https://github.com/opensearch-project/data-prepper/pull/5525"
+revision = "85e7dd9705d98438a64e91e0513ab310c5ff5fa0"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

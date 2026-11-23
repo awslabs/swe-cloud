@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-sqs-dynamodb-duplicate-form-notification-emails"
+description = "GC Forms reliability worker still emails duplicate form responses through GC Notify; fix it without losing any."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "sqs", "dynamodb", "at-least-once", "idempotency", "lease", "callbacks"]
+difficulty_explanation = "One DynamoDB item per submission must both stop redelivered and concurrent SQS copies from re-sending a non-idempotent Notify email and let a dead worker's claim, or a failed email, be sent exactly once more. The verifier kills workers before and after Notify accepts a send, holds a send past the visibility timeout, races two copies, repeats and delays failure callbacks, and deploys the fix over what the previous version left: items whose PENDING mark is stale or hides an unrecorded send, a dead-lettered pointer, an old worker's replacement that Notify accepts just after the new instances start, and the table's history: 1,650 finished submissions, most older than Notify's 7-day retention, behind a Notify rate limit of 1000 requests per minute that sends and status reads share."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "cds-snc/platform-forms-client"
+url = "https://github.com/cds-snc/platform-forms-client/issues/1582"
+revision = "ea3981f9b7eec62c64c3d65bbd2490cfb7d8d765"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

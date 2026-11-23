@@ -1,0 +1,47 @@
+# The SWE-Cloud evaluation protocol. Every profile runs these settings;
+# only the LLM route and the sandbox come from the profile.
+
+[harness]
+# Stock terminus-2 with provider safety-filter declines and max_tokens truncations
+# surfaced and counted, and a terminal that survives a large paste and `exit`
+# (src/swecloud/agents/terminus.py). Harbor handles none of these.
+agent = "swecloud.agents.terminus:Terminus2"
+# terminus-2 records its shell with asciinema by default; any single command of
+# about 23 KB or more then freezes the terminal for the rest of the trial. The
+# protocol harness also defaults to off, so a bare `harbor run --agent ...` matches.
+record_terminal_session = false
+
+[llm]
+timeout_sec = 1200
+max_tokens = 128000
+reasoning_effort = "xhigh"
+# The efforts a run may choose with --effort (default: reasoning_effort). Runs compare only at the same
+# effort; the job manifest records it, and the leaderboard shows each model's.
+reasoning_efforts = ["xhigh", "high"]
+
+[run]
+n_attempts = 3
+max_retries = 1
+# Budgets come from each task's task.toml; no multiplier is applied.
+timeout_multiplier = 1.0
+
+[env]
+# Keeps long LLM requests (up to 20 min) from being dropped as idle.
+AIOHTTP_SO_KEEPALIVE = "true"
+AIOHTTP_TCP_KEEPIDLE = "30"
+AIOHTTP_TCP_KEEPINTVL = "30"
+AIOHTTP_TCP_KEEPCNT = "5"
+# Harbor sends usage telemetry (models, tokens, cost, mean reward) after every run unless this is off.
+HARBOR_TELEMETRY = "0"
+
+[scoring]
+# A trial passes only when the verifier gives reward 1 and the trial ended
+# without an exception. Errored and timed-out trials count as failed attempts.
+pass_reward = 1.0
+# almost@1 also credits an attempt whose reward reaches this value (program-construction gives partial credit).
+almost_reward = 0.95
+
+# SWE-Cloud Score = sum of weight x metric over the splits: 0.6 x issue-fixing pass@1 + 0.4 x program-construction pass@1.
+[scoring.score]
+issue-fixing = { metric = "pass@1", weight = 0.6 }
+program-construction = { metric = "pass@1", weight = 0.4 }

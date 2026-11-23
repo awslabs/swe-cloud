@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+"""Run a writer's commits against a table, one lock acquisition per commit.
+
+For each section 1..N: acquire the table lock (poll every --poll-ms, give up after
+--acquire-timeout-s), commit to the ledger, release, then write
+<results-prefix><worker-id>-<section>.json = {"acquired", "released", "lock_etag"}.
+"""
+import argparse
+import json
+import logging
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+import boto3  # noqa: E402
+
+from tablelock import ledger  # noqa: E402
+from tablelock.provider import LockProvider, LockReleaseError  # noqa: E402
+from tablelock.storage import S3LockClient  # noqa: E402
+
+
+def parse_args(argv):
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--worker-id", required=True, help="name used in ledger entries and result keys")
+    p.add_argument("--owner", required=True, help="writer name the lock is taken under")
+    p.add_argument("--bucket", required=True)
+    p.add_argument("--lock-key", required=True)
+    p.add_argument("--ledger-prefix", required=True)
+    p.add_argument("--results-prefix", required=True)
+    p.add_argument("--sections", type=int, default=4)
+    p.add_argument("--lease-seconds", type=int, default=20)
+    p.add_argument("--hold-ms", type=int, default=300)
+    p.add_argument("--poll-ms", type=int, default=100)
+    p.add_argument("--acquire-timeout-s", type=float, default=15.0)
+    return p.parse_args(argv)
+
+
+def main(argv=None):
+    args = parse_args(argv)
+    logging.basicConfig(level=logging.INFO, stream=sys.stderr,
+                        format=f"%(asctime)s %(levelname)s [{args.worker_id}] %(name)s: %(message)s")
+    log = logging.getLogger("lockworker")
+
+    table = boto3.client("s3")
+    provider = LockProvider(S3LockClient(args.owner, args.bucket, args.lock_key, args.lease_seconds),
+                            args.owner, args.lease_seconds)
+
+    for section in range(1, args.sections + 1):
+        acquired = provider.try_lock_for(args.acquire_timeout_s, args.poll_ms)
+        released = False
+        lock_etag = None
+        if acquired:
+            lock_etag = provider.current.etag
+            seq = ledger.commit(table, args.bucket, args.ledger_prefix, args.worker_id, section,
+                                lock_etag, args.hold_ms)
+            log.info("section %d committed seq %d under %s", section, seq, lock_etag)
+            try:
+                provider.unlock()
+                released = True
+            except LockReleaseError as e:
+                log.error("section %d: %s", section, e)
+        else:
+            log.error("section %d: lock not acquired within %ss", section, args.acquire_timeout_s)
+        result = {"acquired": acquired, "released": released, "lock_etag": lock_etag}
+        table.put_object(Bucket=args.bucket, Key=f"{args.results_prefix}{args.worker_id}-{section}.json",
+                         Body=json.dumps(result).encode(), ContentType="application/json")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

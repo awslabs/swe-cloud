@@ -1,0 +1,182 @@
+{
+ "Outputs": {
+  "DELETE": {
+   "Value": {
+    "Ref": "DELETEQueue"
+   }
+  },
+  "EVENTS": {
+   "Value": {
+    "Ref": "EVENTSQueue"
+   }
+  },
+  "SCAN": {
+   "Value": {
+    "Ref": "SCANQueue"
+   }
+  }
+ },
+ "Parameters": {
+  "Prefix": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Attachments": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Attachments"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "path",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "state",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "expiresAt",
+      "AttributeType": "N"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "PendingExpiry",
+      "KeySchema": [
+       {
+        "AttributeName": "state",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "expiresAt",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "path",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "Prefix"
+       },
+       "-table"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "DELETEQueue": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/DELETEQueue"
+   },
+   "Properties": {
+    "QueueName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "Prefix"
+       },
+       "-DELETE"
+      ]
+     ]
+    },
+    "VisibilityTimeout": 5
+   },
+   "Type": "AWS::SQS::Queue"
+  },
+  "Downloads": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Downloads"
+   },
+   "Properties": {
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "Prefix"
+       },
+       "-d"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::S3::Bucket"
+  },
+  "EVENTSQueue": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/EVENTSQueue"
+   },
+   "Properties": {
+    "QueueName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "Prefix"
+       },
+       "-EVENTS"
+      ]
+     ]
+    },
+    "VisibilityTimeout": 60
+   },
+   "Type": "AWS::SQS::Queue"
+  },
+  "Quarantine": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Quarantine"
+   },
+   "Properties": {
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "Prefix"
+       },
+       "-q"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::S3::Bucket"
+  },
+  "SCANQueue": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/SCANQueue"
+   },
+   "Properties": {
+    "QueueName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "Prefix"
+       },
+       "-SCAN"
+      ]
+     ]
+    },
+    "VisibilityTimeout": 60
+   },
+   "Type": "AWS::SQS::Queue"
+  }
+ }
+}

@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-eventbridge-schedule-config-sync-cli"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = []
+modal_vm_runtime = true
+tags = ["aws", "eventbridge", "scheduler", "ssm", "sts", "cli", "config-sync", "resource-pruning"]
+difficulty_explanation = "The candidate must reconstruct a declarative CLI that validates, dumps, diffs and reconciles EventBridge rules and Scheduler schedules from templated YAML or Jsonnet. Inherited settings, offline lookup placeholders, service defaults and omitted versus empty sections must agree with exact diagnostics and line-level diffs. Target replacement, merged tags and tracking-based pruning differ between rules, buses and schedule groups. Dry runs and failures across multiple files must leave precisely the expected partial AWS state."
+expert_time_estimate_hours = 28.0
+
+[metadata.source]
+kind = "program"
+project = "rrreeeyyy/ebschedule"
+url = "https://github.com/rrreeeyyy/ebschedule"
+revision = "7b42b7d0009f039ab81a079b3e2820b6284a0d9d"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 2
+memory_mb = 4096
+storage_mb = 12288
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 2
+memory_mb = 4096
+storage_mb = 12288
+build_timeout_sec = 1800

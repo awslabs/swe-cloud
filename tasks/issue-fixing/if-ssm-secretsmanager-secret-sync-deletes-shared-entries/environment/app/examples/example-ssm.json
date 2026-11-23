@@ -1,0 +1,9 @@
+{
+  "sync_id": "example-ssm",
+  "destination": "ssm",
+  "path": "/example/",
+  "key_schema": null,
+  "environment": "dev",
+  "tags": {"team": "platform"},
+  "source_file": "example.source.json"
+}

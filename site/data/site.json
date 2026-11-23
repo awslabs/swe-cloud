@@ -1,0 +1,23 @@
+{
+  "_comment": "Section order between the fixed header (mast) and the citation (cite), and the design variant of each section (A, B or C). Exported from the mockup on 2026-11-20.",
+  "tasks_base": "../tasks",
+  "order": [
+    "leaderboard",
+    "how",
+    "ground",
+    "dist",
+    "pipeline",
+    "qa"
+  ],
+  "variants": {
+    "mast": "A",
+    "how": "A",
+    "leaderboard": "A",
+    "ground": "A",
+    "dist": "A",
+    "pipeline": "A",
+    "qa": "A",
+    "cite": "A"
+  },
+  "hidden": ["cite"]
+}

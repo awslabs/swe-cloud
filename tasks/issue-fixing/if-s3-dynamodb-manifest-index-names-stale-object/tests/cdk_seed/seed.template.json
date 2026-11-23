@@ -1,0 +1,58 @@
+{
+ "Parameters": {
+  "BucketName": {
+   "Type": "String"
+  },
+  "TableName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Bucket": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Bucket"
+   },
+   "Properties": {
+    "BucketName": {
+     "Ref": "BucketName"
+    },
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "Type": "AWS::S3::Bucket"
+  },
+  "Table": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Table"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "base_uri",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "version",
+      "AttributeType": "N"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "base_uri",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "version",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": {
+     "Ref": "TableName"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  }
+ }
+}

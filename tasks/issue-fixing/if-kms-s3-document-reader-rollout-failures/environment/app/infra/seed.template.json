@@ -1,0 +1,39 @@
+{
+ "Outputs": {
+  "Key0Arn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Key0",
+     "Arn"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BucketName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Bucket": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Bucket"
+   },
+   "Properties": {
+    "BucketName": {
+     "Ref": "BucketName"
+    }
+   },
+   "Type": "AWS::S3::Bucket"
+  },
+  "Key0": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Key0"
+   },
+   "Properties": {
+    "Description": "document deployment"
+   },
+   "Type": "AWS::KMS::Key"
+  }
+ }
+}

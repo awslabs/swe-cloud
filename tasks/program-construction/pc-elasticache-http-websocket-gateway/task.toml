@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-elasticache-http-websocket-gateway"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["valkey"]
+modal_vm_runtime = true
+tags = ["aws", "elasticache", "http-gateway", "websocket", "pubsub", "access-control", "binary-protocols"]
+difficulty_explanation = "The candidate must reconstruct an HTTP and WebSocket gateway that translates requests into Valkey commands and renders replies in JSON, JSONP, RESP, MessagePack and custom content types. URL decoding, extension parsing, database selection, binary values and large integers require transport-specific handling, while ordered IP and Basic authentication rules must refuse commands without side effects. Chunked subscriptions, disconnect cleanup, WebSocket masking and size errors, CORS and conditional requests extend the contract beyond ordinary command execution."
+expert_time_estimate_hours = 32.0
+
+[metadata.source]
+kind = "program"
+project = "nicolasff/webdis"
+url = "https://github.com/nicolasff/webdis"
+revision = "56d0a9285bd04ff06d02f42e4896cf1a0a5cf548"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

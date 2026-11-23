@@ -1,0 +1,23 @@
+{
+ "Parameters": {
+  "BucketName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Bucket": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Bucket"
+   },
+   "Properties": {
+    "BucketName": {
+     "Ref": "BucketName"
+    },
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "Type": "AWS::S3::Bucket"
+  }
+ }
+}

@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-s3-lock-dangling-on-ambiguous-responses"
+description = "Fix dangling table locks when the S3 gateway returns ambiguous answers to conditional lock writes"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "s3", "conditional-write", "distributed-lock", "idempotency"]
+difficulty_explanation = "A worker must reconcile writes whose answer was lost (5xx, dropped connection, or a 504 the gateway still applies later) on both the S3 lock object and the ledger counter it guards. On the lock: adopt its own landed write without ever adopting, renewing or expiring a co-owner's live lease, where the co-owner locks under the same owner name and can land on the same whole-second lease, so only an identity unique per acquisition separates them. On the ledger: the lease cannot stop a counter write that reaches storage after the writer released, so the counter write must be conditional on the version the commit read, and the 412 that condition then returns for the worker's own landed write must be reconciled the same way."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "pull-request"
+project = "apache/hudi"
+url = "https://github.com/apache/hudi/pull/20186"
+revision = "2c733b2c0ab3337148f69cdd323d0b073c0f5b87"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

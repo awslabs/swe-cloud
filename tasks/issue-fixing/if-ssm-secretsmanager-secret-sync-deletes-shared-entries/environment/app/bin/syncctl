@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# syncctl entry point: run the package that sits next to this script.
+set -euo pipefail
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export PYTHONPATH="${here}${PYTHONPATH:+:${PYTHONPATH}}"
+exec python3 -m syncctl "$@"

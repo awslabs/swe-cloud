@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-route53-zone-sync-stuck-on-failing-record"
+description = "Reconcile a Route 53 zone so record+claim pairs stay atomic while one permanently un-committable pair keeps failing"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "route53", "change-batch-atomicity", "ownership-claims", "liveness"]
+difficulty_explanation = "Route 53 applies one ChangeResourceRecordSets request as a unit, so the same call boundary both keeps a record and its ownership claim together (safety) and sets the blast radius of a change that can never commit (liveness). The graded run arms a concurrent writer that occupies two names inside the reconciler's own write request -- one of them on every attempt -- keeps re-taking a third name that already carries one of the reconciler's own claims with a wrong-valued record, and seeds a stale claim of the solver's own owner plus a claim belonging to another owner; the report must account for every desired endpoint, including the ones the tool will never touch. Every obvious repair for the frozen zone restores liveness by giving up pair atomicity, and every obvious repair for the stuck restore claims a name that belongs to somebody else; the two obligations are only jointly satisfiable by a submission and retry unit chosen to match the ownership structure, which nothing in the shipped material states."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "kubernetes-sigs/external-dns"
+url = "https://github.com/kubernetes-sigs/external-dns/issues/421"
+revision = "a10c5665a5bc30e7163eb17e853e317964500e99"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

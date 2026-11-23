@@ -1,0 +1,10 @@
+{
+  "_comment": "Owned by platform-messaging. Applied by the platform's broker definitions; changes go through their review, not this repo.",
+  "vhost": "/",
+  "queue": "vm.destroy",
+  "durable": true,
+  "auto_delete": false,
+  "arguments": {
+    "x-consumer-timeout": 60000
+  }
+}

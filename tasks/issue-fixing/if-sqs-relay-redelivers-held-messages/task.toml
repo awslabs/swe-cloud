@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-sqs-relay-redelivers-held-messages"
+description = "SQS batch relay hands out messages it still holds: its visibility extender dates SQS's deadline from the wrong moment, and the obvious repairs hold a stopping or crashed relay's messages hostage."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "sqs", "visibility-timeout", "consumer", "graceful-shutdown"]
+difficulty_explanation = "Port of Camel's aws2-sqs batch consumer (CAMEL-25809). One SQS deadline per receipt handle decides both obligations: every extension must reach SQS before the deadline SQS counts from the receive and from each ChangeMessageVisibility call (a poll whose other receive returns late, a slow extension response), while the 20 s timeout, the extension budget and the SIGTERM contract forbid buying that time back: the immediate extension a late batch needs must not be sent for a batch the stopping relay will not route, and the messages queued behind the one in hand must stop being extended at once while that one stays hidden. Graded live through an SQS proxy, a downstream and a probe consumer under a held receive, SIGKILL, SIGTERM in two places and a slow extension response."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "pull-request"
+project = "apache/camel"
+url = "https://github.com/apache/camel/pull/28201"
+revision = "4452cc0dec4d165ba3b2d8ab9eb3b7d0f10b03cb"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

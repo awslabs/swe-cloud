@@ -1,0 +1,30 @@
+# Unit and release-check tests on every push and pull request.
+# The checkout skips Git LFS objects (the program-construction reference programs, about 2.3 GB),
+# so the two tests that need them are skipped with SWECLOUD_NO_LFS; run those locally. Every other check runs.
+# Actions are pinned by commit; the comment names the release.
+name: tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+        with:
+          lfs: false
+      - name: Install tmux (the protocol harness's terminal tests drive a real tmux server)
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends tmux
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e  # v6.8.0
+        with:
+          version: "0.11.30"
+      - run: uv sync --locked
+      - run: uv run --locked pytest
+        env:
+          SWECLOUD_NO_LFS: "1"

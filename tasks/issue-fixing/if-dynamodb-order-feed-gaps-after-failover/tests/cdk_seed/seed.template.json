@@ -1,0 +1,36 @@
+{
+ "Parameters": {
+  "TableName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Source": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Source"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "StreamSpecification": {
+     "StreamViewType": "NEW_AND_OLD_IMAGES"
+    },
+    "TableName": {
+     "Ref": "TableName"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  }
+ }
+}

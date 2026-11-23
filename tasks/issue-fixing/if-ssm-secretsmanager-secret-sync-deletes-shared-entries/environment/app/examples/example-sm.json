@@ -1,0 +1,9 @@
+{
+  "sync_id": "example-sm",
+  "destination": "secretsmanager",
+  "key_schema": "example/{{environment}}/{{secretKey}}",
+  "environment": "dev",
+  "mapping": "one-to-one",
+  "tags": {"team": "platform"},
+  "source_file": "example.source.json"
+}

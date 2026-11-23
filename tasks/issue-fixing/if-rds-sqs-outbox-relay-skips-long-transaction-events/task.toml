@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-rds-sqs-outbox-relay-skips-long-transaction-events"
+description = "An outbox relay on RDS PostgreSQL publishing to SQS FIFO loses events written by long transactions and must also pass rolled-back positions promptly across restarts."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["postgres"]
+tags = ["aws", "rds", "postgresql", "sqs-fifo", "outbox", "sequence-gaps", "high-water-mark"]
+difficulty_explanation = "Outbox positions come from a non-transactional sequence, so a missing position below committed rows is either a live reservation or a dead hole. The relay must never pass the first (a 45 s reconciliation transaction) and must pass the second within 20 s across SIGKILL restarts while an xid-less idle-in-transaction scheduler session is always open. Time thresholds, max-visible checkpoints, unfenced open-transaction probes, row-level xmin filters and xid ordering each fail one side; the discriminator is Postgres snapshot evidence about transactions that existed when the hole was observed."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "article"
+project = "event-driven.io"
+url = "https://event-driven.io/en/ordering_in_postgres_outbox/"
+date = "2022-10-28"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

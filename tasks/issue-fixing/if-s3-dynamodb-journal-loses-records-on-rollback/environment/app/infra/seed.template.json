@@ -1,0 +1,47 @@
+{
+ "Parameters": {
+  "BucketName": {
+   "Type": "String"
+  },
+  "TableName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Bucket": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Bucket"
+   },
+   "Properties": {
+    "BucketName": {
+     "Ref": "BucketName"
+    }
+   },
+   "Type": "AWS::S3::Bucket"
+  },
+  "Table": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Table"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Ref": "TableName"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  }
+ }
+}

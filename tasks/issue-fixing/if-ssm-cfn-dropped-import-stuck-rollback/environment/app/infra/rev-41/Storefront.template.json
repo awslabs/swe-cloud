@@ -1,0 +1,53 @@
+{
+  "Description": "Storefront web tier",
+  "Resources": {
+    "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68": {
+      "Type": "Local::Function",
+      "Properties": {
+        "Handler": "crossref.reader",
+        "Code": {
+          "Asset": "crossref"
+        }
+      }
+    },
+    "ExportsReader8B249524": {
+      "Type": "Custom::CrossRegionExportReader",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68",
+            "Arn"
+          ]
+        },
+        "ReaderProps": {
+          "region": "us-east-1",
+          "prefix": "Storefront",
+          "imports": {
+            "/cdk/exports/Storefront/SharedNetworkuseast1RefVpc8378EB38E6A2F7C1": "{{resolve:ssm:/cdk/exports/Storefront/SharedNetworkuseast1RefVpc8378EB38E6A2F7C1}}",
+            "/cdk/exports/Storefront/SharedNetworkuseast1RefEdgeCertificate1B6E0C2D8F44A913": "{{resolve:ssm:/cdk/exports/Storefront/SharedNetworkuseast1RefEdgeCertificate1B6E0C2D8F44A913}}",
+            "/cdk/exports/Storefront/SharedNetworkuseast1FnGetAttLegacyAlbSg3C1D9E47GroupId5A0B71F2": "{{resolve:ssm:/cdk/exports/Storefront/SharedNetworkuseast1FnGetAttLegacyAlbSg3C1D9E47GroupId5A0B71F2}}",
+            "/cdk/exports/Storefront/SharedNetworkuseast1RefLegacyOrdersQueue0D7F3A21E9C4B805": "{{resolve:ssm:/cdk/exports/Storefront/SharedNetworkuseast1RefLegacyOrdersQueue0D7F3A21E9C4B805}}",
+            "/cdk/exports/Storefront/SharedNetworkuseast1RefLegacyOrdersTopicA94C2E107E3D5B19": "{{resolve:ssm:/cdk/exports/Storefront/SharedNetworkuseast1RefLegacyOrdersTopicA94C2E107E3D5B19}}"
+          }
+        }
+      }
+    },
+    "WebService": {
+      "Type": "Local::Service",
+      "Properties": {
+        "Environment": {
+          "VPC_ID": "{{resolve:ssm:/cdk/exports/Storefront/SharedNetworkuseast1RefVpc8378EB38E6A2F7C1}}",
+          "CERTIFICATE_ARN": "{{resolve:ssm:/cdk/exports/Storefront/SharedNetworkuseast1RefEdgeCertificate1B6E0C2D8F44A913}}",
+          "ALB_SECURITY_GROUP": "{{resolve:ssm:/cdk/exports/Storefront/SharedNetworkuseast1FnGetAttLegacyAlbSg3C1D9E47GroupId5A0B71F2}}",
+          "ORDERS_QUEUE_URL": "{{resolve:ssm:/cdk/exports/Storefront/SharedNetworkuseast1RefLegacyOrdersQueue0D7F3A21E9C4B805}}",
+          "ORDERS_TOPIC_ARN": "{{resolve:ssm:/cdk/exports/Storefront/SharedNetworkuseast1RefLegacyOrdersTopicA94C2E107E3D5B19}}"
+        },
+        "HealthCheck": [
+          "python3",
+          "-c",
+          "import os, sys; missing = [k for k in ['ALB_SECURITY_GROUP', 'CERTIFICATE_ARN', 'ORDERS_QUEUE_URL', 'ORDERS_TOPIC_ARN', 'VPC_ID'] if not os.environ.get(k)]; print('missing settings: %s' % missing, file=sys.stderr) if missing else None; sys.exit(1 if missing else 0)"
+        ]
+      }
+    }
+  }
+}

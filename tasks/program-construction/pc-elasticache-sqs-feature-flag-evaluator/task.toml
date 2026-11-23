@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-elasticache-sqs-feature-flag-evaluator"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["valkey"]
+modal_vm_runtime = true
+tags = ["aws", "elasticache", "sqs", "http-service", "feature-flags", "targeting-queries", "progressive-rollout", "config-refresh"]
+difficulty_explanation = "The candidate must reconstruct an HTTP feature-flag evaluator with native and OFREP APIs, refreshed Valkey definitions and SQS evaluation events. Typed values, ordered targeting queries, deterministic percentage buckets and scheduled or progressive rollouts must produce the correct variants, reasons, metadata and errors. Malformed store values and invalid flag definitions have different refresh consequences, while single, bulk, disabled and failed evaluations have distinct event-emission rules."
+expert_time_estimate_hours = 28.0
+
+[metadata.source]
+kind = "program"
+project = "thomaspoignant/go-feature-flag"
+url = "https://github.com/thomaspoignant/go-feature-flag"
+revision = "5ede674515d70a0f34800d888178cb11bf2a9aeb"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

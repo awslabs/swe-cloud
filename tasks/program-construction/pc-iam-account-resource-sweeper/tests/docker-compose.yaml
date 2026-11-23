@@ -1,0 +1,29 @@
+# The Floci venue: main is the program's container; Floci answers the AWS APIs at http://engines:4566.
+services:
+  main:
+    networks: [venue]
+    cap_add: [NET_ADMIN]
+    # The single-container tasks' hardening; main keeps NET_ADMIN for the engine route floci-venue sets.
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 4096
+    cap_drop:
+      - MKNOD
+      - NET_RAW
+      - AUDIT_WRITE
+      - SYS_CHROOT
+      - SETFCAP
+    depends_on: [engines]
+  engines:
+    networks: [venue]
+    image: floci/floci:2.2.0
+    environment:
+      FLOCI_SERVICES_ECS_ENABLED: "false"
+      FLOCI_SERVICES_EC2_ENABLED: "false"
+      FLOCI_SERVICES_EKS_ENABLED: "false"
+# One internal network for the venue: the services reach each other by name and nothing reaches the internet.
+# Declaring it explicitly keeps runners that enforce no-network by rewriting service networking from moving
+# main and engines out of it.
+networks:
+  venue:
+    internal: true

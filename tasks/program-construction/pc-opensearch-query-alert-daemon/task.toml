@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-opensearch-query-alert-daemon"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["opensearch"]
+modal_vm_runtime = true
+tags = ["aws", "opensearch", "sns", "daemon", "query-alerting", "scheduling", "state-recovery"]
+difficulty_explanation = "Reconstruct a scheduled query daemon that traverses response arrays and aggregation buckets, evaluates typed comparisons with any/all/none quantifiers, and delivers file or SNS alerts. Result ordering, chained bucket keys, exact numeric spelling in body text and template rendering must agree even when conditions suppress delivery or an output fails. Interval and calendar schedules must resume from the latest exact state match under normalized rule names, including the consequences of failed state writes."
+expert_time_estimate_hours = 30.0
+
+[metadata.source]
+kind = "program"
+project = "morningconsult/go-elasticsearch-alerts"
+url = "https://github.com/morningconsult/go-elasticsearch-alerts"
+revision = "e4914b22a79b576031ec6ff0d2dd26811f0ab209"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

@@ -1,0 +1,36 @@
+{
+ "Outputs": {
+  "TargetGroupArn": {
+   "Value": {
+    "Ref": "Targets"
+   }
+  }
+ },
+ "Parameters": {
+  "GroupName": {
+   "Type": "String"
+  },
+  "Port": {
+   "Type": "Number"
+  }
+ },
+ "Resources": {
+  "Targets": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Targets"
+   },
+   "Properties": {
+    "Name": {
+     "Ref": "GroupName"
+    },
+    "Port": {
+     "Ref": "Port"
+    },
+    "Protocol": "TCP",
+    "TargetType": "ip",
+    "VpcId": "vpc-0shared"
+   },
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup"
+  }
+ }
+}

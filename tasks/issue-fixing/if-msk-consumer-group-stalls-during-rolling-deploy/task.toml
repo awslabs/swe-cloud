@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-msk-consumer-group-stalls-during-rolling-deploy"
+description = "Repair consumption stalls across static consumer deployments on MSK"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["kafka"]
+tags = ["aws", "msk", "redpanda", "consumer-groups"]
+difficulty_explanation = "Cached static assignments preserve quiet restarts but also replay an interrupted cooperative transfer; recovery must distinguish the two while concurrent enrichment and durable output require a per-partition checkpoint frontier and drained handoffs."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "twmb/franz-go"
+url = "https://github.com/twmb/franz-go/issues/1483"
+revision = "0bb2f0e89ffe0c089108ce2cf0ad6c9d5c89aa63"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

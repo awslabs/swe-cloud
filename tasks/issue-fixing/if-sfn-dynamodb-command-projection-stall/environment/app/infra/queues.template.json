@@ -1,0 +1,51 @@
+{
+ "Outputs": {
+  "FinishQueue": {
+   "Value": {
+    "Ref": "finish"
+   }
+  },
+  "SyncQueue": {
+   "Value": {
+    "Ref": "sync"
+   }
+  },
+  "WaitQueue": {
+   "Value": {
+    "Ref": "waitprev"
+   }
+  }
+ },
+ "Resources": {
+  "finish": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/finish"
+   },
+   "Properties": {
+    "QueueName": "finish",
+    "VisibilityTimeout": 30
+   },
+   "Type": "AWS::SQS::Queue"
+  },
+  "sync": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/sync"
+   },
+   "Properties": {
+    "QueueName": "sync",
+    "VisibilityTimeout": 30
+   },
+   "Type": "AWS::SQS::Queue"
+  },
+  "waitprev": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/wait-prev"
+   },
+   "Properties": {
+    "QueueName": "wait-prev",
+    "VisibilityTimeout": 30
+   },
+   "Type": "AWS::SQS::Queue"
+  }
+ }
+}

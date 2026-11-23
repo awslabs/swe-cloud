@@ -1,0 +1,39 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+[task]
+name = "swe-cloud/if-rds-dynamodb-workflow-semaphore-capacity-stuck"
+description = "Restore database semaphore capacity after controller maintenance"
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["postgres"]
+tags = ["aws", "rds", "postgres", "dynamodb", "synchronization"]
+difficulty_explanation = "Recovery must preserve shared capacity and ownership while workflow execution outlives controller sessions and processes."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "argoproj/argo-workflows"
+url = "https://github.com/argoproj/argo-workflows/issues/16772"
+revision = "6c80c7e56ae601bce4a9f042767aa00259eb1f41"
+[verifier]
+network_mode = "no-network"
+timeout_sec = 900.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

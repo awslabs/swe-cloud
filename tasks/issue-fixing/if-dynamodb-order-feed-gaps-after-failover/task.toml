@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-dynamodb-order-feed-gaps-after-failover"
+description = "Repair missing order-feed changes after worker replacement"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "dynamodb", "cdc", "recovery"]
+difficulty_explanation = "Preserve a durable subscription boundary and commit only the current owner's contiguous acknowledgements across overlapping startup, pending writes and process loss."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "pull-request"
+project = "redpanda-data/connect"
+url = "https://github.com/redpanda-data/connect/pull/4992"
+revision = "9ed9d8ed71a535ae0c0c02621a3982f914007cf9"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

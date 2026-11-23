@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-ssm-cfn-dropped-import-stuck-rollback"
+description = "Cross-stack SSM exports deadlock when a consumer drops or swaps an import; fix the writer/reader custom-resource handlers without breaking strong references"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "ssm", "dynamodb", "cloudformation", "custom-resource", "cdk", "strong-reference", "rollback"]
+difficulty_explanation = "Two coupled obligations decided by one SSM parameter: a parameter that a committed or in-flight consumer state imports must survive with its value, yet a dropped export must be gone by the end of the deploy that leaves it unused, producer-first, and every refused or failed producer update must roll back cleanly. The writer never runs again for a dropped export and only sees its last two prop sets, so the solver has to find where in the custom-resource lifecycle deletion becomes safe and what state the decision must read. The fix also has to take over environments the previous handlers deployed: per-stack strong-ref tags, a reader that never changed its physical id, and no other state, so whatever commit point the new design relies on has to be bridged for a generation that never recorded one. The handlers ship inside each stack as a function whose code rolls back with the stack, so when the deploy that brings the new code fails, the rollback-cleanup Deletes of the new generation are answered by the previous handlers: the design has to stay safe and leak-free when the old code deletes what the new code created, and rewrites the tag records the new code may be relying on. The verifier drives producer and consumer rollbacks, a swap, a bulk drop, a refused value change and an orphan parameter, on fresh stacks and on stacks deployed by the previous handlers, probing strong references after every handler response."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "aws/aws-cdk"
+url = "https://github.com/aws/aws-cdk/issues/27902"
+revision = "f01d84038935d107a9592a13574c8bf0b97c8059"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1500.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

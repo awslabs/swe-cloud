@@ -1,0 +1,33 @@
+{
+ "Outputs": {
+  "QueueUrl": {
+   "Value": {
+    "Ref": "Jobs"
+   }
+  }
+ },
+ "Parameters": {
+  "QueueName": {
+   "Type": "String"
+  },
+  "VisibilityTimeout": {
+   "Type": "Number"
+  }
+ },
+ "Resources": {
+  "Jobs": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Jobs"
+   },
+   "Properties": {
+    "QueueName": {
+     "Ref": "QueueName"
+    },
+    "VisibilityTimeout": {
+     "Ref": "VisibilityTimeout"
+    }
+   },
+   "Type": "AWS::SQS::Queue"
+  }
+ }
+}

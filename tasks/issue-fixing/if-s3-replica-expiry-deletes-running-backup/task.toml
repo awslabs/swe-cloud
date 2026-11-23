@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-s3-replica-expiry-deletes-running-backup"
+description = "Repair cross-host repository maintenance across publication races and host replacement"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "s3", "backup", "concurrency", "recovery"]
+difficulty_explanation = "Retention, reconstruction and restartable cleanup share a non-atomic S3 repository with independent primary publication and overlapping maintenance hosts."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "pgbackrest/pgbackrest"
+url = "https://github.com/pgbackrest/pgbackrest/issues/2622"
+revision = "aa0e215019f50f92a8f0c97f907affc1d3bf86c4"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 3600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

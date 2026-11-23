@@ -1,0 +1,26 @@
+{
+ "Resources": {
+  "Table": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Table"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "SubmissionID",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "SubmissionID",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "ReliabilityQueue"
+   },
+   "Type": "AWS::DynamoDB::Table"
+  }
+ }
+}

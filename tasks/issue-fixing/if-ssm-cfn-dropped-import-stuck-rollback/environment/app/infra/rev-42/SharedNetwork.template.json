@@ -1,0 +1,43 @@
+{
+  "Description": "SharedNetwork: VPC, load balancer security groups, edge certificate (us-east-1)",
+  "Resources": {
+    "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A": {
+      "Type": "Local::Function",
+      "Properties": {
+        "Handler": "crossref.writer",
+        "Code": {
+          "Asset": "crossref"
+        }
+      }
+    },
+    "ExportsWriteruseast1D5B3B3B0": {
+      "Type": "Custom::CrossRegionExportWriter",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A",
+            "Arn"
+          ]
+        },
+        "WriterProps": {
+          "region": "us-east-1",
+          "exports": {
+            "/cdk/exports/Storefront/SharedNetworkuseast1RefVpc8378EB38E6A2F7C1": "vpc-0f3c2a9d81b47e650",
+            "/cdk/exports/Storefront/SharedNetworkuseast1RefEdgeCertificate1B6E0C2D8F44A913": "arn:aws:acm:us-east-1:000000000000:certificate/6f1e0b52-9c3d-4a7e-8b21-d04c5f9a7e13",
+            "/cdk/exports/Storefront/SharedNetworkuseast1FnGetAttAlbSgV2E0D41C7BGroupIdC2A96F03": "sg-0d92a6f1e3b7c4185"
+          }
+        }
+      }
+    },
+    "EdgeSmokeTest": {
+      "Type": "Local::Hook",
+      "Properties": {
+        "Command": [
+          "python3",
+          "-c",
+          "print('edge smoke test ok')"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+Dispatch has been reporting successful publishes, but some downstream projections never catch up. Operations found notifications in the error queue that still fail when replayed. It is intermittent and more common around restarts or when one projection is behind. Producers also report retries that succeed but leave storage behind, and some killed publish commands never reach the projections.
+
+Fix the transport in `/app` so all subscribed projections receive the original event bytes and operator replay remains usable. Keep the existing storage reclamation SLO; leaving every published body behind is not an acceptable recovery plan. The CLI and operating contract are documented in `/app/OPERATIONS.md`.
+
+Each role runs as a separate process in a fresh working directory. Durable coordination belongs in the emulated AWS services, not local files. Preserve the starter's pause announcements when reorganizing the processing flow. Do not replace the business handler or alter the supplied service resources to suppress deliveries.

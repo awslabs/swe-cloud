@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-elasticache-rds-realtime-channel-server"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["postgres", "valkey"]
+modal_vm_runtime = true
+tags = ["aws", "elasticache", "rds", "sqs", "websocket-server", "distributed-presence", "webhooks", "schema-migration"]
+difficulty_explanation = "The candidate must reconstruct a realtime WebSocket server with signed HTTP publishing, Postgres application records, Valkey coordination and SQS webhook delivery. Private-channel authentication, presence counted by user rather than connection, shared connection limits and cache expiry must remain consistent across servers. Webhook filtering, batching, departure confirmation, signed retries and queue visibility interact with malformed jobs, unknown apps and FIFO queues. Startup must also extend existing database schemas without losing rows and shutdown must finish pending webhook work."
+expert_time_estimate_hours = 40.0
+
+[metadata.source]
+kind = "program"
+project = "sockudo/sockudo"
+url = "https://github.com/sockudo/sockudo"
+revision = "9b4f0476028871a76bb239809a90e2c91d16f648"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

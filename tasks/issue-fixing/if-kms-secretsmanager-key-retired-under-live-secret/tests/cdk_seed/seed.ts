@@ -1,0 +1,28 @@
+// Creates existing sandbox resources; seed.template.json is generated with cdk synth.
+import * as cdk from 'aws-cdk-lib';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as sm from 'aws-cdk-lib/aws-secretsmanager';
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Seed', { synthesizer: new cdk.BootstraplessSynthesizer() });
+const param = (name: string, type = 'String') => new cdk.CfnParameter(stack, name, { type });
+const run = param('RunId').valueAsString;
+new s3.CfnBucket(stack, 'data', {bucketName: `data-${run}`});
+new s3.CfnBucket(stack, 'keep', {bucketName: `keep-${run}`});
+new s3.CfnBucket(stack, 'backups', {bucketName: `backups-${run}`});
+const K1 = new kms.CfnKey(stack, 'K1', {description: `sandbox ${run} K1`});
+new cdk.CfnOutput(stack, 'K1Id', {value: K1.ref});
+new cdk.CfnOutput(stack, 'K1Arn', {value: K1.attrArn});
+const K2 = new kms.CfnKey(stack, 'K2', {description: `sandbox ${run} K2`});
+new cdk.CfnOutput(stack, 'K2Id', {value: K2.ref});
+new cdk.CfnOutput(stack, 'K2Arn', {value: K2.attrArn});
+const K3 = new kms.CfnKey(stack, 'K3', {description: `sandbox ${run} K3`});
+new cdk.CfnOutput(stack, 'K3Id', {value: K3.ref});
+new cdk.CfnOutput(stack, 'K3Arn', {value: K3.attrArn});
+const K4 = new kms.CfnKey(stack, 'K4', {description: `sandbox ${run} K4`});
+new cdk.CfnOutput(stack, 'K4Id', {value: K4.ref});
+new cdk.CfnOutput(stack, 'K4Arn', {value: K4.attrArn});
+const K5 = new kms.CfnKey(stack, 'K5', {description: `sandbox ${run} K5`});
+new cdk.CfnOutput(stack, 'K5Id', {value: K5.ref});
+new cdk.CfnOutput(stack, 'K5Arn', {value: K5.attrArn});
+app.synth();

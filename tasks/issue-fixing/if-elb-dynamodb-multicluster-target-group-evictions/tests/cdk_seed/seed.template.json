@@ -1,0 +1,41 @@
+{
+ "Parameters": {
+  "TableName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Ownership": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Ownership"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "owner",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "target",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "owner",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "target",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": {
+     "Ref": "TableName"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  }
+ }
+}

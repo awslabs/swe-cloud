@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-s3-sink-stuck-restoring-same-checkpoint"
+description = "S3 part-file sink gets stuck restoring the same checkpoint and leaks temp state; fix cleanup without breaking restore."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "s3", "multipart-upload", "checkpointing", "flink", "cleanup", "recovery"]
+difficulty_explanation = "Port of Flink FLINK-13940/13941/10963/26151: one DeleteObject/AbortMultipartUpload decides both reclaiming temp state (tails of subsumed and aborted checkpoints, earlier attempts' leftovers, orphan uploads of crashed fresh starts) and keeping every retained checkpoint and savepoint restorable through repeated restores of the same checkpoint, an open failure, a crash after open, and a completion notification that arrives after the next snapshot. A superseded attempt cut off by a partition is cancelled only after the next attempt is running, so cleanup on cancellation would free the running attempt's unreferenced upload and in-flight snapshot, while a lost final notification makes END-time cleanup necessary. A superseded attempt whose host froze resumes its startup while the next attempt runs, so a startup sweep (or an ownership claim taken at startup) frees or fences the running attempt; and a resubmission by hand numbers attempts from 0 again right after the previous submission's last attempt died with its host, so fencing by attempt number against a lock the dead attempt left behind blocks the restore. A superseded fresh start whose host froze at deploy resumes only after the resubmission's attempt has started, creates its upload and is then lost with its host, so a cleanup that never looks past the inventory it took at startup leaks that upload at the end of the job: at END the job has finished and every unreferenced object or upload under the prefix is garbage, whoever created it and whenever. Only a cleanup driven by the durable reference set (manifests under chk/ and savepoints/) plus the attempt's own undecided snapshots, run only on job-manager commands (COMPLETE, END), satisfies all of it."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "apache/flink"
+url = "https://issues.apache.org/jira/browse/FLINK-13940"
+revision = "0147cf601701c87dd330898f68b47939f2ef1226"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

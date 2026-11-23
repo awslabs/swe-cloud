@@ -1,0 +1,47 @@
+{
+ "Outputs": {
+  "RoleArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Role",
+     "Arn"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "RoleName": {
+   "Type": "String"
+  },
+  "Service": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Role": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Role"
+   },
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": {
+         "Ref": "Service"
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": {
+     "Ref": "RoleName"
+    }
+   },
+   "Type": "AWS::IAM::Role"
+  }
+ }
+}

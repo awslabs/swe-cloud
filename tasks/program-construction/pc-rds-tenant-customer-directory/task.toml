@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-rds-tenant-customer-directory"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["postgres"]
+modal_vm_runtime = true
+tags = ["aws", "rds", "s3", "http-api", "multi-tenant", "customer-directory", "authorization", "persistence", "oauth2", "jwt", "file-storage", "roles"]
+difficulty_explanation = "The candidate must reconstruct an identity server's organization-scoped API on PostgreSQL and S3: user CRUD with application credential resolution and startup provisioning, organization settings, password setting with organization rules and storage types, groups and roles, file uploads through S3 storage providers, and an OAuth 2.0 token endpoint with introspection, revocation, discovery and JWKS. Its 131 test functions check exact response messages, competing tenant identifiers, full versus column-restricted updates, renames with stable UUIDs, S3 object keys and bytes with numbered repeats and path rules, RS256 token claims and signatures against provisioned and generated keys, failed-attempt lockout, refresh and revocation effects, and stored rows before and after refused operations and restarts."
+expert_time_estimate_hours = 60.0
+
+[metadata.source]
+kind = "program"
+project = "casdoor/casdoor"
+url = "https://github.com/casdoor/casdoor"
+revision = "2213c440aa2ce100f4d47efc1c0be3d7d47417fe"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

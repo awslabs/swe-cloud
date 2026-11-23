@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-rds-background-job-broker"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["mysql"]
+modal_vm_runtime = true
+tags = ["aws", "rds", "tcp-server", "job-queue", "scheduling", "deduplication", "crash-recovery"]
+difficulty_explanation = "Reconstruct a TCP job broker with binary-safe framed packets, text administration commands and a durable MySQL background queue. Dispatch combines priority, submission order, worker abilities, rotation between functions, sleeping-worker wakeups and scheduled availability. Duplicate submissions and special unique IDs must preserve the correct handle, payload and queue position, while foreground results, worker disconnects and restart replay stay consistent with persisted rows and running counts."
+expert_time_estimate_hours = 28.0
+
+[metadata.source]
+kind = "program"
+project = "gearman/gearmand"
+url = "https://github.com/gearman/gearmand"
+revision = "22a85e7298f11d9fb5b05623824b91cbb1a8a80a"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

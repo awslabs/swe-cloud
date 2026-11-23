@@ -1,0 +1,39 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+[task]
+name = "swe-cloud/if-msk-ledger-consumer-loses-progress-on-scale-out"
+description = "Repair ledger processing across graceful cooperative scale-out"
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["kafka"]
+tags = ["aws", "msk", "kafka", "consumer-groups"]
+difficulty_explanation = "Overlapping accounting completions share a delivery frontier with rejected commits, cooperative partition handover and retained ownership."
+expert_time_estimate_hours = 3.0
+
+[metadata.source]
+kind = "issue"
+project = "confluentinc/librdkafka"
+url = "https://github.com/confluentinc/librdkafka/issues/4059"
+revision = "596813a522773aa8405bb5b12a04616d462c43f7"
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

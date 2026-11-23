@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-kms-dynamodb-seal-key-retirement-breaks-reads"
+description = "Repair online seal key migration so completed rotations permit safe key retirement."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "kms", "dynamodb", "durability"]
+difficulty_explanation = "Key retirement fencing shares the durable write boundary with request replay safety after ambiguous commits, reconnects, and migrator restart."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "pull-request"
+project = "hashicorp/go-kms-wrapping"
+url = "https://github.com/hashicorp/go-kms-wrapping/pull/70"
+revision = "0989a9b6deb160d3d8eaa3b5a9891ca7f2c22bd7"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

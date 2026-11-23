@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-sqs-lambda-runner-scaleup-partial-batch-failure"
+description = "CI runner scale-up Lambda port: per-record SQS acknowledgement when the fleet API, the code host or SSM fail partway through a batch"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = []
+tags = ["aws", "sqs", "ssm", "lambda", "partial-batch-response", "github-runners"]
+difficulty_explanation = "One SQSBatchResponse per invocation decides both 'no lost job' and 'no duplicate runner' after irreversible launches in a sequential per-owner loop; the starter (port of upstream #5220) returns the whole batch when a later group's cap check fails, retries by count although runners are bound to jobs, and swallows failed terminates of half-built instances, which must be carried to the next delivery; and describe-runners lags launches by seconds, so a cap check that trusts it alone overshoots when invocations follow each other, unless the function counts its own recent launches from a record that outlives the invocation."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "github-aws-runners/terraform-aws-github-runner"
+url = "https://github.com/github-aws-runners/terraform-aws-github-runner/issues/5105"
+revision = "9045340a56df19cb1a946387daef3174e316fcdf"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

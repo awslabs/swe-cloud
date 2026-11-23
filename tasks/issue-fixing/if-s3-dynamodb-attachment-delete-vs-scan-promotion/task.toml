@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-s3-dynamodb-attachment-delete-vs-scan-promotion"
+description = "Repair staged attachment cancellation and recovery"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "s3", "dynamodb", "sqs"]
+difficulty_explanation = "Cancellation and interrupted promotion must agree on durable ownership despite delayed requests and ambiguous responses."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "motech-development/platform"
+url = "https://github.com/motech-development/platform/issues/1577"
+revision = "548908010157c309c0a61ed9f8e3cb66568518d8"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

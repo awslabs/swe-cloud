@@ -1,0 +1,37 @@
+# The Floci venue with engines: main is the program's container; engines is a private Docker daemon on its own
+# loopback, holding the engine images it loads at start; Floci runs in its network namespace and starts each engine there.
+services:
+  main:
+    networks: [venue]
+    cap_add: [NET_ADMIN]
+    # The single-container tasks' hardening; main keeps NET_ADMIN for the engine route floci-venue sets.
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 4096
+    cap_drop:
+      - MKNOD
+      - NET_RAW
+      - AUDIT_WRITE
+      - SYS_CHROOT
+      - SETFCAP
+    depends_on: [floci]
+  engines:
+    networks: [venue]
+    build: ./engines
+    privileged: true
+  floci:
+    image: floci/floci:2.2.0
+    network_mode: "service:engines"
+    environment:
+      FLOCI_DOCKER_DOCKER_HOST: tcp://127.0.0.1:2375
+      FLOCI_SERVICES_RDS_DEFAULT_POSTGRES_IMAGE: postgres:16.3-alpine
+      FLOCI_SERVICES_ECS_ENABLED: "false"
+      FLOCI_SERVICES_EC2_ENABLED: "false"
+      FLOCI_SERVICES_EKS_ENABLED: "false"
+    depends_on: [engines]
+# One internal network for the venue: the services reach each other by name and nothing reaches the internet.
+# Declaring it explicitly keeps runners that enforce no-network by rewriting service networking from moving
+# main and engines out of it.
+networks:
+  venue:
+    internal: true

@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-s3-dynamodb-manifest-index-names-stale-object"
+description = "Reader-assisted manifest finalization on S3 + DynamoDB leaves index rows naming a superseded object generation, and a failed index update after the copy is reported as a commit conflict."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "s3", "dynamodb", "versioning", "commit-protocol", "concurrency", "crash-recovery"]
+difficulty_explanation = "Any reader that finds a pending version must finish it (copy staging to the canonical key and publish the row), so several helpers overwrite the canonical key and each copy mints a new S3 VersionId; COPY, HEAD and the row publish are separate operations, so any generation the row persists can be superseded after it is published, which a conditional publish cannot fence. The row must stay true of the canonical object at every instant (older readers verify it) while callers still get the generation they observed, size corruption is still refused, and a failed publish after the copy must not turn a won version into a conflict. Deciding who won is itself coupled to what rows can carry: a scheduler rerun of a killed commit (same job name, same manifest, new staging path) has to recognise that its manifest already holds the version, after helpers of either release (the 0.14 batch-fleet reader replaces the whole item) finalized it and deleted the selected staging object, while a replica with a different same-size manifest under the same job name must still get conflict. Graded live on Floci with per-process fault-proxy stalls, SIGKILLs and injected 500s."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "pull-request"
+project = "lance-format/lance"
+url = "https://github.com/lance-format/lance/pull/8499"
+revision = "3d69cef146ec6d3d61bbd77e6912a4c864a441ac"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 900.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

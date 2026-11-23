@@ -1,0 +1,28 @@
+warehouse/sessions version 7 — stream-ingest's rerun was told conflict
+=====================================================================
+
+Scheduler log (stream-ingest, 2026-10-25):
+  14:20:02.118  step commit-v7 attempt 1: stratactl commit --dataset warehouse/sessions --version 7 --manifest-file part-0981.json --committer stream-ingest
+  14:20:02.904  step commit-v7 attempt 1: killed (OOMKilled, exit 137)
+  14:20:33.120  step commit-v7 attempt 2: stratactl commit --dataset warehouse/sessions --version 7 --manifest-file part-0981.json --committer stream-ingest
+                {"status": "conflict", "version": 7}          (exit 3)
+  14:20:33.611  conflict on v7: re-planning part-0981 against latest
+  14:20:35.270  stratactl commit --dataset warehouse/sessions --version 8 --manifest-file part-0981-r1.json --committer stream-ingest
+                {"status": "committed", "version": 8, ...}    (exit 0)
+
+  part-0981 is now in the table twice (v7 and v8).
+
+Gateway log (UTC, 2026-10-25):
+  14:20:02.390  stream-ingest    PutObject    warehouse/sessions/_versions/7.manifest-5be1c7a2-...   200
+  14:20:02.433  stream-ingest    PutItem      (version=7)                                            200
+  14:20:19.002  reporting-3      Query        latest of .../warehouse/sessions                       200   path=7.manifest-5be1c7a2-...
+  14:20:19.040  reporting-3      CopyObject   -> warehouse/sessions/_versions/7.manifest             200
+  14:20:19.061  reporting-3      HeadObject   warehouse/sessions/_versions/7.manifest                200
+  14:20:19.088  reporting-3      PutItem      (version=7)                                            200
+  14:20:19.112  reporting-3      DeleteObject warehouse/sessions/_versions/7.manifest-5be1c7a2-...   204
+  14:20:33.402  stream-ingest    PutObject    warehouse/sessions/_versions/7.manifest-e07d3f91-...   200
+  14:20:33.441  stream-ingest    PutItem      (version=7)                                            400 ConditionalCheckFailedException
+  14:20:33.467  stream-ingest    GetItem      (version=7)                                            200
+  14:20:33.590  stream-ingest    DeleteObject warehouse/sessions/_versions/7.manifest-e07d3f91-...   204
+
+  reporting-3 is a batch-fleet host (0.14.1).

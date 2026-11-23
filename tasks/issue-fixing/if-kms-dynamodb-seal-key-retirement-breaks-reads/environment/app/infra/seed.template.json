@@ -1,0 +1,48 @@
+{
+ "Resources": {
+  "Entries": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Entries"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "seal_entries"
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "Meta": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Meta"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "seal_meta"
+   },
+   "Type": "AWS::DynamoDB::Table"
+  }
+ }
+}

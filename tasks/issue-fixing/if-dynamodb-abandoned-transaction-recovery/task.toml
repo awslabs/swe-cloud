@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-dynamodb-abandoned-transaction-recovery"
+description = "Fix recovery of abandoned multi-item DynamoDB transactions so it neither reverses decided outcomes nor strands locks"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "dynamodb", "transactions", "recovery"]
+difficulty_explanation = "Three coupled obligations share the tx/items/images state: preserve every winning terminal decision and later acknowledged write when recovery replays a stale snapshot (fenced decision plus ownership-checked restore), still decide old pending records and finish cleanup to completion within the recovery window after coordinators and earlier recovery passes die mid-flight, and leave no participant or saved image stranded around a record the retention has already reaped when a parked writer finally wakes. The unfenced path satisfies liveness while reverting commits; refusing to intervene preserves decisions while stranding locks; trusting the record table as the whole story strands the rest."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "design"
+project = "awslabs/dynamodb-transactions"
+url = "https://github.com/awslabs/dynamodb-transactions/blob/master/DESIGN.md"
+revision = "c52588b2137229213d417b25464fdc490657bd43"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 900.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

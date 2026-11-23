@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-sqs-dynamodb-delayed-task-holder-crash"
+description = "Repair a delayed-task runner so a destroyed holder's queue message returns promptly while no task commits twice."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "sqs", "dynamodb", "visibility", "scheduling"]
+difficulty_explanation = "One queue visibility window governs both how long a live holder can keep a future task hidden and how long a destroyed holder's work stays unreachable; the repair must give up the single long window without letting redeliveries, an adopted copy, or a holder resumed mid-flight commit the task's effect twice, and the row must stay right about ownership: a copy delivered while the holder runs cannot move the task, and only the holder the fleet currently has may commit it — including when a suspended holder was replaced under its own worker id and the replaced process comes back."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "celery/celery"
+url = "https://github.com/celery/celery/issues/8069"
+revision = "f83d0b69dcc5df6370ac61574eaee21b9341f314"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 300.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

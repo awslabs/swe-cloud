@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-dynamodb-interrupted-approval-double-purchase"
+description = "Reconcile interrupted commitment approvals without creating duplicate obligations"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "dynamodb", "recovery"]
+difficulty_explanation = "Recovery must reconcile uncertain provider outcomes while respecting live ownership and surviving its own interruption."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "LeanerCloud/cloud-commitments-cli"
+url = "https://github.com/LeanerCloud/cloud-commitments-cli/issues/632"
+revision = "2089692d098b2e514762f2452a6482b6ceac6d32"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

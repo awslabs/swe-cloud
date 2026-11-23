@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-rds-kinesis-feature-flag-evaluator"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["postgres"]
+modal_vm_runtime = true
+tags = ["aws", "rds", "kinesis", "http-server", "feature-flags", "deterministic-bucketing", "cache-refresh", "record-aggregation"]
+difficulty_explanation = "Reconstruct a persistent feature-flag HTTP API with variants, ranked segments, constraints, distributions, tags and per-mutation history. Evaluation must reproduce deterministic bucketing, nested context operators, fall-through on unevaluable constraints, ordered batch selection and debug structure, with edits becoming visible only after cache refresh. Eligible evaluations must also produce correctly keyed Kinesis frames in either JSON mode, matching KPL aggregation count and byte limits and the handling of oversized records."
+expert_time_estimate_hours = 38.0
+
+[metadata.source]
+kind = "program"
+project = "openflagr/flagr"
+url = "https://github.com/openflagr/flagr"
+revision = "d225861250eaf5314cf6f921599ab4980a00897f"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

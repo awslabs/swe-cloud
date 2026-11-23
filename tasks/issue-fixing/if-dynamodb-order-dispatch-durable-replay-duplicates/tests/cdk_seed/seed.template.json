@@ -1,0 +1,157 @@
+{
+ "Parameters": {
+  "CheckpointTable": {
+   "Type": "String"
+  },
+  "DispatchTable": {
+   "Type": "String"
+  },
+  "EffectsTable": {
+   "Type": "String"
+  },
+  "ExecutionTable": {
+   "Type": "String"
+  },
+  "IdempotencyTable": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Checkpoint": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Checkpoint"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "execution_id",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "seq",
+      "AttributeType": "N"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "execution_id",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "seq",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": {
+     "Ref": "CheckpointTable"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "Dispatch": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Dispatch"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Ref": "DispatchTable"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "Effects": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Effects"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "payload_key",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "execution_id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "payload_key",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "execution_id",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": {
+     "Ref": "EffectsTable"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "Execution": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Execution"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "execution_id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "execution_id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Ref": "ExecutionTable"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "Idempotency": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Idempotency"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Ref": "IdempotencyTable"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  }
+ }
+}

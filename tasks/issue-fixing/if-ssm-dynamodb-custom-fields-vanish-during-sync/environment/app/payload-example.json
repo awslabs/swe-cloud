@@ -1,0 +1,9 @@
+{
+  "customization_request_id": "0e4b6c6e-0f79-4d8e-9d31-3c1a06f20b21",
+  "account_info": {"account": {"id": "123456789012"}},
+  "account_request": {
+    "id": "build-account@example.com",
+    "custom_fields": "{\"backup_tier\": \"gold\", \"cost_center\": \"cc-123\"}",
+    "record_version": 4
+  }
+}

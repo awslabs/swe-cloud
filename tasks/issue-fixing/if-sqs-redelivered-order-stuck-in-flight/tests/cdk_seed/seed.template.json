@@ -1,0 +1,74 @@
+{
+ "Outputs": {
+  "DlqArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "DeadLetter",
+     "Arn"
+    ]
+   }
+  },
+  "DlqUrl": {
+   "Value": {
+    "Ref": "DeadLetter"
+   }
+  },
+  "QueueUrl": {
+   "Value": {
+    "Ref": "Orders"
+   }
+  }
+ },
+ "Parameters": {
+  "DlqName": {
+   "Type": "String"
+  },
+  "MaxReceiveCount": {
+   "Type": "String"
+  },
+  "QueueName": {
+   "Type": "String"
+  },
+  "VisibilityTimeout": {
+   "Type": "Number"
+  }
+ },
+ "Resources": {
+  "DeadLetter": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/DeadLetter"
+   },
+   "Properties": {
+    "QueueName": {
+     "Ref": "DlqName"
+    }
+   },
+   "Type": "AWS::SQS::Queue"
+  },
+  "Orders": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Orders"
+   },
+   "Properties": {
+    "QueueName": {
+     "Ref": "QueueName"
+    },
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "DeadLetter",
+       "Arn"
+      ]
+     },
+     "maxReceiveCount": {
+      "Ref": "MaxReceiveCount"
+     }
+    },
+    "VisibilityTimeout": {
+     "Ref": "VisibilityTimeout"
+    }
+   },
+   "Type": "AWS::SQS::Queue"
+  }
+ }
+}

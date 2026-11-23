@@ -1,0 +1,15 @@
+ledger reconciliation  run=2026-10-22T06:00:04Z  topic=ledger partition=0  isolation=read_committed
+range checked: offsets 85102..91877 (business date 2026-10-21)
+
+batches expected: 1480   batches found: 1480
+entries expected: 4440   entries found: 4441
+
+MISMATCH  batch STL-20261021-0417: 4 entries committed, 3 expected
+    offset 88213  key=STL-20261021-0417-2  account=ACC-6120  amount_cents=48210   writer=ledger-writer-a  attempt=1
+    offset 88214  key=STL-20261021-0417-1  account=ACC-2291  amount_cents=1250    writer=ledger-writer-a  attempt=2
+    offset 88215  key=STL-20261021-0417-2  account=ACC-6120  amount_cents=48210   writer=ledger-writer-a  attempt=2
+    offset 88216  key=STL-20261021-0417-3  account=ACC-9054  amount_cents=310077  writer=ledger-writer-a  attempt=2
+
+all other batches: OK (STL-20261021-0453: 3 entries, attempt=2)
+
+GL export 2026-10-21: REJECTED (duplicate entry id STL-20261021-0417-2). Export held; finance notified.

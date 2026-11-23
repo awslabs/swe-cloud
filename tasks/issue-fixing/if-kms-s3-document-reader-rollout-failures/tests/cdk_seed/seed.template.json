@@ -1,0 +1,56 @@
+{
+ "Outputs": {
+  "Key0Arn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Key0",
+     "Arn"
+    ]
+   }
+  },
+  "Key1Arn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Key1",
+     "Arn"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BucketName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Bucket": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Bucket"
+   },
+   "Properties": {
+    "BucketName": {
+     "Ref": "BucketName"
+    }
+   },
+   "Type": "AWS::S3::Bucket"
+  },
+  "Key0": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Key0"
+   },
+   "Properties": {
+    "Description": "verifier document key"
+   },
+   "Type": "AWS::KMS::Key"
+  },
+  "Key1": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Key1"
+   },
+   "Properties": {
+    "Description": "verifier document key"
+   },
+   "Type": "AWS::KMS::Key"
+  }
+ }
+}

@@ -1,0 +1,30 @@
+{
+ "Outputs": {
+  "ZoneId": {
+   "Value": {
+    "Ref": "Zone"
+   }
+  }
+ },
+ "Parameters": {
+  "ZoneName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Zone": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Zone"
+   },
+   "Properties": {
+    "HostedZoneConfig": {
+     "Comment": "reconciler run"
+    },
+    "Name": {
+     "Ref": "ZoneName"
+    }
+   },
+   "Type": "AWS::Route53::HostedZone"
+  }
+ }
+}

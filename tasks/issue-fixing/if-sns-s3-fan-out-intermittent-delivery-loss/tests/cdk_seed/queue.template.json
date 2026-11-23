@@ -1,0 +1,71 @@
+{
+ "Conditions": {
+  "HasSubscription": {
+   "Fn::Equals": [
+    {
+     "Ref": "Subscribe"
+    },
+    "true"
+   ]
+  }
+ },
+ "Outputs": {
+  "QueueArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "QueueResource",
+     "Arn"
+    ]
+   }
+  },
+  "QueueUrl": {
+   "Value": {
+    "Ref": "QueueResource"
+   }
+  }
+ },
+ "Parameters": {
+  "QueueName": {
+   "Type": "String"
+  },
+  "Subscribe": {
+   "Type": "String"
+  },
+  "TopicArn": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "QueueResource": {
+   "Metadata": {
+    "aws:cdk:path": "Queue/QueueResource"
+   },
+   "Properties": {
+    "QueueName": {
+     "Ref": "QueueName"
+    },
+    "VisibilityTimeout": 2
+   },
+   "Type": "AWS::SQS::Queue"
+  },
+  "Subscription": {
+   "Condition": "HasSubscription",
+   "Metadata": {
+    "aws:cdk:path": "Queue/Subscription"
+   },
+   "Properties": {
+    "Endpoint": {
+     "Fn::GetAtt": [
+      "QueueResource",
+      "Arn"
+     ]
+    },
+    "Protocol": "sqs",
+    "TopicArn": {
+     "Ref": "TopicArn"
+    }
+   },
+   "Type": "AWS::SNS::Subscription"
+  }
+ }
+}

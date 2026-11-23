@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-sfn-dynamodb-command-projection-stall"
+description = "Repair stalled per-version projection processing"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "dynamodb", "stepfunctions", "sqs", "concurrency"]
+difficulty_explanation = "Callback ownership and release ordering must jointly preserve progress and single application across independent version executions."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "pull-request"
+project = "mbc-net/mbc-cqrs-serverless"
+url = "https://github.com/mbc-net/mbc-cqrs-serverless/pull/465"
+revision = "7780b3b573edd93bc9fd1c0ec089db41ce8227f6"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

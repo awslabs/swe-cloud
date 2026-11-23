@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-rds-elasticache-flow-retries-crash-at-concurrency-cap"
+description = "Flow retries on concurrency-limited deployments end Crashed; fix the orchestrator's slot and lease handling on RDS Postgres + ElastiCache Valkey without breaking the limit."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["postgres", "valkey"]
+tags = ["aws", "rds", "postgres", "elasticache", "valkey", "lua", "concurrency-limit", "lease", "exactly-once"]
+difficulty_explanation = "The slot counter lives in Postgres and its lease in Valkey. An in-process retry (a rejected FAILED) must keep the slot and the same lease across the retry and carry the lease id forward, while a directly proposed AwaitingRetry from a SIGTERMed supervisor (same state name, same persisted retry_type) must release at once. Every slot must come back exactly once across terminal release and lease expiry, including a late forced Crashed after the reaper already returned it and a reaper killed between its Valkey delete and its Postgres commit; the two stores share no transaction."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "PrefectHQ/prefect"
+url = "https://github.com/PrefectHQ/prefect/issues/22885"
+revision = "04f0155d6d6b696709628f193c2bad154350f332"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-opensearch-trace-store-lifecycle-tool"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["opensearch"]
+modal_vm_runtime = true
+tags = ["aws", "opensearch", "cli", "http-server", "tracing", "index-lifecycle", "alias-rollover"]
+difficulty_explanation = "Reconstruct both an OTLP JSON trace server and lifecycle commands that manage templates, numbered index families and read/write aliases. Typed attributes, resources, scopes, events, links and status must map consistently into stored span documents and current or legacy query responses, with searches returning complete traces. Initialization, rollover and age-based lookback must preserve their idempotency and partial-failure effects while ingestion continues and restarted servers follow the current write generation."
+expert_time_estimate_hours = 38.0
+
+[metadata.source]
+kind = "program"
+project = "jaegertracing/jaeger"
+url = "https://github.com/jaegertracing/jaeger"
+revision = "462bb49fcff9af4be9556bf0206d07f5171bd8d7"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

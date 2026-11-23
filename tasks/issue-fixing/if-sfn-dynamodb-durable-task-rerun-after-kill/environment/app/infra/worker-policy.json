@@ -1,0 +1,41 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "RunAndWatchTheJob",
+      "Effect": "Allow",
+      "Action": [
+        "states:StartExecution",
+        "states:ListExecutions",
+        "states:DescribeStateMachine"
+      ],
+      "Resource": "arn:aws:states:us-east-1:*:stateMachine:${JobStateMachine}"
+    },
+    {
+      "Sid": "ReadTheJobsExecutions",
+      "Effect": "Allow",
+      "Action": [
+        "states:DescribeExecution",
+        "states:GetExecutionHistory"
+      ],
+      "Resource": "arn:aws:states:us-east-1:*:execution:${JobStateMachine}:*"
+    },
+    {
+      "Sid": "TaskStateStore",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:Query",
+        "dynamodb:DescribeTable",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchGetItem",
+        "dynamodb:TransactGetItems",
+        "dynamodb:TransactWriteItems"
+      ],
+      "Resource": "arn:aws:dynamodb:us-east-1:*:table/${TaskStateStoreTable}"
+    }
+  ]
+}

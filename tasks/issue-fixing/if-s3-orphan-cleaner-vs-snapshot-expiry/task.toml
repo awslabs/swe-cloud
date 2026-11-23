@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-s3-orphan-cleaner-vs-snapshot-expiry"
+description = "Make an S3 lake table's orphan-file cleaner safe against concurrent commit and snapshot expiry without starving it on busy tables"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "s3", "lakehouse", "paimon", "orphan-files", "snapshot-expiry", "concurrency"]
+difficulty_explanation = "A 404 on a file of a listed snapshot is either concurrent expiry (skip it and move to a newer view, or busy tables are never cleaned) or genuine loss under a retained snapshot (deleting would lose live data). Expiry deletes manifests before the snapshot file and may lag commits, so neither an immediate re-check nor a newer clean latest decides; only the snapshot file's presence over the documented expiry bound does, and the run must finish without chasing new commits."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "apache/paimon"
+url = "https://github.com/apache/paimon/issues/7710"
+revision = "3f5e9fcf62548a9f5bd110d4729e091b705a19b4"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1500.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

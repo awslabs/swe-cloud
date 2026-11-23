@@ -1,0 +1,283 @@
+{
+ "Outputs": {
+  "FinishQueue": {
+   "Value": {
+    "Ref": "finish"
+   }
+  },
+  "MachineArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Machine",
+     "Arn"
+    ]
+   }
+  },
+  "SyncQueue": {
+   "Value": {
+    "Ref": "sync"
+   }
+  },
+  "WaitQueue": {
+   "Value": {
+    "Ref": "waitprev"
+   }
+  }
+ },
+ "Parameters": {
+  "Ident": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Machine": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Machine"
+   },
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"route\",\"States\":{\"route\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.version\",\"NumericEquals\":1,\"Next\":\"sync_data\"}],\"Default\":\"wait_prev_command\"},\"wait_prev_command\":{\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::sqs:sendMessage.waitForTaskToken\",\"Parameters\":{\"QueueUrl\":\"",
+       {
+        "Ref": "waitprev"
+       },
+       "\",\"MessageBody\":{\"entity.$\":\"$.entity\",\"version.$\":\"$.version\",\"taskToken.$\":\"$$.Task.Token\",\"executionArn.$\":\"$$.Execution.Id\"}},\"TimeoutSeconds\":120,\"ResultPath\":\"$.wait\",\"Next\":\"dup_check\",\"Catch\":[{\"ErrorEquals\":[\"States.Timeout\"],\"Next\":\"wait_prev_command_timeout\"}]},\"dup_check\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.wait.result\",\"StringEquals\":\"duplicate\",\"Next\":\"duplicate_done\"}],\"Default\":\"sync_data\"},\"sync_data\":{\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::sqs:sendMessage.waitForTaskToken\",\"Parameters\":{\"QueueUrl\":\"",
+       {
+        "Ref": "sync"
+       },
+       "\",\"MessageBody\":{\"entity.$\":\"$.entity\",\"version.$\":\"$.version\",\"taskToken.$\":\"$$.Task.Token\",\"executionArn.$\":\"$$.Execution.Id\"}},\"TimeoutSeconds\":120,\"ResultPath\":null,\"Next\":\"finish\"},\"finish\":{\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::sqs:sendMessage.waitForTaskToken\",\"Parameters\":{\"QueueUrl\":\"",
+       {
+        "Ref": "finish"
+       },
+       "\",\"MessageBody\":{\"entity.$\":\"$.entity\",\"version.$\":\"$.version\",\"taskToken.$\":\"$$.Task.Token\",\"executionArn.$\":\"$$.Execution.Id\"}},\"TimeoutSeconds\":120,\"ResultPath\":null,\"Next\":\"done\"},\"done\":{\"Type\":\"Succeed\"},\"duplicate_done\":{\"Type\":\"Succeed\"},\"wait_prev_command_timeout\":{\"Type\":\"Pass\",\"Next\":\"failed\"},\"failed\":{\"Type\":\"Fail\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "Role",
+      "Arn"
+     ]
+    },
+    "StateMachineName": {
+     "Fn::Join": [
+      "",
+      [
+       "command-",
+       {
+        "Ref": "Ident"
+       }
+      ]
+     ]
+    },
+    "StateMachineType": "STANDARD"
+   },
+   "Type": "AWS::StepFunctions::StateMachine"
+  },
+  "Role": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Role"
+   },
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": {
+     "Fn::Join": [
+      "",
+      [
+       "command-",
+       {
+        "Ref": "Ident"
+       }
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::IAM::Role"
+  },
+  "commands": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/commands"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "sk",
+      "AttributeType": "N"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sk",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": {
+     "Fn::Join": [
+      "",
+      [
+       "commands-",
+       {
+        "Ref": "Ident"
+       }
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "effects": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/effects"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "sk",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sk",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": {
+     "Fn::Join": [
+      "",
+      [
+       "effects-",
+       {
+        "Ref": "Ident"
+       }
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "finish": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/finish"
+   },
+   "Properties": {
+    "QueueName": {
+     "Fn::Join": [
+      "",
+      [
+       "finish-",
+       {
+        "Ref": "Ident"
+       }
+      ]
+     ]
+    },
+    "VisibilityTimeout": 30
+   },
+   "Type": "AWS::SQS::Queue"
+  },
+  "projection": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/projection"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Fn::Join": [
+      "",
+      [
+       "projection-",
+       {
+        "Ref": "Ident"
+       }
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "sync": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/sync"
+   },
+   "Properties": {
+    "QueueName": {
+     "Fn::Join": [
+      "",
+      [
+       "sync-",
+       {
+        "Ref": "Ident"
+       }
+      ]
+     ]
+    },
+    "VisibilityTimeout": 30
+   },
+   "Type": "AWS::SQS::Queue"
+  },
+  "waitprev": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/wait-prev"
+   },
+   "Properties": {
+    "QueueName": {
+     "Fn::Join": [
+      "",
+      [
+       "wait-prev-",
+       {
+        "Ref": "Ident"
+       }
+      ]
+     ]
+    },
+    "VisibilityTimeout": 30
+   },
+   "Type": "AWS::SQS::Queue"
+  }
+ }
+}

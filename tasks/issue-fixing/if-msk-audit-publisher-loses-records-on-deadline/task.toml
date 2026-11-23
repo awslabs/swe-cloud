@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-msk-audit-publisher-loses-records-on-deadline"
+description = "Repair deadline-bound audit publishing to MSK without losing or duplicating records."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["kafka"]
+tags = ["aws", "msk", "redpanda", "idempotence"]
+difficulty_explanation = "Caller deadlines share a bounded per-partition pipeline with sequence reservations, ambiguous sends, and live successors across producer recovery."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "twmb/franz-go"
+url = "https://github.com/twmb/franz-go/issues/1217"
+revision = "b5a45ccfdf7e240a7b7a6df18b73d10a081741f2"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

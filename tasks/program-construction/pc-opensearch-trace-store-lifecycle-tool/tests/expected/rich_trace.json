@@ -1,0 +1,1570 @@
+{
+ "legacy TA": {
+  "data": [
+   {
+    "processes": {
+     "p1": {
+      "serviceName": "alpha",
+      "tags": [
+       {
+        "key": "canary",
+        "type": "bool",
+        "value": true
+       },
+       {
+        "key": "host.name",
+        "type": "string",
+        "value": "h1"
+       },
+       {
+        "key": "load",
+        "type": "float64",
+        "value": 0.5
+       },
+       {
+        "key": "pid",
+        "type": "int64",
+        "value": 42
+       }
+      ]
+     },
+     "p2": {
+      "serviceName": "beta",
+      "tags": []
+     }
+    },
+    "spans": [
+     {
+      "duration": 5000,
+      "flags": 1,
+      "logs": [
+       {
+        "fields": [],
+        "timestamp": 1485449191003000
+       },
+       {
+        "fields": [
+         {
+          "key": "event",
+          "type": "string",
+          "value": "cache miss"
+         },
+         {
+          "key": "key",
+          "type": "string",
+          "value": "c1"
+         },
+         {
+          "key": "size",
+          "type": "int64",
+          "value": 7
+         }
+        ],
+        "timestamp": 1485449191001000
+       },
+       {
+        "fields": [
+         {
+          "key": "event",
+          "type": "string",
+          "value": "override"
+         }
+        ],
+        "timestamp": 1485449191002000
+       }
+      ],
+      "operationName": "GET /cart",
+      "processID": "p1",
+      "references": [],
+      "spanID": "0000000000000001",
+      "startTime": 1485449191000000,
+      "tags": [
+       {
+        "key": "otel.scope.name",
+        "type": "string",
+        "value": "lib.http"
+       },
+       {
+        "key": "otel.scope.version",
+        "type": "string",
+        "value": "1.2.3"
+       },
+       {
+        "key": "blob",
+        "type": "binary",
+        "value": "AQL/"
+       },
+       {
+        "key": "http.method",
+        "type": "string",
+        "value": "GET"
+       },
+       {
+        "key": "list",
+        "type": "string",
+        "value": "[\"a\",1]"
+       },
+       {
+        "key": "map",
+        "type": "string",
+        "value": "{\"k\":\"v\"}"
+       },
+       {
+        "key": "ok",
+        "type": "bool",
+        "value": true
+       },
+       {
+        "key": "ratio",
+        "type": "float64",
+        "value": 1.5
+       },
+       {
+        "key": "retries",
+        "type": "int64",
+        "value": 3
+       },
+       {
+        "key": "whole",
+        "type": "float64",
+        "value": 2
+       },
+       {
+        "key": "span.kind",
+        "type": "string",
+        "value": "server"
+       },
+       {
+        "key": "otel.status_code",
+        "type": "string",
+        "value": "OK"
+       },
+       {
+        "key": "w3c.tracestate",
+        "type": "string",
+        "value": "vendor=abc"
+       }
+      ],
+      "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "warnings": null
+     },
+     {
+      "duration": 2500,
+      "logs": [],
+      "operationName": "SELECT",
+      "processID": "p1",
+      "references": [
+       {
+        "refType": "CHILD_OF",
+        "spanID": "0000000000000001",
+        "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+       },
+       {
+        "refType": "FOLLOWS_FROM",
+        "spanID": "00000000000000b1",
+        "traceID": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"
+       }
+      ],
+      "spanID": "0000000000000002",
+      "startTime": 1485449191001000,
+      "tags": [
+       {
+        "key": "otel.scope.name",
+        "type": "string",
+        "value": "lib.http"
+       },
+       {
+        "key": "otel.scope.version",
+        "type": "string",
+        "value": "1.2.3"
+       },
+       {
+        "key": "db.system",
+        "type": "string",
+        "value": "pg"
+       },
+       {
+        "key": "span.kind",
+        "type": "string",
+        "value": "client"
+       },
+       {
+        "key": "otel.status_code",
+        "type": "string",
+        "value": "ERROR"
+       },
+       {
+        "key": "error",
+        "type": "bool",
+        "value": true
+       },
+       {
+        "key": "otel.status_description",
+        "type": "string",
+        "value": "boom"
+       }
+      ],
+      "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "warnings": null
+     },
+     {
+      "duration": 1500,
+      "logs": [],
+      "operationName": "GET /cart",
+      "processID": "p2",
+      "references": [
+       {
+        "refType": "CHILD_OF",
+        "spanID": "0000000000000002",
+        "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+       }
+      ],
+      "spanID": "0000000000000007",
+      "startTime": 1485449191001500,
+      "tags": [
+       {
+        "key": "otel.scope.name",
+        "type": "string",
+        "value": "lib.rpc"
+       },
+       {
+        "key": "tier",
+        "type": "string",
+        "value": "gold"
+       },
+       {
+        "key": "span.kind",
+        "type": "string",
+        "value": "server"
+       }
+      ],
+      "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "warnings": null
+     },
+     {
+      "duration": 400,
+      "logs": [],
+      "operationName": "publish",
+      "processID": "p1",
+      "references": [
+       {
+        "refType": "CHILD_OF",
+        "spanID": "0000000000000001",
+        "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+       }
+      ],
+      "spanID": "0000000000000003",
+      "startTime": 1485449191003600,
+      "tags": [
+       {
+        "key": "span.kind",
+        "type": "string",
+        "value": "producer"
+       },
+       {
+        "key": "otel.status_code",
+        "type": "string",
+        "value": "ERROR"
+       },
+       {
+        "key": "error",
+        "type": "bool",
+        "value": true
+       }
+      ],
+      "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "warnings": null
+     },
+     {
+      "duration": 200,
+      "logs": [],
+      "operationName": "consume",
+      "processID": "p1",
+      "references": [
+       {
+        "refType": "CHILD_OF",
+        "spanID": "0000000000000003",
+        "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+       }
+      ],
+      "spanID": "0000000000000004",
+      "startTime": 1485449191003700,
+      "tags": [
+       {
+        "key": "span.kind",
+        "type": "string",
+        "value": "consumer"
+       }
+      ],
+      "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "warnings": null
+     },
+     {
+      "duration": 100,
+      "logs": [],
+      "operationName": "compute",
+      "processID": "p1",
+      "references": [
+       {
+        "refType": "CHILD_OF",
+        "spanID": "0000000000000001",
+        "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+       }
+      ],
+      "spanID": "0000000000000005",
+      "startTime": 1485449191004000,
+      "tags": [
+       {
+        "key": "otel.status_description",
+        "type": "string",
+        "value": "ignored"
+       },
+       {
+        "key": "span.kind",
+        "type": "string",
+        "value": "internal"
+       }
+      ],
+      "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "warnings": null
+     },
+     {
+      "duration": 100,
+      "logs": [],
+      "operationName": "unspecified",
+      "processID": "p1",
+      "references": [
+       {
+        "refType": "CHILD_OF",
+        "spanID": "0000000000000001",
+        "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+       }
+      ],
+      "spanID": "0000000000000006",
+      "startTime": 1485449191004100,
+      "tags": [],
+      "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "warnings": null
+     }
+    ],
+    "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "warnings": null
+   }
+  ],
+  "errors": null,
+  "limit": 0,
+  "offset": 0,
+  "total": 0
+ },
+ "legacy TB": {
+  "data": [
+   {
+    "processes": {
+     "p1": {
+      "serviceName": "beta",
+      "tags": []
+     }
+    },
+    "spans": [
+     {
+      "duration": 1000000,
+      "logs": [],
+      "operationName": "batch",
+      "processID": "p1",
+      "references": [],
+      "spanID": "00000000000000b1",
+      "startTime": 1485449131000000,
+      "tags": [
+       {
+        "key": "otel.scope.name",
+        "type": "string",
+        "value": "lib.rpc"
+       },
+       {
+        "key": "pattern",
+        "type": "string",
+        "value": "abc*"
+       },
+       {
+        "key": "tier",
+        "type": "string",
+        "value": "silver"
+       },
+       {
+        "key": "span.kind",
+        "type": "string",
+        "value": "internal"
+       }
+      ],
+      "traceID": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+      "warnings": null
+     }
+    ],
+    "traceID": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "warnings": null
+   }
+  ],
+  "errors": null,
+  "limit": 0,
+  "offset": 0,
+  "total": 0
+ },
+ "legacy TC": {
+  "data": [
+   {
+    "processes": {
+     "p1": {
+      "serviceName": "missing-service-name",
+      "tags": []
+     }
+    },
+    "spans": [
+     {
+      "duration": 20000,
+      "logs": [],
+      "operationName": "orphan",
+      "processID": "p1",
+      "references": [],
+      "spanID": "00000000000000c1",
+      "startTime": 1485449201000000,
+      "tags": [],
+      "traceID": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+      "warnings": null
+     }
+    ],
+    "traceID": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+    "warnings": null
+   }
+  ],
+  "errors": null,
+  "limit": 0,
+  "offset": 0,
+  "total": 0
+ },
+ "legacy TD": {
+  "data": [
+   {
+    "processes": {
+     "p1": {
+      "serviceName": "missing-service-name",
+      "tags": [
+       {
+        "key": "host.name",
+        "type": "string",
+        "value": "noservice"
+       }
+      ]
+     }
+    },
+    "spans": [
+     {
+      "duration": 0,
+      "logs": [],
+      "operationName": "lonely",
+      "processID": "p1",
+      "references": [],
+      "spanID": "00000000000000d1",
+      "startTime": 1485449211000000,
+      "tags": [],
+      "traceID": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+      "warnings": [
+       "[\"Negative duration detected, sanitizing end timestamp. Original end timestamp: 2017-01-26 16:46:51 +0000 UTC, adjusted to: 2017-01-26 16:46:51.000000001 +0000 UTC\"]"
+      ]
+     }
+    ],
+    "traceID": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+    "warnings": null
+   }
+  ],
+  "errors": null,
+  "limit": 0,
+  "offset": 0,
+  "total": 0
+ },
+ "span docs": [
+  {
+   "duration": 5000,
+   "flags": 1,
+   "logs": [
+    {
+     "fields": [
+      {
+       "key": "event",
+       "type": "string",
+       "value": "cache miss"
+      },
+      {
+       "key": "key",
+       "type": "string",
+       "value": "c1"
+      },
+      {
+       "key": "size",
+       "type": "int64",
+       "value": 7
+      }
+     ],
+     "timestamp": 1485449191001000
+    },
+    {
+     "fields": [
+      {
+       "key": "event",
+       "type": "string",
+       "value": "override"
+      }
+     ],
+     "timestamp": 1485449191002000
+    },
+    {
+     "fields": [],
+     "timestamp": 1485449191003000
+    }
+   ],
+   "operationName": "GET /cart",
+   "process": {
+    "serviceName": "alpha",
+    "tags": [
+     {
+      "key": "host.name",
+      "type": "string",
+      "value": "h1"
+     },
+     {
+      "key": "pid",
+      "type": "int64",
+      "value": 42
+     },
+     {
+      "key": "load",
+      "type": "float64",
+      "value": 0.5
+     },
+     {
+      "key": "canary",
+      "type": "bool",
+      "value": true
+     }
+    ]
+   },
+   "references": null,
+   "spanID": "0000000000000001",
+   "startTime": 1485449191000000,
+   "startTimeMillis": 1485449191000,
+   "tag": {
+    "span@kind": "server"
+   },
+   "tags": [
+    {
+     "key": "otel.scope.name",
+     "type": "string",
+     "value": "lib.http"
+    },
+    {
+     "key": "otel.scope.version",
+     "type": "string",
+     "value": "1.2.3"
+    },
+    {
+     "key": "http.method",
+     "type": "string",
+     "value": "GET"
+    },
+    {
+     "key": "retries",
+     "type": "int64",
+     "value": 3
+    },
+    {
+     "key": "ratio",
+     "type": "float64",
+     "value": 1.5
+    },
+    {
+     "key": "whole",
+     "type": "float64",
+     "value": 2
+    },
+    {
+     "key": "ok",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "key": "blob",
+     "type": "binary",
+     "value": "0102ff"
+    },
+    {
+     "key": "list",
+     "type": "string",
+     "value": "[\"a\",1]"
+    },
+    {
+     "key": "map",
+     "type": "string",
+     "value": "{\"k\":\"v\"}"
+    },
+    {
+     "key": "otel.status_code",
+     "type": "string",
+     "value": "OK"
+    },
+    {
+     "key": "w3c.tracestate",
+     "type": "string",
+     "value": "vendor=abc"
+    }
+   ],
+   "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+  },
+  {
+   "duration": 2500,
+   "logs": null,
+   "operationName": "SELECT",
+   "parentSpanID": "0000000000000001",
+   "process": {
+    "serviceName": "alpha",
+    "tags": [
+     {
+      "key": "host.name",
+      "type": "string",
+      "value": "h1"
+     },
+     {
+      "key": "pid",
+      "type": "int64",
+      "value": 42
+     },
+     {
+      "key": "load",
+      "type": "float64",
+      "value": 0.5
+     },
+     {
+      "key": "canary",
+      "type": "bool",
+      "value": true
+     }
+    ]
+   },
+   "references": [
+    {
+     "refType": "FOLLOWS_FROM",
+     "spanID": "00000000000000b1",
+     "traceID": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"
+    },
+    {
+     "refType": "CHILD_OF",
+     "spanID": "0000000000000001",
+     "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+    }
+   ],
+   "spanID": "0000000000000002",
+   "startTime": 1485449191001000,
+   "startTimeMillis": 1485449191001,
+   "tag": {
+    "error": true,
+    "span@kind": "client"
+   },
+   "tags": [
+    {
+     "key": "otel.scope.name",
+     "type": "string",
+     "value": "lib.http"
+    },
+    {
+     "key": "otel.scope.version",
+     "type": "string",
+     "value": "1.2.3"
+    },
+    {
+     "key": "db.system",
+     "type": "string",
+     "value": "pg"
+    },
+    {
+     "key": "otel.status_description",
+     "type": "string",
+     "value": "boom"
+    }
+   ],
+   "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+  },
+  {
+   "duration": 400,
+   "logs": null,
+   "operationName": "publish",
+   "parentSpanID": "0000000000000001",
+   "process": {
+    "serviceName": "alpha",
+    "tags": [
+     {
+      "key": "host.name",
+      "type": "string",
+      "value": "h1"
+     },
+     {
+      "key": "pid",
+      "type": "int64",
+      "value": 42
+     },
+     {
+      "key": "load",
+      "type": "float64",
+      "value": 0.5
+     },
+     {
+      "key": "canary",
+      "type": "bool",
+      "value": true
+     }
+    ]
+   },
+   "references": null,
+   "spanID": "0000000000000003",
+   "startTime": 1485449191003600,
+   "startTimeMillis": 1485449191003,
+   "tag": {
+    "error": true,
+    "span@kind": "producer"
+   },
+   "tags": [],
+   "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+  },
+  {
+   "duration": 200,
+   "logs": null,
+   "operationName": "consume",
+   "parentSpanID": "0000000000000003",
+   "process": {
+    "serviceName": "alpha",
+    "tags": [
+     {
+      "key": "host.name",
+      "type": "string",
+      "value": "h1"
+     },
+     {
+      "key": "pid",
+      "type": "int64",
+      "value": 42
+     },
+     {
+      "key": "load",
+      "type": "float64",
+      "value": 0.5
+     },
+     {
+      "key": "canary",
+      "type": "bool",
+      "value": true
+     }
+    ]
+   },
+   "references": null,
+   "spanID": "0000000000000004",
+   "startTime": 1485449191003700,
+   "startTimeMillis": 1485449191003,
+   "tag": {
+    "span@kind": "consumer"
+   },
+   "tags": [],
+   "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+  },
+  {
+   "duration": 100,
+   "logs": null,
+   "operationName": "compute",
+   "parentSpanID": "0000000000000001",
+   "process": {
+    "serviceName": "alpha",
+    "tags": [
+     {
+      "key": "host.name",
+      "type": "string",
+      "value": "h1"
+     },
+     {
+      "key": "pid",
+      "type": "int64",
+      "value": 42
+     },
+     {
+      "key": "load",
+      "type": "float64",
+      "value": 0.5
+     },
+     {
+      "key": "canary",
+      "type": "bool",
+      "value": true
+     }
+    ]
+   },
+   "references": null,
+   "spanID": "0000000000000005",
+   "startTime": 1485449191004000,
+   "startTimeMillis": 1485449191004,
+   "tag": {
+    "span@kind": "internal"
+   },
+   "tags": [
+    {
+     "key": "otel.status_description",
+     "type": "string",
+     "value": "ignored"
+    }
+   ],
+   "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+  },
+  {
+   "duration": 100,
+   "logs": null,
+   "operationName": "unspecified",
+   "parentSpanID": "0000000000000001",
+   "process": {
+    "serviceName": "alpha",
+    "tags": [
+     {
+      "key": "host.name",
+      "type": "string",
+      "value": "h1"
+     },
+     {
+      "key": "pid",
+      "type": "int64",
+      "value": 42
+     },
+     {
+      "key": "load",
+      "type": "float64",
+      "value": 0.5
+     },
+     {
+      "key": "canary",
+      "type": "bool",
+      "value": true
+     }
+    ]
+   },
+   "references": null,
+   "spanID": "0000000000000006",
+   "startTime": 1485449191004100,
+   "startTimeMillis": 1485449191004,
+   "tags": [],
+   "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+  },
+  {
+   "duration": 1500,
+   "logs": null,
+   "operationName": "GET /cart",
+   "parentSpanID": "0000000000000002",
+   "process": {
+    "serviceName": "beta",
+    "tags": []
+   },
+   "references": null,
+   "spanID": "0000000000000007",
+   "startTime": 1485449191001500,
+   "startTimeMillis": 1485449191001,
+   "tag": {
+    "span@kind": "server"
+   },
+   "tags": [
+    {
+     "key": "otel.scope.name",
+     "type": "string",
+     "value": "lib.rpc"
+    },
+    {
+     "key": "tier",
+     "type": "string",
+     "value": "gold"
+    }
+   ],
+   "traceID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+  },
+  {
+   "duration": 1000000,
+   "logs": null,
+   "operationName": "batch",
+   "process": {
+    "serviceName": "beta",
+    "tags": []
+   },
+   "references": null,
+   "spanID": "00000000000000b1",
+   "startTime": 1485449131000000,
+   "startTimeMillis": 1485449131000,
+   "tag": {
+    "span@kind": "internal"
+   },
+   "tags": [
+    {
+     "key": "otel.scope.name",
+     "type": "string",
+     "value": "lib.rpc"
+    },
+    {
+     "key": "tier",
+     "type": "string",
+     "value": "silver"
+    },
+    {
+     "key": "pattern",
+     "type": "string",
+     "value": "abc*"
+    }
+   ],
+   "traceID": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"
+  },
+  {
+   "duration": 20000,
+   "logs": null,
+   "operationName": "orphan",
+   "process": {
+    "serviceName": "missing-service-name",
+    "tags": []
+   },
+   "references": null,
+   "spanID": "00000000000000c1",
+   "startTime": 1485449201000000,
+   "startTimeMillis": 1485449201000,
+   "tags": [],
+   "traceID": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3"
+  },
+  {
+   "duration": 0,
+   "logs": null,
+   "operationName": "lonely",
+   "process": {
+    "serviceName": "missing-service-name",
+    "tags": [
+     {
+      "key": "host.name",
+      "type": "string",
+      "value": "noservice"
+     }
+    ]
+   },
+   "references": null,
+   "spanID": "00000000000000d1",
+   "startTime": 1485449211000000,
+   "startTimeMillis": 1485449211000,
+   "tags": [
+    {
+     "key": "@jaeger@warnings",
+     "type": "string",
+     "value": "[\"Negative duration detected, sanitizing end timestamp. Original end timestamp: 2017-01-26 16:46:51 +0000 UTC, adjusted to: 2017-01-26 16:46:51.000000001 +0000 UTC\"]"
+    }
+   ],
+   "traceID": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4"
+  }
+ ],
+ "v3 TA": {
+  "resourceSpans": [
+   {
+    "resource": {
+     "attributes": [
+      {
+       "key": "canary",
+       "value": {
+        "boolValue": true
+       }
+      },
+      {
+       "key": "host.name",
+       "value": {
+        "stringValue": "h1"
+       }
+      },
+      {
+       "key": "load",
+       "value": {
+        "doubleValue": 0.5
+       }
+      },
+      {
+       "key": "pid",
+       "value": {
+        "intValue": "42"
+       }
+      },
+      {
+       "key": "service.name",
+       "value": {
+        "stringValue": "alpha"
+       }
+      }
+     ]
+    },
+    "scopeSpans": [
+     {
+      "scope": {
+       "name": "lib.http",
+       "version": "1.2.3"
+      },
+      "spans": [
+       {
+        "attributes": [
+         {
+          "key": "blob",
+          "value": {
+           "bytesValue": "AQL/"
+          }
+         },
+         {
+          "key": "http.method",
+          "value": {
+           "stringValue": "GET"
+          }
+         },
+         {
+          "key": "list",
+          "value": {
+           "stringValue": "[\"a\",1]"
+          }
+         },
+         {
+          "key": "map",
+          "value": {
+           "stringValue": "{\"k\":\"v\"}"
+          }
+         },
+         {
+          "key": "ok",
+          "value": {
+           "boolValue": true
+          }
+         },
+         {
+          "key": "ratio",
+          "value": {
+           "doubleValue": 1.5
+          }
+         },
+         {
+          "key": "retries",
+          "value": {
+           "intValue": "3"
+          }
+         },
+         {
+          "key": "whole",
+          "value": {
+           "doubleValue": 2
+          }
+         }
+        ],
+        "endTimeUnixNano": "1485449191005000000",
+        "events": [
+         {
+          "timeUnixNano": "1485449191003000000"
+         },
+         {
+          "attributes": [
+           {
+            "key": "key",
+            "value": {
+             "stringValue": "c1"
+            }
+           },
+           {
+            "key": "size",
+            "value": {
+             "intValue": "7"
+            }
+           }
+          ],
+          "name": "cache miss",
+          "timeUnixNano": "1485449191001000000"
+         },
+         {
+          "name": "override",
+          "timeUnixNano": "1485449191002000000"
+         }
+        ],
+        "flags": 1,
+        "kind": 2,
+        "name": "GET /cart",
+        "spanId": "0000000000000001",
+        "startTimeUnixNano": "1485449191000000000",
+        "status": {
+         "code": 1
+        },
+        "traceId": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "traceState": "vendor=abc"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "resource": {
+     "attributes": [
+      {
+       "key": "canary",
+       "value": {
+        "boolValue": true
+       }
+      },
+      {
+       "key": "host.name",
+       "value": {
+        "stringValue": "h1"
+       }
+      },
+      {
+       "key": "load",
+       "value": {
+        "doubleValue": 0.5
+       }
+      },
+      {
+       "key": "pid",
+       "value": {
+        "intValue": "42"
+       }
+      },
+      {
+       "key": "service.name",
+       "value": {
+        "stringValue": "alpha"
+       }
+      }
+     ]
+    },
+    "scopeSpans": [
+     {
+      "scope": {
+       "name": "lib.http",
+       "version": "1.2.3"
+      },
+      "spans": [
+       {
+        "attributes": [
+         {
+          "key": "db.system",
+          "value": {
+           "stringValue": "pg"
+          }
+         }
+        ],
+        "endTimeUnixNano": "1485449191003500000",
+        "kind": 3,
+        "links": [
+         {
+          "attributes": [
+           {
+            "key": "opentracing.ref_type",
+            "value": {
+             "stringValue": "follows_from"
+            }
+           }
+          ],
+          "spanId": "00000000000000b1",
+          "traceId": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"
+         }
+        ],
+        "name": "SELECT",
+        "parentSpanId": "0000000000000001",
+        "spanId": "0000000000000002",
+        "startTimeUnixNano": "1485449191001000000",
+        "status": {
+         "code": 2,
+         "message": "boom"
+        },
+        "traceId": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "resource": {
+     "attributes": [
+      {
+       "key": "service.name",
+       "value": {
+        "stringValue": "beta"
+       }
+      }
+     ]
+    },
+    "scopeSpans": [
+     {
+      "scope": {
+       "name": "lib.rpc"
+      },
+      "spans": [
+       {
+        "attributes": [
+         {
+          "key": "tier",
+          "value": {
+           "stringValue": "gold"
+          }
+         }
+        ],
+        "endTimeUnixNano": "1485449191003000000",
+        "kind": 2,
+        "name": "GET /cart",
+        "parentSpanId": "0000000000000002",
+        "spanId": "0000000000000007",
+        "startTimeUnixNano": "1485449191001500000",
+        "status": {},
+        "traceId": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "resource": {
+     "attributes": [
+      {
+       "key": "canary",
+       "value": {
+        "boolValue": true
+       }
+      },
+      {
+       "key": "host.name",
+       "value": {
+        "stringValue": "h1"
+       }
+      },
+      {
+       "key": "load",
+       "value": {
+        "doubleValue": 0.5
+       }
+      },
+      {
+       "key": "pid",
+       "value": {
+        "intValue": "42"
+       }
+      },
+      {
+       "key": "service.name",
+       "value": {
+        "stringValue": "alpha"
+       }
+      }
+     ]
+    },
+    "scopeSpans": [
+     {
+      "scope": {},
+      "spans": [
+       {
+        "endTimeUnixNano": "1485449191004000000",
+        "kind": 4,
+        "name": "publish",
+        "parentSpanId": "0000000000000001",
+        "spanId": "0000000000000003",
+        "startTimeUnixNano": "1485449191003600000",
+        "status": {
+         "code": 2
+        },
+        "traceId": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "resource": {
+     "attributes": [
+      {
+       "key": "canary",
+       "value": {
+        "boolValue": true
+       }
+      },
+      {
+       "key": "host.name",
+       "value": {
+        "stringValue": "h1"
+       }
+      },
+      {
+       "key": "load",
+       "value": {
+        "doubleValue": 0.5
+       }
+      },
+      {
+       "key": "pid",
+       "value": {
+        "intValue": "42"
+       }
+      },
+      {
+       "key": "service.name",
+       "value": {
+        "stringValue": "alpha"
+       }
+      }
+     ]
+    },
+    "scopeSpans": [
+     {
+      "scope": {},
+      "spans": [
+       {
+        "endTimeUnixNano": "1485449191003900000",
+        "kind": 5,
+        "name": "consume",
+        "parentSpanId": "0000000000000003",
+        "spanId": "0000000000000004",
+        "startTimeUnixNano": "1485449191003700000",
+        "status": {},
+        "traceId": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "resource": {
+     "attributes": [
+      {
+       "key": "canary",
+       "value": {
+        "boolValue": true
+       }
+      },
+      {
+       "key": "host.name",
+       "value": {
+        "stringValue": "h1"
+       }
+      },
+      {
+       "key": "load",
+       "value": {
+        "doubleValue": 0.5
+       }
+      },
+      {
+       "key": "pid",
+       "value": {
+        "intValue": "42"
+       }
+      },
+      {
+       "key": "service.name",
+       "value": {
+        "stringValue": "alpha"
+       }
+      }
+     ]
+    },
+    "scopeSpans": [
+     {
+      "scope": {},
+      "spans": [
+       {
+        "attributes": [
+         {
+          "key": "otel.status_description",
+          "value": {
+           "stringValue": "ignored"
+          }
+         }
+        ],
+        "endTimeUnixNano": "1485449191004100000",
+        "kind": 1,
+        "name": "compute",
+        "parentSpanId": "0000000000000001",
+        "spanId": "0000000000000005",
+        "startTimeUnixNano": "1485449191004000000",
+        "status": {},
+        "traceId": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "resource": {
+     "attributes": [
+      {
+       "key": "canary",
+       "value": {
+        "boolValue": true
+       }
+      },
+      {
+       "key": "host.name",
+       "value": {
+        "stringValue": "h1"
+       }
+      },
+      {
+       "key": "load",
+       "value": {
+        "doubleValue": 0.5
+       }
+      },
+      {
+       "key": "pid",
+       "value": {
+        "intValue": "42"
+       }
+      },
+      {
+       "key": "service.name",
+       "value": {
+        "stringValue": "alpha"
+       }
+      }
+     ]
+    },
+    "scopeSpans": [
+     {
+      "scope": {},
+      "spans": [
+       {
+        "endTimeUnixNano": "1485449191004200000",
+        "name": "unspecified",
+        "parentSpanId": "0000000000000001",
+        "spanId": "0000000000000006",
+        "startTimeUnixNano": "1485449191004100000",
+        "status": {},
+        "traceId": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "v3 TB": {
+  "resourceSpans": [
+   {
+    "resource": {
+     "attributes": [
+      {
+       "key": "service.name",
+       "value": {
+        "stringValue": "beta"
+       }
+      }
+     ]
+    },
+    "scopeSpans": [
+     {
+      "scope": {
+       "name": "lib.rpc"
+      },
+      "spans": [
+       {
+        "attributes": [
+         {
+          "key": "pattern",
+          "value": {
+           "stringValue": "abc*"
+          }
+         },
+         {
+          "key": "tier",
+          "value": {
+           "stringValue": "silver"
+          }
+         }
+        ],
+        "endTimeUnixNano": "1485449132000000000",
+        "kind": 1,
+        "name": "batch",
+        "spanId": "00000000000000b1",
+        "startTimeUnixNano": "1485449131000000000",
+        "status": {},
+        "traceId": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "v3 TC": {
+  "resourceSpans": [
+   {
+    "resource": {
+     "attributes": [
+      {
+       "key": "service.name",
+       "value": {
+        "stringValue": "missing-service-name"
+       }
+      }
+     ]
+    },
+    "scopeSpans": [
+     {
+      "scope": {},
+      "spans": [
+       {
+        "endTimeUnixNano": "1485449201020000000",
+        "name": "orphan",
+        "spanId": "00000000000000c1",
+        "startTimeUnixNano": "1485449201000000000",
+        "status": {},
+        "traceId": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "v3 TD": {
+  "resourceSpans": [
+   {
+    "resource": {
+     "attributes": [
+      {
+       "key": "host.name",
+       "value": {
+        "stringValue": "noservice"
+       }
+      },
+      {
+       "key": "service.name",
+       "value": {
+        "stringValue": "missing-service-name"
+       }
+      }
+     ]
+    },
+    "scopeSpans": [
+     {
+      "scope": {},
+      "spans": [
+       {
+        "attributes": [
+         {
+          "key": "@jaeger@warnings",
+          "value": {
+           "stringValue": "[\"Negative duration detected, sanitizing end timestamp. Original end timestamp: 2017-01-26 16:46:51 +0000 UTC, adjusted to: 2017-01-26 16:46:51.000000001 +0000 UTC\"]"
+          }
+         }
+        ],
+        "endTimeUnixNano": "1485449211000000000",
+        "name": "lonely",
+        "spanId": "00000000000000d1",
+        "startTimeUnixNano": "1485449211000000000",
+        "status": {},
+        "traceId": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}

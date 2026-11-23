@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-rds-parallel-database-cloner"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["postgres"]
+modal_vm_runtime = true
+tags = ["aws", "rds", "cli", "database-cloning", "snapshot-isolation", "concurrency", "resumability"]
+difficulty_explanation = "Reconstruct a PostgreSQL cloner with full and staged copying, dependency-aware filters, object listings and schema or data comparison reports. Parallel table workers and concurrent splits must share one source snapshot while preserving rows, sequence state, constraints, indexes and large objects. Work-directory recovery must retain completed copies, detect expired snapshots and target mismatches, and distinguish resume, restart and explicitly inconsistent continuation."
+expert_time_estimate_hours = 30.0
+
+[metadata.source]
+kind = "program"
+project = "dimitri/pgcopydb"
+url = "https://github.com/dimitri/pgcopydb"
+revision = "95ebd553790fa45de67c92b934917d777131bdd3"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# The after-commit hook server. Usage: bin/sync-server [--port 8702]
+export PYTHONPATH="$(cd "$(dirname "$0")/.." && pwd)${PYTHONPATH:+:$PYTHONPATH}"
+exec python3 -m search_sync.server "$@"

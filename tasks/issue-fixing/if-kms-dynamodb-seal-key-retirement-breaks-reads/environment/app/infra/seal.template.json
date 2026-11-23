@@ -1,0 +1,25 @@
+{
+ "Resources": {
+  "Alias": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Alias"
+   },
+   "Properties": {
+    "AliasName": "alias/vault-seal",
+    "TargetKeyId": {
+     "Ref": "Key"
+    }
+   },
+   "Type": "AWS::KMS::Alias"
+  },
+  "Key": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Key"
+   },
+   "Properties": {
+    "Description": "Local seal"
+   },
+   "Type": "AWS::KMS::Key"
+  }
+ }
+}

@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-dynamodb-sqs-review-worker-duplicates-on-redelivery"
+description = "Compose-review workers lose, duplicate and half-compose reviews when spot reclaims kill them mid-upload and SQS redelivers."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "dynamodb", "sqs", "idempotency", "retry", "atomic-counter"]
+difficulty_explanation = "Five upload parts synchronise on a DynamoDB counter; a worker killed after a committed write is re-executed from the top after SQS redelivery while the other parts have moved the counter. The re-execution must skip the increment it already applied, report the rank that increment produced, and still finish what it owes, including the review_compose cleanup and the SQS hand-off to the user-review service, which no DynamoDB transaction can include. Moderation removes listed reviews from movie pages, so a review missing from its page is not evidence that listing is owed: that has to be decided from what the request itself has committed. Spot instances may also hibernate a worker and resume it after its request was finished and the review taken down, so every write a stale execution can still make must be fenced. The fix is rolled out onto live state written by the old code, including a completing upload reclaimed after its cleanup, whose hand-off and reply are still owed but whose listing is not. The frontend may also resubmit a review under a new request id, so two completing uploads of one review can race."
+expert_time_estimate_hours = 3.0
+
+[metadata.source]
+kind = "paper"
+project = "Beldi (USENIX OSDI '23)"
+url = "https://www.usenix.org/conference/osdi23/presentation/ding"
+date = "2023-06-01"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 900.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

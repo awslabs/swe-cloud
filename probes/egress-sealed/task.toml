@@ -1,0 +1,19 @@
+schema_version = "1.4"
+
+[task]
+name = "probes/egress-sealed"
+description = "Passes only if nothing outside a no-network sandbox answers: HTTPS, DNS, UDP/53, ICMP or instance metadata."
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 300
+
+[environment]
+network_mode = "no-network"
+cpus = 1
+memory_mb = 1024
+build_timeout_sec = 600
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 120

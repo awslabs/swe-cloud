@@ -1,0 +1,29 @@
+{
+ "Parameters": {
+  "PolicyDocument": {
+   "Type": "String"
+  },
+  "RoleName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Policy": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Policy"
+   },
+   "Properties": {
+    "PolicyDocument": {
+     "Ref": "PolicyDocument"
+    },
+    "PolicyName": "worker",
+    "Roles": [
+     {
+      "Ref": "RoleName"
+     }
+    ]
+   },
+   "Type": "AWS::IAM::Policy"
+  }
+ }
+}

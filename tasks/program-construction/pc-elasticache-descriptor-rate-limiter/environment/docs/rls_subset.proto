@@ -1,0 +1,88 @@
+// Wire-compatible subset of the public Envoy rate limit service API
+// (envoy.service.ratelimit.v3, envoy.extensions.common.ratelimit.v3,
+// envoy.type.v3). Field numbers, types and enum values match the public API;
+// all messages are flattened into one package and unused fields are omitted.
+// Compile with: python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. rls_subset.proto
+syntax = "proto3";
+
+package envoy.service.ratelimit.v3;
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
+
+// envoy.type.v3.RateLimitUnit (used by per-request overrides)
+enum RateLimitUnit {
+  UNKNOWN = 0;
+  SECOND = 1;
+  MINUTE = 2;
+  HOUR = 3;
+  DAY = 4;
+  MONTH = 5;
+  YEAR = 6;
+}
+
+// envoy.extensions.common.ratelimit.v3.RateLimitDescriptor
+message RateLimitDescriptor {
+  message Entry {
+    string key = 1;
+    string value = 2;
+  }
+  message RateLimitOverride {
+    uint32 requests_per_unit = 1;
+    RateLimitUnit unit = 2;
+  }
+  repeated Entry entries = 1;
+  RateLimitOverride limit = 2;
+  google.protobuf.UInt64Value hits_addend = 3;
+  bool is_negative_hits = 4;
+}
+
+message RateLimitRequest {
+  string domain = 1;
+  repeated RateLimitDescriptor descriptors = 2;
+  uint32 hits_addend = 3;
+}
+
+// envoy.config.core.v3.HeaderValue
+message HeaderValue {
+  string key = 1;
+  string value = 2;
+  bytes raw_value = 3;
+}
+
+message RateLimitResponse {
+  enum Code {
+    UNKNOWN = 0;
+    OK = 1;
+    OVER_LIMIT = 2;
+  }
+  message RateLimit {
+    enum Unit {
+      UNKNOWN = 0;
+      SECOND = 1;
+      MINUTE = 2;
+      HOUR = 3;
+      DAY = 4;
+      MONTH = 5;
+      YEAR = 6;
+      WEEK = 7;
+    }
+    string name = 3;
+    uint32 requests_per_unit = 1;
+    Unit unit = 2;
+  }
+  message DescriptorStatus {
+    Code code = 1;
+    RateLimit current_limit = 2;
+    uint32 limit_remaining = 3;
+    google.protobuf.Duration duration_until_reset = 4;
+  }
+  Code overall_code = 1;
+  repeated DescriptorStatus statuses = 2;
+  repeated HeaderValue response_headers_to_add = 3;
+  repeated HeaderValue request_headers_to_add = 4;
+}
+
+service RateLimitService {
+  rpc ShouldRateLimit(RateLimitRequest) returns (RateLimitResponse);
+}

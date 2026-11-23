@@ -1,0 +1,15 @@
+{
+  "lag_minutes": 60,
+  "bucket_minutes": 60,
+  "page_size": 10,
+  "groups": [
+    "bucket_start_ms",
+    "device"
+  ],
+  "metrics": [
+    "m1_sum",
+    "m1_count",
+    "m1_avg"
+  ],
+  "window_minutes": 2880
+}

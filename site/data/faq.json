@@ -1,0 +1,26 @@
+{
+  "_comment": "Shown in order on the front page; answers are HTML. All but the scoring answer are copied from the Q&A page (data/faq-page.json), so keep the two in step.",
+  "total_on_faq_page": 16,
+  "items": [
+    {
+      "q": "What is SWE-Cloud?",
+      "a": "<p>SWE-Cloud is a coding benchmark that tests whether agents can fix and build programs that run on AWS. It has 100 tasks of two kinds. In the 60 <b>issue-fixing</b> tasks, the agent repairs a reported defect in a working AWS-backed service. In the 40 <b>program-construction</b> tasks, the agent builds a program from its documentation and a reference executable it can run but not read. Five of those 40 are <b>multi-tenant</b> programs.</p><p>Every task runs in a sealed container with local emulation of the AWS services it uses, so it needs no AWS account and no network. Hidden tests judge the agent's code by its behavior and by the state it leaves in those services.</p>"
+    },
+    {
+      "q": "How does SWE-Cloud emulate AWS services offline?",
+      "a": "<p>Each task image includes a pinned copy of <a href=\"https://github.com/floci-io/floci\">Floci</a>, an open-source local emulator of the AWS APIs. Programs and tests use the standard AWS SDKs and CLI with a local endpoint and dummy credentials. For services built around a data engine (RDS, ElastiCache, MSK, OpenSearch and Amazon MQ), the emulator runs the matching open-source engine in a private container network inside the task, so queries, consumer groups and indexes behave like the real thing. Tasks grade only behavior the emulator reproduces faithfully.</p>"
+    },
+    {
+      "q": "How is a run scored?",
+      "a": "<p>Each task gets three attempts. An attempt passes only when every hidden test passes and the attempt ends normally. pass@1 is passes divided by attempts, averaged over tasks. The headline SWE-Cloud Score is 0.6 × issue-fixing pass@1 + 0.4 × program-construction pass@1. The program-construction view also reports almost@1, which credits a program that passes at least 95% of its hidden tests.</p>"
+    },
+    {
+      "q": "Why one agent harness, and not Claude Code, Codex or other vendor agents?",
+      "a": "<p>The score should reflect the model. Every model runs in the same agent loop with the same budgets: Terminus 2, the generic terminal agent that ships with <a href=\"https://github.com/harbor-framework/harbor\">Harbor</a>. It sends shell commands and reads their output, with no task-specific tools or prompts.</p><p>Vendor agents are tuned for their own models and change from release to release, so a cross-model table would mix model and scaffold effects. We plan to add support for more vendor-agnostic harnesses in the future.</p>"
+    },
+    {
+      "q": "What about contamination and memorization?",
+      "a": "<p>The issue-fixing code bases are written for the benchmark. They are small services, 140 to 1,500 lines of Python (about 530 at the median), that reproduce a documented failure mechanism. They are not copies of an upstream project, so remembering an upstream patch does not apply. The program-construction references are real open-source programs that a model may have seen in training. The agent never sees their source and cannot fetch it, and it must match the reference's outputs, errors and stored state on 30 to 180 hidden tests. Recalled code rarely matches at that level of detail. The sandbox is also sealed from the internet, so an agent cannot download upstream source or look up a public fix. We do not claim contamination is zero.</p>"
+    }
+  ]
+}

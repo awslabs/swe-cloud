@@ -1,0 +1,233 @@
+{
+ "Outputs": {
+  "K1Arn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "K1",
+     "Arn"
+    ]
+   }
+  },
+  "K1Id": {
+   "Value": {
+    "Ref": "K1"
+   }
+  },
+  "K2Arn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "K2",
+     "Arn"
+    ]
+   }
+  },
+  "K2Id": {
+   "Value": {
+    "Ref": "K2"
+   }
+  },
+  "K3Arn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "K3",
+     "Arn"
+    ]
+   }
+  },
+  "K3Id": {
+   "Value": {
+    "Ref": "K3"
+   }
+  },
+  "K4Arn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "K4",
+     "Arn"
+    ]
+   }
+  },
+  "K4Id": {
+   "Value": {
+    "Ref": "K4"
+   }
+  },
+  "K5Arn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "K5",
+     "Arn"
+    ]
+   }
+  },
+  "K5Id": {
+   "Value": {
+    "Ref": "K5"
+   }
+  }
+ },
+ "Parameters": {
+  "RunId": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "K1": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/K1"
+   },
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "sandbox ",
+       {
+        "Ref": "RunId"
+       },
+       " K1"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::KMS::Key"
+  },
+  "K2": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/K2"
+   },
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "sandbox ",
+       {
+        "Ref": "RunId"
+       },
+       " K2"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::KMS::Key"
+  },
+  "K3": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/K3"
+   },
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "sandbox ",
+       {
+        "Ref": "RunId"
+       },
+       " K3"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::KMS::Key"
+  },
+  "K4": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/K4"
+   },
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "sandbox ",
+       {
+        "Ref": "RunId"
+       },
+       " K4"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::KMS::Key"
+  },
+  "K5": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/K5"
+   },
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "sandbox ",
+       {
+        "Ref": "RunId"
+       },
+       " K5"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::KMS::Key"
+  },
+  "backups": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/backups"
+   },
+   "Properties": {
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "backups-",
+       {
+        "Ref": "RunId"
+       }
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::S3::Bucket"
+  },
+  "data": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/data"
+   },
+   "Properties": {
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "data-",
+       {
+        "Ref": "RunId"
+       }
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::S3::Bucket"
+  },
+  "keep": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/keep"
+   },
+   "Properties": {
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "keep-",
+       {
+        "Ref": "RunId"
+       }
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::S3::Bucket"
+  }
+ }
+}

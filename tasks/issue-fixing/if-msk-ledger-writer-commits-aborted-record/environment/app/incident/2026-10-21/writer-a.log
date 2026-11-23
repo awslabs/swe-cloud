@@ -1,0 +1,13 @@
+# ledger-writer-a stderr, 2026-10-21 21:10-21:35 UTC (host wr-a-03). The standby was not started.
+2026-10-21 21:13:58,604 ledger-writer-a ledger_writer INFO batch STL-20261021-0415 committed (attempt 1, producer 4007 epoch 12)
+2026-10-21 21:14:01,977 ledger-writer-a ledger_writer INFO batch STL-20261021-0416 committed (attempt 1, producer 4007 epoch 12)
+2026-10-21 21:14:09,211 ledger-writer-a txnclient.producer WARNING send to ledger-0 failed: record for ledger-0 (sequence 1292) not acknowledged within 5000 ms
+2026-10-21 21:14:09,212 ledger-writer-a ledger_writer WARNING batch STL-20261021-0417 attempt 1 failed: record for ledger-0 (sequence 1292) not acknowledged within 5000 ms; aborting
+2026-10-21 21:14:09,236 ledger-writer-a ledger_writer INFO batch STL-20261021-0417 committed (attempt 2, producer 4007 epoch 12)
+2026-10-21 21:14:12,580 ledger-writer-a ledger_writer INFO batch STL-20261021-0418 committed (attempt 1, producer 4007 epoch 12)
+2026-10-21 21:14:15,902 ledger-writer-a ledger_writer INFO batch STL-20261021-0419 committed (attempt 1, producer 4007 epoch 12)
+2026-10-21 21:22:41,355 ledger-writer-a ledger_writer INFO batch STL-20261021-0452 committed (attempt 1, producer 4007 epoch 12)
+2026-10-21 21:22:49,733 ledger-writer-a txnclient.producer WARNING send to ledger-0 failed: record for ledger-0 (sequence 1401) not acknowledged within 5000 ms
+2026-10-21 21:22:49,734 ledger-writer-a ledger_writer WARNING batch STL-20261021-0453 attempt 1 failed: record for ledger-0 (sequence 1401) not acknowledged within 5000 ms; aborting
+2026-10-21 21:22:49,761 ledger-writer-a ledger_writer INFO batch STL-20261021-0453 committed (attempt 2, producer 4007 epoch 12)
+2026-10-21 21:22:53,120 ledger-writer-a ledger_writer INFO batch STL-20261021-0454 committed (attempt 1, producer 4007 epoch 12)

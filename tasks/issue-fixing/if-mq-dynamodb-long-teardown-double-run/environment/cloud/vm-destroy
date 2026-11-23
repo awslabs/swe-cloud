@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+"""vm-destroy: tear down one VM through the cloud API.
+
+Usage: vm-destroy --vm-id <id>
+
+Walks the full teardown of the VM (detach and delete disks, release the external IP, delete the
+instance, release its quota reservation). While the cloud reports the teardown advancing it prints
+one line per step to stdout:
+
+    progress <n>
+
+about every two seconds, and a final ``destroyed <id>`` line. Exit status 0 means the VM is gone;
+anything else means the teardown did not finish and nothing about the VM should be assumed.
+
+A teardown is not idempotent: every run walks every step again, including the quota release, and
+the cloud reuses released addresses and disk ids. Large VMs take minutes. A run that stops printing
+progress is stuck inside a cloud API call; it will not recover on its own.
+
+Talks to the cloud API endpoint on the local socket /run/cloud-api.sock (on a laptop, start
+``sandbox-cloud`` to provide one).
+"""
+
+import argparse
+import json
+import os
+import socket
+import sys
+import time
+
+SOCKET_PATH = "/run/cloud-api.sock"
+
+
+class CloudAPI:
+    def __init__(self, path):
+        self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.sock.connect(path)
+        self.reader = self.sock.makefile("r")
+
+    def send(self, **message):
+        self.sock.sendall((json.dumps(message) + "\n").encode())
+
+    def call(self, **message):
+        self.send(**message)
+        line = self.reader.readline()
+        if not line:
+            raise ConnectionError("cloud API closed the connection")
+        return json.loads(line)
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(prog="vm-destroy", description="Tear down one VM through the cloud API.")
+    parser.add_argument("--vm-id", required=True)
+    args = parser.parse_args(argv)
+
+    try:
+        api = CloudAPI(SOCKET_PATH)
+        plan = api.call(op="begin", vm_id=args.vm_id, pid=os.getpid(), ppid=os.getppid())
+    except OSError as error:
+        print(f"vm-destroy: cannot reach the cloud API at {SOCKET_PATH}: {error}", file=sys.stderr)
+        return 2
+    if not plan.get("ok"):
+        print(f"vm-destroy: {args.vm_id}: {plan.get('error', 'refused')}", file=sys.stderr)
+        return 3
+
+    print(f"destroying {args.vm_id} ({plan['steps']} steps)", flush=True)
+    for step in range(1, int(plan["steps"]) + 1):
+        time.sleep(float(plan["interval"]))
+        print(f"progress {step}", flush=True)
+        api.send(op="progress", n=step)
+    result = api.call(op="done")
+    if not result.get("ok"):
+        print(f"vm-destroy: {args.vm_id}: {result.get('error', 'teardown failed')}", file=sys.stderr)
+        return 4
+    print(f"destroyed {args.vm_id}", flush=True)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

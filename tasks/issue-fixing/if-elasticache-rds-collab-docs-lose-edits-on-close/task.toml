@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-elasticache-rds-collab-docs-lose-edits-on-close"
+description = "Collaborative docserver fleet loses edits when a document closes under store-lock contention or a Valkey outage"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["postgres", "valkey"]
+tags = ["aws", "elasticache", "rds", "valkey", "postgres", "redlock", "yjs", "optimistic-concurrency"]
+difficulty_explanation = "Port of hocuspocus #1167: a failed Redlock store lock skips the database store and unloads the document unsaved. Removing the skip (#1180/#1196) re-opens overlapping full-snapshot last-writer-wins writes to the shared documents row, so the store must merge the row and write conditionally, retrying on conflict, resets and refused connections inside the unload budget. The lock cannot simply be dropped either: the platform compaction job rewrites rows under it without re-checking the version, so a store must wait for a held lock instead of skipping, keep its own lock alive while a slow store outlasts the 1 s PX, and go ahead without it only when Valkey is unreachable (where the Redlock port reports an outage exactly like contention). Graded live against a peer instance that commits versions the docserver never saw and a compaction job that takes the lock as soon as it is free."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "ueberdosis/hocuspocus"
+url = "https://github.com/ueberdosis/hocuspocus/issues/1167"
+revision = "acddf68ab524d3592fa8a93b34da08282c065a31"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

@@ -1,0 +1,110 @@
+{
+ "Outputs": {
+  "TopicArn": {
+   "Value": {
+    "Ref": "Topic"
+   }
+  }
+ },
+ "Parameters": {
+  "Tag": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Bodies": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Bodies"
+   },
+   "Properties": {
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "Tag"
+       },
+       "-bodies"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::S3::Bucket"
+  },
+  "Topic": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Topic"
+   },
+   "Properties": {
+    "TopicName": {
+     "Ref": "Tag"
+    }
+   },
+   "Type": "AWS::SNS::Topic"
+  },
+  "control": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/control"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "Tag"
+       },
+       "_control"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "receipts": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/receipts"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "Tag"
+       },
+       "_receipts"
+      ]
+     ]
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  }
+ }
+}

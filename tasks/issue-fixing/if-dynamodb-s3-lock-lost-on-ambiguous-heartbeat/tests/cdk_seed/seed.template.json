@@ -1,0 +1,53 @@
+{
+ "Parameters": {
+  "BucketName": {
+   "Type": "String"
+  },
+  "TableName": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Ledger": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Ledger"
+   },
+   "Properties": {
+    "BucketName": {
+     "Ref": "BucketName"
+    },
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "Type": "AWS::S3::Bucket"
+  },
+  "Locks": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Locks"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "key",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "key",
+      "KeyType": "HASH"
+     }
+    ],
+    "StreamSpecification": {
+     "StreamViewType": "NEW_AND_OLD_IMAGES"
+    },
+    "TableName": {
+     "Ref": "TableName"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  }
+ }
+}

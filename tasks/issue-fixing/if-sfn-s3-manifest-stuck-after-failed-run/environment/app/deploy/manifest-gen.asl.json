@@ -1,0 +1,20 @@
+{
+  "Comment": "Generates one manifest. One execution per generation attempt; the service names the execution.",
+  "StartAt": "Generate",
+  "States": {
+    "Generate": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage.waitForTaskToken",
+      "Parameters": {
+        "QueueUrl": "${TaskQueueUrl}",
+        "MessageBody": {
+          "input.$": "$",
+          "execution_arn.$": "$$.Execution.Id",
+          "task_token.$": "$$.Task.Token"
+        }
+      },
+      "TimeoutSeconds": 900,
+      "End": true
+    }
+  }
+}

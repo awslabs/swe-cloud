@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-s3-replicator-rolls-back-acked-commits"
+description = "Repair an S3 generation-chain replicator (port of libSQL bottomless) that loses or rolls back acknowledged commits after a crash mid-snapshot or a boot on an old disk."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "s3", "backup", "crash-recovery", "generations"]
+difficulty_explanation = "Rollover must not wait for the new generation's snapshot, so the newest generation is routinely snapshotless while it already holds acknowledged commits. Restore, the boot-time reuse/restore decision and the stale-disk fence all read that head; each per-issue fix (skip snapshotless generations, compare against the head's .changecounter) breaks durability or lets an old disk through inside exactly that window. The store also throttles in multi-second 503 bursts and its gateway answers 504 for writes the store completed, so a frame whose outcome is unknown keeps its frame number and seq and must be settled before the next write or rollover, without fail-stopping the writer or acknowledging late; a failed snapshot upload must not wedge later checkpoints. The buckets also carry history the old writer left: generations without .dep, most of them restart generations whose snapshot continues the history and must still restore and boot, one of them a snapshot of an old volume that forks it, which restore must refuse rather than report; only comparing that snapshot with the state the previous generation ended in tells them apart. The verifier holds the snapshot PUT through a fault proxy, fails a .dep PUT once, runs a 503 burst whose first frame PUT is stored but answered 504, SIGKILLs the node, boots old disk copies against a snapshotless head, and seeds buckets with both kinds of unlinked generation."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "tursodatabase/libsql"
+url = "https://github.com/tursodatabase/libsql/issues/717"
+revision = "6ac769eb480e8b64b270312ac877b849896aaf7e"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 900.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

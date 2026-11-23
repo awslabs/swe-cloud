@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-rds-declarative-schema-sync-cli"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["postgres"]
+modal_vm_runtime = true
+tags = ["aws", "rds", "secrets-manager", "ssm", "cli", "schema-migration", "hcl"]
+difficulty_explanation = "Reconstruct an HCL schema CLI that inspects PostgreSQL, normalizes desired states through a clean scratch database, and produces dependency-ordered DDL for diff and apply. Types, defaults, column order, enums, constraints, indexes and comments must round-trip through inspection, with schema filters and transaction modes controlling drift correction and failure leftovers. Project evaluation must combine variables and source files and resolve rotated Secrets Manager or decrypted SSM credentials only where needed, leaving scratch databases clean."
+expert_time_estimate_hours = 36.0
+
+[metadata.source]
+kind = "program"
+project = "ariga/atlas"
+url = "https://github.com/ariga/atlas"
+revision = "9a6bc601212130aaaefcbc8dd36c710baf9716ff"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

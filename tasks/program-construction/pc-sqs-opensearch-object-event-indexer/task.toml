@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-sqs-opensearch-object-event-indexer"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = ["opensearch"]
+modal_vm_runtime = true
+tags = ["aws", "sqs", "s3", "opensearch", "daemon", "log-pipeline", "bulk-indexing", "acknowledgements"]
+difficulty_explanation = "The candidate must rebuild a configurable daemon that turns S3 notifications from SQS into OpenSearch bulk documents. Its 60 test functions cover notification envelopes, metadata precedence, framing and multiline decoding, gzip and zstd selection, document IDs, index templates, field filtering and data streams. Bulk request and item failures must produce the correct retries and queue acknowledgements, with document versions and receive counts exposing accidental reprocessing; configuration validation and signal shutdown are also checked."
+expert_time_estimate_hours = 36.0
+
+[metadata.source]
+kind = "program"
+project = "vectordotdev/vector"
+url = "https://github.com/vectordotdev/vector"
+revision = "0d0b35865036f8b5c2f0104d9744fa84985ffff1"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 4
+memory_mb = 8192
+storage_mb = 24576
+build_timeout_sec = 1800

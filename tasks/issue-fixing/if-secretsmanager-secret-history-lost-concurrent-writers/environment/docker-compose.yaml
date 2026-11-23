@@ -1,0 +1,24 @@
+# The task container's hardening for single-container tasks. Every such task (and the egress probe) carries an identical copy
+# as environment/docker-compose.yaml, so it applies to the agent's container and to the
+# separate verifier container alike, with any Harbor command line. This file is the template;
+# tests/test_tasks.py checks that every copy matches it.
+services:
+  main:
+    # No network interface except loopback. The emulator runs inside this container on
+    # localhost and the LLM is called from the host, so a task needs no network. Because
+    # `main` sets its own network_mode, Harbor does not attach it to its egress sidecar,
+    # which would still forward DNS and ICMP.
+    network_mode: none
+    security_opt:
+      - no-new-privileges:true
+    # Bounds runaway process and thread creation. The emulator and the racing test
+    # workers are expected to stay well below this.
+    pids_limit: 4096
+    # Capabilities no task uses. MKNOD also keeps the agent from creating device nodes in
+    # the folders Harbor mounts from the host.
+    cap_drop:
+      - MKNOD
+      - NET_RAW
+      - AUDIT_WRITE
+      - SYS_CHROOT
+      - SETFCAP

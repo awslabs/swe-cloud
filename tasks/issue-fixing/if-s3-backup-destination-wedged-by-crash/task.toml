@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-s3-backup-destination-wedged-by-crash"
+description = "Repair backup publication and retry behavior under interrupted workers"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "s3", "backup"]
+difficulty_explanation = "A destination record must permit recovery without letting delayed writers invalidate publication."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "ClickHouse/ClickHouse"
+url = "https://github.com/ClickHouse/ClickHouse/issues/112407"
+revision = "712db354c56686493abf6c24992ad25e7e7c9cd8"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

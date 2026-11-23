@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-kinesis-dynamodb-dedup-worker-handoff-duplicates"
+description = "Fix the delivery dedup worker so a replaced partition neither drops an in-flight message nor delivers it twice"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "kinesis", "dynamodb", "deduplication", "recovery"]
+difficulty_explanation = "A worker killed between its durable seen-key write and its acknowledged output append leaves the same local facts behind in both cases. Grading counts raw output-stream records, so trusting the inherited row drops the unpublished message and clearing it duplicates the published one; only the output log separates the two histories."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "article"
+project = "Segment engineering blog"
+url = "https://www.twilio.com/en-us/blog/insights/exactly-once-delivery/"
+date = "2017-06-29"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 900.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

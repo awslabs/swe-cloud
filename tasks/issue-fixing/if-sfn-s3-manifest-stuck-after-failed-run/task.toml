@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-sfn-s3-manifest-stuck-after-failed-run"
+description = "A failed Step Functions manifest generation strands the manifest; fix retry without losing coalescing of concurrent requests."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "stepfunctions", "s3", "idempotency", "deterministic-execution-names", "retry"]
+difficulty_explanation = "Each generation attempt is one Standard Step Functions execution, and its deterministic name does two jobs: it makes concurrent identical requests share one execution, and once the execution fails it is a closed record that cannot be restarted. After a failure, a fresh request must move on to a new name, and every concurrent requester must pick the same one. Three plausible fixes break this. Treating every non-SUCCEEDED ExecutionAlreadyExists as a failure retries running attempts, because equal requests serialize their input differently and Step Functions joins only on identical input. Keeping the expiry-sized iteration cap lets failures exhaust it. And walking every earlier name with DescribeExecution on each request makes the cost of a request grow with the failure history, which the account's documented DescribeExecution quota (300 burst, 15 per second) cannot carry once dozens of failed attempts meet bursts of requests. The verifier throttles at the documented quotas and drives reordered bursts over three processes, more than a dozen held failures, a SIGKILL restart, a long failure history under bursts with a restart in it, abort, expiry followed by a failed regeneration, and a straggler held between its cache miss and its first Step Functions call."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "DataBiosphere/azul"
+url = "https://github.com/DataBiosphere/azul/issues/8266"
+revision = "5aa733302ebca578a2261e331ce62c7150bd8c49"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1800.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

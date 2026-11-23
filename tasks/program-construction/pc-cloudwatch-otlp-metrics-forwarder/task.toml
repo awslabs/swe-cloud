@@ -1,0 +1,54 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/pc-cloudwatch-otlp-metrics-forwarder"
+description = "Reconstruct a pinned AWS-backed program from its documentation and executable behavior."
+
+[metadata]
+task_type = "program_construction"
+category = "aws-floci"
+engines = []
+modal_vm_runtime = true
+tags = ["aws", "cloudwatch", "daemon", "otlp", "embedded-metric-format", "cumulative-metrics", "grpc"]
+difficulty_explanation = "The candidate must reconstruct an asynchronous OTLP metrics receiver with equivalent HTTP JSON, HTTP protobuf and gRPC behavior and exact CloudWatch EMF output. Grouping across resources, attribute stringification, dimension filtering, unit conversion and histogram statistics interact with per-series cumulative sum and summary history. Delivery must lazily create or recreate log destinations, preserve existing retention and data, and drop unusable requests with the same whole-request effects."
+expert_time_estimate_hours = 20.0
+
+[metadata.source]
+kind = "program"
+project = "rotel-dev/rotel"
+url = "https://github.com/rotel-dev/rotel"
+revision = "9f2f19aa639a6acf26571a40298211868ec81cb9"
+
+[agent]
+user = "candidate"
+network_mode = "no-network"
+timeout_sec = 14400
+
+[environment]
+network_mode = "public"
+cpus = 2
+memory_mb = 4096
+storage_mb = 12288
+build_timeout_sec = 1800
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4
+
+[verifier]
+environment_mode = "separate"
+user = "root"
+network_mode = "no-network"
+timeout_sec = 4800
+
+[verifier.environment]
+network_mode = "public"
+cpus = 2
+memory_mb = 4096
+storage_mb = 12288
+build_timeout_sec = 1800

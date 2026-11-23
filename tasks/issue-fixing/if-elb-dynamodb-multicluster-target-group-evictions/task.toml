@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-elb-dynamodb-multicluster-target-group-evictions"
+description = "Two cluster TargetGroupBinding controllers evict each other's and hand-registered targets from a shared ELBv2 target group; make them share it under SIGKILLs and dropped responses."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "elbv2", "dynamodb", "ownership-ledger", "write-ahead", "crash-consistency", "aws-load-balancer-controller", "address-reuse", "stale-snapshot", "generation-fencing"]
+difficulty_explanation = "The target group records no registrant, so a per-cluster ownership item is both the only licence to deregister (no leak) and the only thing that forbids it (no eviction of the peer cluster or hand-registered hosts). Its writes must bracket the ELBv2 mutations so that a SIGKILL after an applied RegisterTargets, a DeregisterTargets that never reached ELB, a RegisterTargets whose every response is dropped while the controller stays up, and a kill during binding deletion all leave each target licensed. And because pod addresses are recycled across the two clusters, a leftover item of one cluster can name an address the other cluster's pod now holds: the licence to deregister is the own item only while no other cluster's item names the address, both on a restart after a lost deregistration and in deletion cleanup. Finally, the binding file itself can go backwards: after an endpoint-agent failover, which takes the controller down with the node, the standby first writes an older snapshot, so the controller must durably record, before acting, the highest binding generation it has started on, and ignore older files."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "kubernetes-sigs/aws-load-balancer-controller"
+url = "https://github.com/kubernetes-sigs/aws-load-balancer-controller/issues/2173"
+revision = "8416a4320aeb4e86c61ddb301d9661c1cf26cb29"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

@@ -1,0 +1,211 @@
+{
+  "_comment": "Edit scores here. Fractions 0-1 (pass@3 = share of tasks solved in at least one of the attempts), cost in USD per attempt. null shows as TBD. cost_usd on a model is its overall cost per attempt, from unrounded data; without it the page averages the split costs. The SWE-Cloud Score is computed by the page.",
+  "placeholder": false,
+  "updated": "2026-11-23",
+  "attempts": 3,
+  "tasks": {
+    "issue_fixing": 60,
+    "program_construction": 40
+  },
+  "score": {
+    "w_if": 0.6,
+    "w_pc": 0.4,
+    "almost_threshold": 0.95
+  },
+  "models": [
+    {
+      "name": "GPT-6 Astra",
+      "lab": "OpenAI",
+      "weights": "closed",
+      "effort": "xhigh",
+      "harness": "Terminus 2",
+      "cost_usd": 3.8,
+      "issue_fixing": {
+        "pass@1": 0.789,
+        "pass@3": 0.8667,
+        "cost_usd": 2.81
+      },
+      "program_construction": {
+        "pass@1": 0.133,
+        "pass@3": 0.225,
+        "almost@1": 0.533,
+        "cost_usd": 5.28
+      }
+    },
+    {
+      "name": "Claude Opus 5.5",
+      "lab": "Anthropic",
+      "weights": "closed",
+      "effort": "xhigh",
+      "harness": "Terminus 2",
+      "cost_usd": 7.58,
+      "issue_fixing": {
+        "pass@1": 0.678,
+        "pass@3": 0.9,
+        "cost_usd": 3.4
+      },
+      "program_construction": {
+        "pass@1": 0.158,
+        "pass@3": 0.25,
+        "almost@1": 0.525,
+        "cost_usd": 13.84
+      }
+    },
+    {
+      "name": "GPT-6.1 Sol",
+      "lab": "OpenAI",
+      "weights": "closed",
+      "effort": "xhigh",
+      "harness": "Terminus 2",
+      "cost_usd": 0.69,
+      "issue_fixing": {
+        "pass@1": 0.722,
+        "pass@3": 0.8667,
+        "cost_usd": 0.53
+      },
+      "program_construction": {
+        "pass@1": 0.075,
+        "pass@3": 0.15,
+        "almost@1": 0.475,
+        "cost_usd": 0.92
+      }
+    },
+    {
+      "name": "Claude Sonnet 5.5",
+      "lab": "Anthropic",
+      "weights": "closed",
+      "effort": "xhigh",
+      "harness": "Terminus 2",
+      "cost_usd": 3.99,
+      "issue_fixing": {
+        "pass@1": 0.694,
+        "pass@3": 0.8667,
+        "cost_usd": 1.47
+      },
+      "program_construction": {
+        "pass@1": 0.017,
+        "pass@3": 0.05,
+        "almost@1": 0.225,
+        "cost_usd": 7.76
+      }
+    },
+    {
+      "name": "GPT-6.1 Terra",
+      "lab": "OpenAI",
+      "weights": "closed",
+      "effort": "xhigh",
+      "harness": "Terminus 2",
+      "cost_usd": 1.11,
+      "issue_fixing": {
+        "pass@1": 0.494,
+        "pass@3": 0.6167,
+        "cost_usd": 1.2
+      },
+      "program_construction": {
+        "pass@1": 0.033,
+        "pass@3": 0.1,
+        "almost@1": 0.367,
+        "cost_usd": 0.99
+      }
+    },
+    {
+      "name": "Qwen 4 Max",
+      "lab": "Alibaba",
+      "weights": "open",
+      "effort": "high",
+      "harness": "Terminus 2",
+      "weights_url": "https://huggingface.co/Qwen",
+      "cost_usd": 1.95,
+      "issue_fixing": {
+        "pass@1": 0.461,
+        "pass@3": 0.6667,
+        "cost_usd": 0.83
+      },
+      "program_construction": {
+        "pass@1": 0.058,
+        "pass@3": 0.1,
+        "almost@1": 0.275,
+        "cost_usd": 3.64
+      }
+    },
+    {
+      "name": "DeepSeek V4.1 Flash",
+      "lab": "DeepSeek",
+      "weights": "open",
+      "effort": "high",
+      "harness": "Terminus 2",
+      "weights_url": "https://huggingface.co/deepseek-ai",
+      "cost_usd": 0.26,
+      "issue_fixing": {
+        "pass@1": 0.461,
+        "pass@3": 0.6333,
+        "cost_usd": 0.21
+      },
+      "program_construction": {
+        "pass@1": 0,
+        "pass@3": 0.0,
+        "almost@1": 0,
+        "cost_usd": 0.34
+      }
+    },
+    {
+      "name": "GLM-5.3",
+      "lab": "Z.ai",
+      "weights": "open",
+      "effort": "high",
+      "harness": "Terminus 2",
+      "weights_url": "https://huggingface.co/zai-org",
+      "cost_usd": 2.0,
+      "issue_fixing": {
+        "pass@1": 0.45,
+        "pass@3": 0.6167,
+        "cost_usd": 0.97
+      },
+      "program_construction": {
+        "pass@1": 0,
+        "pass@3": 0.0,
+        "almost@1": 0,
+        "cost_usd": 3.56
+      }
+    },
+    {
+      "name": "Kimi K3.1 Pro",
+      "lab": "Moonshot AI",
+      "weights": "open",
+      "effort": "high",
+      "harness": "Terminus 2",
+      "weights_url": "https://huggingface.co/moonshotai",
+      "cost_usd": 1.17,
+      "issue_fixing": {
+        "pass@1": 0.444,
+        "pass@3": 0.6167,
+        "cost_usd": 0.59
+      },
+      "program_construction": {
+        "pass@1": 0,
+        "pass@3": 0.0,
+        "almost@1": 0.017,
+        "cost_usd": 2.03
+      }
+    },
+    {
+      "name": "Grok 4.7",
+      "lab": "xAI",
+      "weights": "closed",
+      "effort": "xhigh",
+      "harness": "Terminus 2",
+      "cost_usd": 3.41,
+      "issue_fixing": {
+        "pass@1": 0.389,
+        "pass@3": 0.65,
+        "cost_usd": 2.04
+      },
+      "program_construction": {
+        "pass@1": 0,
+        "pass@3": 0.0,
+        "almost@1": 0.05,
+        "cost_usd": 5.46
+      }
+    }
+  ]
+}

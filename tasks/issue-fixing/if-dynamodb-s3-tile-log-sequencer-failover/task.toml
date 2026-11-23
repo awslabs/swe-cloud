@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-dynamodb-s3-tile-log-sequencer-failover"
+description = "Fix a tile log sequencer whose committed checkpoints do not survive an instance swap: committed trees must be recoverable from services alone and must stay immune to a stale concurrent writer."
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "dynamodb", "s3"]
+difficulty_explanation = "One conditional checkpoint record governs both which candidate may publish at the shared public tile coordinates and which committed tree a replacement process must restore after the winner dies past its record write. A submission carries a batch of entries and commits as one checkpoint, so the durable candidate copy must cover a tree of any width a submission brings, including the tile coordinates a multi-entry commit completes. Recovering the committed batch without resubmitting it, while a stale contender holding the same parent cannot alter the published bytes or answer successfully, and while a writer that learns its commit late cannot undo what has been published since, requires durable candidate bytes on the checkpoint's own side of the fence: the drills fence the writer's record write with the reply withheld, release a parked contender after recovery, deliver the withheld reply after the world has moved on, forward a pre-assembled stale record write, and kill a writer before its record write is forwarded."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "design"
+project = "FiloSottile/sunlight"
+url = "https://github.com/FiloSottile/sunlight"
+revision = "42d2b79f62b160c4cf84b615b7b0360c4c41128a"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

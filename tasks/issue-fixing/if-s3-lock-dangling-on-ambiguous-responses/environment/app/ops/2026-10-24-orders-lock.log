@@ -1,0 +1,52 @@
+# orders table, night of 2026-10-24: dangling-lock pages. Collected by on-call.
+# Writer logs (orders-ingest, orders-backfill) interleaved with the storage gateway's access log
+# for the lock object. Gateway fields: status = what the client got, upstream = what S3 answered
+# (upstream=pending: the gateway answered the client first; an upstream-done line follows when S3
+# answers).
+
+## page 1, 02:13
+
+2026-10-24 02:13:07,401 INFO [ingest] tablelock.provider: Owner orders-ingest: Lock orders/_locks/table_lock.json, state FAILED_TO_ACQUIRE, Lock already held by orders-backfill
+2026-10-24 02:13:07,402 gateway PUT /lakehouse-orders/orders/_locks/table_lock.json if-match="5f1c0d8e6b1d1b8a4c3e6f0e2a7d9b11" status=200 upstream=200 etag="a41b7e0c9d2f4e1b8c6a5d3f2e1c0b9a" src=backfill
+2026-10-24 02:13:07,503 gateway PUT /lakehouse-orders/orders/_locks/table_lock.json if-match="a41b7e0c9d2f4e1b8c6a5d3f2e1c0b9a" status=503 upstream=200 etag="9c2e5b7a1d0f3e4c8b6a2d1f0e9c8b7a" src=ingest
+2026-10-24 02:13:07,504 WARNING [ingest] tablelock.storage: Owner orders-ingest: storage server error for orders/_locks/table_lock.json: An error occurred (ServiceUnavailable) when calling the PutObject operation (reached max retries: 0): Service Unavailable
+2026-10-24 02:13:07,504 INFO [ingest] tablelock.provider: Owner orders-ingest: Lock orders/_locks/table_lock.json, state FAILED_TO_ACQUIRE, UNKNOWN_ERROR
+2026-10-24 02:13:07,611 INFO [ingest] tablelock.provider: Owner orders-ingest: Lock orders/_locks/table_lock.json, state FAILED_TO_ACQUIRE, Lock already held by orders-ingest
+2026-10-24 02:13:07,612 INFO [backfill] tablelock.provider: Owner orders-backfill: Lock orders/_locks/table_lock.json, state FAILED_TO_ACQUIRE, Lock already held by orders-ingest
+2026-10-24 02:13:07,716 INFO [ingest] tablelock.provider: Owner orders-ingest: Lock orders/_locks/table_lock.json, state FAILED_TO_ACQUIRE, Lock already held by orders-ingest
+... (same two lines every 100 ms) ...
+2026-10-24 02:13:22,505 INFO [ingest] tablelock.provider: Owner orders-ingest: Lock orders/_locks/table_lock.json, state FAILED_TO_ACQUIRE, gave up after 15.0s
+2026-10-24 02:13:22,505 ERROR [ingest] lockworker: section 7: lock not acquired within 15.0s
+2026-10-24 02:13:27,612 WARNING [backfill] tablelock.provider: Owner orders-backfill: Lock orders/_locks/table_lock.json, state ACQUIRING, Found a dangling expired lock with owner orders-ingest
+2026-10-24 02:13:27,640 INFO [backfill] tablelock.provider: Owner orders-backfill: Lock orders/_locks/table_lock.json, state ACQUIRED, etag "0d7a3c5e9b1f2e4a6c8b0d2f4e6a8c1b"
+
+## no page, 02:58 (from the gateway's slow-request report)
+
+2026-10-24 02:58:40,511 gateway PUT /lakehouse-orders/orders/_locks/table_lock.json if-match="e0b47c2a9d1f3e5b7c9a1d3f5e7b9c0d" status=504 upstream=pending src=backfill
+2026-10-24 02:58:40,512 WARNING [backfill] tablelock.storage: Owner orders-backfill: storage server error for orders/_locks/table_lock.json: An error occurred (GatewayTimeout) when calling the PutObject operation (reached max retries: 0): Gateway Timeout
+2026-10-24 02:58:40,512 INFO [backfill] tablelock.provider: Owner orders-backfill: Lock orders/_locks/table_lock.json, state FAILED_TO_ACQUIRE, UNKNOWN_ERROR
+2026-10-24 02:58:40,615 gateway PUT /lakehouse-orders/orders/_locks/table_lock.json if-match="e0b47c2a9d1f3e5b7c9a1d3f5e7b9c0d" status=200 upstream=200 etag="3d9f1b7e5c3a1f9d7b5e3c1a9f7d5b3e" src=backfill
+2026-10-24 02:58:40,616 INFO [backfill] tablelock.provider: Owner orders-backfill: Lock orders/_locks/table_lock.json, state ACQUIRED, etag "3d9f1b7e5c3a1f9d7b5e3c1a9f7d5b3e"
+2026-10-24 02:58:41,019 INFO [backfill] lockworker: section 5 committed seq 18391 under "3d9f1b7e5c3a1f9d7b5e3c1a9f7d5b3e"
+2026-10-24 02:58:41,043 gateway PUT /lakehouse-orders/orders/_locks/table_lock.json if-match="3d9f1b7e5c3a1f9d7b5e3c1a9f7d5b3e" status=200 upstream=200 etag="8a6c4e2b0d9f7a5c3e1b9d7f5a3c1e9b" src=backfill
+2026-10-24 02:58:42,147 gateway upstream-done PUT /lakehouse-orders/orders/_locks/table_lock.json if-match="e0b47c2a9d1f3e5b7c9a1d3f5e7b9c0d" upstream=412 after_ms=3636 src=backfill (client was answered 504 at 02:58:40,511)
+
+## page 2, 03:41
+
+2026-10-24 03:41:52,118 INFO [ingest] lockworker: section 3 committed seq 18233 under "6e2d4f8a0c1b3e5d7f9a1c3e5b7d9f0a"
+2026-10-24 03:41:52,120 gateway PUT /lakehouse-orders/orders/_locks/table_lock.json if-match="6e2d4f8a0c1b3e5d7f9a1c3e5b7d9f0a" status=503 upstream=- src=ingest
+2026-10-24 03:41:52,121 WARNING [ingest] tablelock.storage: Owner orders-ingest: storage server error for orders/_locks/table_lock.json: An error occurred (ServiceUnavailable) when calling the PutObject operation (reached max retries: 0): Service Unavailable
+2026-10-24 03:41:52,121 ERROR [ingest] tablelock.provider: Owner orders-ingest: Lock orders/_locks/table_lock.json, state FAILED_TO_RELEASE, Lock state is unknown.
+2026-10-24 03:41:52,121 ERROR [ingest] tablelock.provider: Owner orders-ingest: cannot release lock orders/_locks/table_lock.json - expire write ended as FAILED (cause=EXPIRE_WRITE_FAILED); lock left un-expired and will dangle until its lease elapses
+2026-10-24 03:41:52,122 ERROR [ingest] lockworker: section 3: Owner orders-ingest: Lock orders/_locks/table_lock.json, state FAILED_TO_RELEASE, cause EXPIRE_WRITE_FAILED
+2026-10-24 03:42:12,537 WARNING [backfill] tablelock.provider: Owner orders-backfill: Lock orders/_locks/table_lock.json, state ACQUIRING, Found a dangling expired lock with owner orders-ingest
+
+## page 3, 05:02
+
+2026-10-24 05:02:31,877 INFO [ingest] lockworker: section 2 committed seq 18604 under "b3f1a9c7e5d3b1f9e7c5a3d1b9f7e5c3"
+2026-10-24 05:02:31,880 gateway PUT /lakehouse-orders/orders/_locks/table_lock.json if-match="b3f1a9c7e5d3b1f9e7c5a3d1b9f7e5c3" status=reset upstream=200 etag="1a3c5e7b9d0f2a4c6e8b0d2f4a6c8e0b" src=ingest
+2026-10-24 05:02:31,881 ERROR [ingest] tablelock.storage: Owner orders-ingest: unexpected SDK error while writing lock object orders/_locks/table_lock.json: ConnectionClosedError('Connection was closed before we received a valid response from endpoint URL: "http://s3-gateway.internal/lakehouse-orders/orders/_locks/table_lock.json".')
+2026-10-24 05:02:31,881 ERROR [ingest] tablelock.provider: Owner orders-ingest: Lock orders/_locks/table_lock.json, state FAILED_TO_RELEASE, Lock state is unknown.
+2026-10-24 05:02:31,882 ERROR [ingest] lockworker: section 2: Owner orders-ingest: Lock orders/_locks/table_lock.json, state FAILED_TO_RELEASE, cause EXPIRE_WRITE_FAILED
+# lock object at 05:02:33 (aws s3api get-object): {"expired": true, "validUntil": 1792818171000, "owner": "orders-ingest"} etag "1a3c5e7b9d0f2a4c6e8b0d2f4a6c8e0b"
+# The ingest job's next section re-used its in-memory lock state and committed without a new acquire.

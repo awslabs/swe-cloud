@@ -1,0 +1,12 @@
+# Planned failover, 2026-09-03 (patching of wr-a-03). Collected from the supervisor and both writers'
+# stderr, merged by timestamp.
+2026-09-03 02:00:11,402 ledger-writer-a ledger_writer INFO batch STL-20260903-0112 committed (attempt 1, producer 4007 epoch 10)
+2026-09-03 02:00:11,957 ledger-writer-a ledger_writer INFO batch STL-20260903-0113 committed (attempt 1, producer 4007 epoch 10)
+2026-09-03 02:00:12,950 supervisor drain wr-a-03: starting standby ledger-writer-b on wr-b-01
+2026-09-03 02:00:13,201 ledger-writer-b txnclient.producer INFO initialized transactional id ledger-writer: producer id 4007, epoch 11
+2026-09-03 02:00:13,238 ledger-writer-a txnclient.producer WARNING send to ledger-0 failed: produce to ledger-0 failed: INVALID_PRODUCER_EPOCH (47)
+2026-09-03 02:00:13,239 ledger-writer-a ledger_writer ERROR fenced: produce to ledger-0 failed: INVALID_PRODUCER_EPOCH (47); another instance owns ledger-writer, exiting
+2026-09-03 02:00:13,262 ledger-writer-b ledger_writer INFO 114 of 160 batches already in the ledger; 46 to write
+2026-09-03 02:00:13,270 supervisor ledger-writer-a exited 3 (fenced); not restarting
+2026-09-03 02:00:13,281 ledger-writer-b ledger_writer INFO batch STL-20260903-0114 committed (attempt 1, producer 4007 epoch 11)
+2026-09-03 02:00:13,840 ledger-writer-b ledger_writer INFO batch STL-20260903-0115 committed (attempt 1, producer 4007 epoch 11)

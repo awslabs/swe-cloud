@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-opensearch-rds-reindex-loses-live-writes"
+description = "Zero-downtime OpenSearch reindex behind an alias loses writes made during the backfill"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci-engines"
+engines = ["opensearch", "postgres"]
+tags = ["aws", "opensearch", "rds", "postgres", "reindex", "alias-swap"]
+difficulty_explanation = "Live changes must keep reaching the index the alias serves (fresh reads) and also the index being backfilled, where each document must arbitrate between a page read earlier and newer live state; deletes must survive a later stale page, and the alias may only move once that reconciliation has caught up. The verifier commits changes between each export page's query and its response, holds one page past the delete-tombstone window, skews app clocks, probes freshness through the alias during the run and across the swap, and pauses the reindex process mid-backfill the way a drained node pauses a job container (its database sessions and their locks stay open, and it never runs again), so the rerun must take over from that holder and resume the same run from a durable cursor without losing the changes made while no reindex was alive."
+expert_time_estimate_hours = 4.0
+
+[metadata.source]
+kind = "issue"
+project = "ankane/searchkick"
+url = "https://github.com/ankane/searchkick/issues/1456"
+revision = "fd27bac5809e34f538ac95861b07cfb5a7812b44"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 2400.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 900.0
+cpus = 4
+memory_mb = 8192
+storage_mb = 20480
+
+[environment.healthcheck]
+command = "floci-venue up"
+interval_sec = 5.0
+timeout_sec = 400.0
+start_period_sec = 10.0
+start_interval_sec = 5.0
+retries = 4

@@ -1,0 +1,44 @@
+schema_version = "1.4"
+artifacts = ["/app"]
+
+[task]
+name = "swe-cloud/if-secretsmanager-secret-history-lost-concurrent-writers"
+description = "chambersm (chamber's Secrets Manager backend, ported) loses per-key history and acknowledged writes when writers overlap or are killed"
+
+[metadata]
+task_type = "issue_fixing"
+category = "aws-floci"
+engines = []
+tags = ["aws", "secretsmanager", "staging-labels", "quotas", "concurrency", "crash-recovery", "ambiguous-failures"]
+difficulty_explanation = "All keys of a service share one secret whose staging labels both advance AWSCURRENT and keep history versions listed, under a non-adjustable quota of 20 labels per secret. PutSecretValue moves every label it names unconditionally, so the write protocol must make the history label itself conditional, label the CreateSecret version, and leave no contradicting orphan when a writer stalls or is killed between calls; once the secret is full every write must recycle a label, and on secrets the old code filled (whose label numbers are per-key versions, not write order) the recycled label must come from the oldest retained version, not the lowest number. Because the endpoint can drop a connection after a request was applied and the SDK then retries it, a writer must recognise its own applied commit, since a retried UpdateSecretVersionStage is not idempotent, rather than re-applying the write. The verifier enforces the quota, parks one writer, kills another and drops a third writer's answer at every mutating-call index in turn, and replays writes on a service seeded at the quota."
+expert_time_estimate_hours = 5.0
+
+[metadata.source]
+kind = "issue"
+project = "segmentio/chamber"
+url = "https://github.com/segmentio/chamber/issues/301"
+revision = "5f93f5f357740686db56a037935b4dfd9805ca57"
+
+[verifier]
+network_mode = "no-network"
+timeout_sec = 1200.0
+environment_mode = "separate"
+
+[agent]
+network_mode = "no-network"
+timeout_sec = 3600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 3072
+storage_mb = 12288
+
+[environment.healthcheck]
+command = "bash /usr/local/bin/start_floci.sh"
+interval_sec = 5.0
+timeout_sec = 500.0
+start_period_sec = 15.0
+start_interval_sec = 5.0
+retries = 4

@@ -1,0 +1,190 @@
+{
+ "Outputs": {
+  "UploadUrl": {
+   "Value": {
+    "Ref": "Upload"
+   }
+  },
+  "UserReviewUrl": {
+   "Value": {
+    "Ref": "UserReview"
+   }
+  }
+ },
+ "Parameters": {
+  "ComposeTable": {
+   "Type": "String"
+  },
+  "IdempotencyTable": {
+   "Type": "String"
+  },
+  "MoviesTable": {
+   "Type": "String"
+  },
+  "ResponsesTable": {
+   "Type": "String"
+  },
+  "ReviewsTable": {
+   "Type": "String"
+  },
+  "UploadQueue": {
+   "Type": "String"
+  },
+  "UserReviewQueue": {
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Compose": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Compose"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "req_id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "req_id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Ref": "ComposeTable"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "Idempotency": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Idempotency"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Ref": "IdempotencyTable"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "Movies": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Movies"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "movie_id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "movie_id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Ref": "MoviesTable"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "Responses": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Responses"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "req_id",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "part",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "req_id",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "part",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": {
+     "Ref": "ResponsesTable"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "Reviews": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Reviews"
+   },
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "review_id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "review_id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": {
+     "Ref": "ReviewsTable"
+    }
+   },
+   "Type": "AWS::DynamoDB::Table"
+  },
+  "Upload": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/Upload"
+   },
+   "Properties": {
+    "QueueName": {
+     "Ref": "UploadQueue"
+    },
+    "VisibilityTimeout": 6
+   },
+   "Type": "AWS::SQS::Queue"
+  },
+  "UserReview": {
+   "Metadata": {
+    "aws:cdk:path": "Seed/UserReview"
+   },
+   "Properties": {
+    "QueueName": {
+     "Ref": "UserReviewQueue"
+    }
+   },
+   "Type": "AWS::SQS::Queue"
+  }
+ }
+}
