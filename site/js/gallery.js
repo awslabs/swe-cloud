@@ -83,7 +83,7 @@ function summarize(md){
 const plain=s=>s.replace(/`([^`]+)`/g,"$1").replace(/\*\*([^*]+)\*\*/g,"$1").replace(/\[([^\]]+)\]\([^)]+\)/g,"$1");
 
 function shell(body){
-  return `<header class="shead">${logo()}<nav aria-label="Site"><a href="index.html">Overview</a><a href="index.html">Leaderboard</a></nav></header>
+  return `<header class="shead">${logo()}<nav aria-label="Site"><a href="index.html">Overview</a><a href="index.html#leaderboard">Leaderboard</a></nav></header>
   <div class="crumbs"><a href="index.html">SWE-Cloud</a> &nbsp;›&nbsp; Task Gallery</div><main class="gal">${body}</main><footer class="sfoot">SWE-Cloud</footer>`;
 }
 function card(t){

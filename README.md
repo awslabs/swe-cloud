@@ -6,7 +6,7 @@
 
 [Website](https://awslabs.github.io/swe-cloud/site/) ·
 [Task gallery](https://awslabs.github.io/swe-cloud/site/tasks.html) ·
-[Leaderboard](#leaderboard) ·
+[Leaderboard](https://awslabs.github.io/swe-cloud/site/#leaderboard) ·
 [Evaluation protocol](docs/EVALUATION_PROTOCOL.md)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-0F141A)](LICENSE)

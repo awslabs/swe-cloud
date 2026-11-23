@@ -453,6 +453,9 @@ Promise.all(["data/site.json","data/leaderboard.json","data/faq.json","data/cita
   const tup=T=>T.map(c=>[c.category,c.subcategories.map(x=>[x.name,x.count,(x.tasks||[]).join(", ")])]);
   COV={IF:tup(cov.issue_fixing),PC:tup(cov.program_construction),SVC:cov.aws_services};
   render();
+  // A link such as index.html#leaderboard (or #c-leaderboard) opens at that section once it is built.
+  const h=decodeURIComponent(location.hash.slice(1)), at=h&&(document.getElementById(h)||document.getElementById("c-"+h));
+  if(at)requestAnimationFrame(()=>at.scrollIntoView({block:"start"}));
 }).catch(err=>{
   document.getElementById("site").innerHTML=`<div class="loaderr"><h1>SWE-Cloud</h1><p>The page could not load its data files (${esc(err.message)}).</p><p>Open it through a web server, not as a file: run <code>python3 -m http.server 8000</code> in this folder and visit <code>http://localhost:8000</code>.</p></div>`;
 });
