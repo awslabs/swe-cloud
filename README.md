@@ -4,8 +4,8 @@
 
 **Can coding agents fix and build programs that run on AWS?**
 
-[Website](site/) ·
-[Task gallery](tasks/) ·
+[Website](https://awslabs.github.io/swe-cloud/site/) ·
+[Task gallery](https://awslabs.github.io/swe-cloud/site/tasks.html) ·
 [Leaderboard](#leaderboard) ·
 [Evaluation protocol](docs/EVALUATION_PROTOCOL.md)
 
@@ -32,7 +32,7 @@ SWE-Cloud is a benchmark of 100 tasks for AI coding agents on software that runs
 | 9 | Kimi K3.1 Pro (high) | Moonshot AI | [Open](https://huggingface.co/moonshotai) | Terminus 2 † | 26.6% | $1.17 |
 | 10 | Grok 4.7 (xhigh) | xAI | Closed | Terminus 2 † | 23.3% | $3.41 |
 
-**SWE-Cloud Score** = 0.6 × issue-fixing pass@1 + 0.4 × program-construction pass@1 (with 60 and 40 tasks, pass@1 over all 100 tasks). **pass@1** is the mean success rate over 3 attempts per task; **almost@1** is the share of attempts that pass at least 95% of the hidden tests. **Cost** is the estimated API cost per attempt in USD, at list prices from a pinned LiteLLM price table. Per-split results (pass@1, pass@3, almost@1) are on the website and in [`site/data/leaderboard.json`](site/data/leaderboard.json).
+**SWE-Cloud Score** = 0.6 × issue-fixing pass@1 + 0.4 × program-construction pass@1 (with 60 and 40 tasks, pass@1 over all 100 tasks). **pass@1** is the mean success rate over 3 attempts per task; **almost@1** is the share of attempts that pass at least 95% of the hidden tests. **Cost** is the estimated API cost per attempt in USD, at list prices from a pinned LiteLLM price table. Per-split results (pass@1, pass@3, almost@1) are on the [website](https://awslabs.github.io/swe-cloud/site/) and in [`site/data/leaderboard.json`](site/data/leaderboard.json).
 
 † **Terminus 2** is the SWE-Cloud protocol harness: Harbor's Terminus 2 with bug fixes, for example a shell that restarts after a stray `exit` or a large paste, provider content-filter declines and `max_tokens` truncations counted instead of crashing the run, and terminal recording off ([details](docs/EVALUATION_PROTOCOL.md#4-known-issues-and-how-the-protocol-handles-them)).
 

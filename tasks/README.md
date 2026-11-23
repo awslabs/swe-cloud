@@ -15,7 +15,7 @@ tasks/
 | `issue-fixing` | `if` | 60 | 1 hour | Fix a reported defect in a working code base. |
 | `program-construction` | `pc` | 40 | 4 hours | Build a program from its documentation and observable behavior. |
 
-Each task's own `task.toml` is authoritative for its budgets and resources. [SOURCES.md](SOURCES.md) lists where each task comes from. The task gallery (`site/tasks.html`, see [site/README.md](../site/README.md)) describes every task.
+Each task's own `task.toml` is authoritative for its budgets and resources. [SOURCES.md](SOURCES.md) lists where each task comes from. The [task gallery](https://awslabs.github.io/swe-cloud/site/tasks.html) describes every task.
 
 ## Git LFS
 
