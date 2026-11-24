@@ -22,7 +22,7 @@ tasks/<split>/<task-folder>/
 
 | category | containers | network | used by |
 | --- | --- | --- | --- |
-| single container | one: the task container runs the AWS-API emulator on `localhost` | `network_mode: none` from [`sandbox/docker-hardening.yaml`](../sandbox/docker-hardening.yaml), loopback only | issue-fixing tasks in category `aws-floci` |
+| single container | one: the task container runs the AWS-API emulator ([Floci](https://github.com/floci-io/floci) 2.2.0) on `localhost` | `network_mode: none` from [`sandbox/docker-hardening.yaml`](../sandbox/docker-hardening.yaml), loopback only | issue-fixing tasks in category `aws-floci` |
 | venue | `main` (the agent's container) and the emulator; plus `engines`, a private Docker daemon that starts the database, cache, search or streaming engines the emulated services need, when the task uses any | one Compose network, `venue`, either `internal: true` or a bridge with IP masquerading off: the services reach each other and nothing else | every program-construction task, and issue-fixing tasks in category `aws-floci-engines` |
 
 The `engines` daemon runs privileged, because it starts containers itself. It holds every engine image it needs from build time, so no trial pulls from a registry.

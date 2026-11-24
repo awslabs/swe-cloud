@@ -12,7 +12,7 @@
 
 </div>
 
-**SWE-Cloud** tests whether AI coding agents can fix and build cloud software that depends on AWS. In **issue-fixing** tasks the agent resolves a production incident in an AWS-backed service. In **program-construction** tasks it rebuilds a real program from its documentation and a binary it can run but not read. Each task runs in a sandbox with emulated AWS services and no internet access.
+**SWE-Cloud** tests whether AI coding agents can fix and build cloud software that depends on AWS. In **issue-fixing** tasks the agent resolves a production incident in an AWS-backed service. In **program-construction** tasks it rebuilds a real program from its documentation and a binary it can run but not read. Each task runs in a sandbox with no internet access, against AWS services emulated by [Floci](https://github.com/floci-io/floci).
 
 This repository holds the tasks and `swecloud`, a thin command over [Harbor](https://github.com/harbor-framework/harbor) that pins the evaluation protocol. The [website](https://awslabs.github.io/swe-cloud/site/) has the overview, the task gallery and the full leaderboard.
 
@@ -130,7 +130,7 @@ flowchart LR
     V --> R["Reward<br/>0 to 1 per attempt"]
 ```
 
-- **No AWS account.** AWS services are emulated inside the sandbox, and the sandbox has no network access.
+- **No AWS account.** AWS services are emulated inside the sandbox by Floci 2.2.0, an open-source AWS emulator, and the sandbox has no network access.
 - **Separate grading.** Hidden tests never enter the agent's container; they run on a copy of `/app` in a fresh one.
 - **Reward.** Issue fixing: 1 when every hidden test passes, otherwise 0. Program construction: the fraction of hidden tests passed; an attempt passes only at 1.
 - **Three attempts per task.** pass@1 is the mean pass rate over them. The **SWE-Cloud Score** combines the issue-fixing and program-construction pass@1, each weighted by its share of the tasks.
