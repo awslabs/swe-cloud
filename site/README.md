@@ -1,14 +1,16 @@
 # SWE-Cloud front page
 
-A static page: one HTML file, one stylesheet, one script and a few JSON data files. No build step.
+A static page: one HTML file, a base stylesheet plus a theme stylesheet, one script and a few JSON data files. No build step.
 
 ```text
 index.html             front page
 tasks.html             task gallery (60 issue-fixing, 40 program-construction)
-css/site.css           styles (AWS console theme)
+css/site.css           base styles (AWS console theme)
+css/modern.css         modern theme, loaded after site.css and overriding it
 js/site.js             renders every section from the data files
 js/gallery.js          renders the task gallery from the task folders
 css/gallery.css        gallery styles
+css/modern-gallery.css modern theme for the gallery, loaded after gallery.css
 data/leaderboard.json  models, scores, costs, effort, Hugging Face links
 data/coverage.json     task categories and AWS services (task counts)
 data/faq.json          the questions shown on the front page

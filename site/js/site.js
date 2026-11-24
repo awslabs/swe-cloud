@@ -207,6 +207,7 @@ function rLeaderboard(){
 let COV={};
 const tsum=t=>t[1].reduce((a,x)=>a+x[1],0);
 const OP=[1,.72,.5,.32];
+const TINT=[0,30,50,66], shade=(c,j)=>j?`color-mix(in srgb,var(--${c}) ${100-TINT[j]}%,#fff)`:`var(--${c})`;
 function covSet(v){}
 function arc(cx,cy,r0,r1,a0,a1){const L=a1-a0>Math.PI?1:0,p=(r,a)=>[(cx+r*Math.sin(a)).toFixed(2),(cy-r*Math.cos(a)).toFixed(2)];const [x0,y0]=p(r1,a0),[x1,y1]=p(r1,a1),[x2,y2]=p(r0,a1),[x3,y3]=p(r0,a0);return `M${x0} ${y0}A${r1} ${r1} 0 ${L} 1 ${x1} ${y1}L${x2} ${y2}A${r0} ${r0} 0 ${L} 0 ${x3} ${y3}Z`}
 function donut(inner,outer,total,label,aria){
@@ -215,8 +216,24 @@ function donut(inner,outer,total,label,aria){
   if(outer){a=0;outer.forEach(x=>{const d=x.v/T*Math.PI*2;h+=`<path d="${arc(100,100,77,92,a+g,a+d-g)}" style="fill:var(--${x.c});opacity:${x.o}"><title>${x.l}: ${x.v}</title></path>`;a+=d})}
   return `<svg class="donut" viewBox="0 0 200 200" role="img" aria-label="${aria}">${h}<text x="100" y="100" text-anchor="middle" class="dn">${total}</text><text x="100" y="118" text-anchor="middle" class="dl">${label}</text></svg>`;
 }
-function themeDonut(k){const T=COV[k],inner=[],outer=[];T.forEach((t,i)=>{inner.push({l:t[0],v:tsum(t),c:"c"+(i+1)});t[1].forEach((x,j)=>outer.push({l:x[0],v:x[1],c:"c"+(i+1),o:OP[j]}))});return donut(inner,outer,k==="IF"?60:40,"tasks",(k==="IF"?"Issue-fixing":"Program-construction")+" tasks by category")}
-function themeLegend(k){return `<ul class="clg">${COV[k].map((t,i)=>`<li><span class="sw" style="background:var(--c${i+1})"></span><b>${t[0]}</b><span class="num cn">${tsum(t)}</span><small>${t[1].map((x,j)=>`<span title="${x[2]||""}"><span class="sw s" style="background:var(--c${i+1});opacity:${OP[j]}"></span>${x[0]} ${x[1]}</span>`).join("<br>")}</small></li>`).join("")}</ul>`}
+/* Rounded ring (design P5-G): rounded annular sectors with parallel-sided gaps. */
+function rArc(cx,cy,r0,r1,a0,a1,c,gap){
+  const P=(r,a)=>(cx+r*Math.sin(a)).toFixed(2)+" "+(cy-r*Math.cos(a)).toFixed(2);
+  const h=gap/2,b0=a0+h/r1,b1=a1-h/r1,i0=a0+h/r0,i1=a1-h/r0;
+  if(b1<=b0||i1<=i0)return "";
+  c=Math.max(0,Math.min(c,(r1-r0)/2-.01,(i1-i0)*r0/2-.01));
+  const oc=c/r1,ic=c/r0,Lo=(b1-b0-2*oc)>Math.PI?1:0,Li=(i1-i0-2*ic)>Math.PI?1:0;
+  return `M${P(r1,b0+oc)}A${r1} ${r1} 0 ${Lo} 1 ${P(r1,b1-oc)}Q${P(r1,b1)} ${P(r1-c,b1)}L${P(r0+c,i1)}Q${P(r0,i1)} ${P(r0,i1-ic)}A${r0} ${r0} 0 ${Li} 0 ${P(r0,i0+ic)}Q${P(r0,i0)} ${P(r0+c,i0)}L${P(r1-c,b0)}Q${P(r1,b0)} ${P(r1,b0+oc)}Z`;
+}
+/* items: [{l,v,f,gap}] — f is the fill, gap (px) the gap before the item */
+function ring(items,total,label,aria,base){
+  const r0=80,r1=94,T=items.reduce((a,x)=>a+x.v,0);let a=0,h=`<circle class="trk" cx="100" cy="100" r="${(r0+r1)/2}" stroke-width="${r1-r0}"/>`;
+  items.forEach((x,k)=>{const d=x.v/T*Math.PI*2,nx=items[(k+1)%items.length],g0=(x.gap??base)/2,g1=(nx.gap??base)/2;
+    h+=`<path d="${rArc(100,100,r0,r1,a+(g0-base/2)/r1,a+d-(g1-base/2)/r1,5,base)}" style="fill:${x.f}"><title>${esc(x.l)}: ${x.v}</title></path>`;a+=d});
+  return `<svg class="donut ring" viewBox="0 0 200 200" role="img" aria-label="${aria}">${h}<text x="100" y="100" text-anchor="middle" class="dn">${total}</text><text x="100" y="118" text-anchor="middle" class="dl">${label}</text></svg>`;
+}
+function themeDonut(k){const items=[];COV[k].forEach((t,i)=>t[1].forEach((x,j)=>items.push({l:t[0]+" · "+x[0],v:x[1],f:shade("c"+(i+1),j),gap:j===0?7:2.5})));return ring(items,k==="IF"?60:40,"tasks",(k==="IF"?"Issue-fixing":"Program-construction")+" tasks by category and subcategory",2.5)}
+function themeLegend(k){return `<ul class="clg">${COV[k].map((t,i)=>`<li><span class="sw" style="background:var(--c${i+1})"></span><b>${t[0]}</b><span class="num cn">${tsum(t)}</span><small>${t[1].map((x,j)=>`<span title="${x[2]||""}"><span class="sw s" style="background:${shade("c"+(i+1),j)}"></span>${x[0]} ${x[1]}</span>`).join("<br>")}</small></li>`).join("")}</ul>`}
 const flatLegend=arr=>`<ul class="clg flat">${arr.map((x,i)=>`<li><span class="sw" style="background:${x[2]||`var(--c${i+1})`}"></span>${x[0]}<span class="num cn">${x[1]}</span></li>`).join("")}</ul>`;
 const COVTXT={
   IF:["Issue fixing: what breaks","60 tasks, grouped by the kind of production failure the agent has to fix."],
@@ -238,7 +255,7 @@ function rDist(){
       covCell("SVC",`<div class="stiles">${COV.SVC.map(x=>`<span class="${x[1]/smax>.5?"dk":""}" style="flex-grow:${x[1]};--w:${(.12+.88*x[1]/smax).toFixed(2)}" title="${x[0]}: ${x[1]} tasks"><b>${x[0]}</b><em class="num">${x[1]}</em></span>`).join("")}</div><p class="more">Tile size and shade follow the number of tasks.</p>`)];
   } else {
     cells=[covCell("IF",`<div class="dwrap">${themeDonut("IF")}${themeLegend("IF")}</div>`),covCell("PC",`<div class="dwrap">${themeDonut("PC")}${themeLegend("PC")}</div>`),
-      covCell("SVC",`<div class="dwrap">${donut(svcTop.map((x,i)=>({l:x[0],v:x[1],c:"c"+(i%5+1),o:i<5?1:.55})).concat([{l:svcRest.length+" more services",v:restN,c:"cg"}]),null,23,"services","Task uses per AWS service")}${flatLegend(svcTop.map((x,i)=>[x[0],x[1],`var(--c${i%5+1})`+(i<5?"":";opacity:.55")]).concat([[svcRest.length+" more",restN,"var(--cg)"]]))}<div class="svcmore">${svcRest.map(x=>`<span>${esc(x[0])} <b class="num">${x[1]}</b></span>`).join("")}</div><p class="more">A task counts once for each service it uses.</p></div>`)];
+      covCell("SVC",`<div class="dwrap">${ring(svcTop.map((x,i)=>({l:x[0],v:x[1],f:i<5?`var(--c${i+1})`:shade("c1",3)})).concat([{l:svcRest.length+" more services",v:restN,f:"var(--cg)"}]),23,"services","Task uses per AWS service",4)}${flatLegend(svcTop.map((x,i)=>[x[0],x[1],i<5?`var(--c${i+1})`:shade("c1",3)]).concat([[svcRest.length+" more",restN,"var(--cg)"]]))}<div class="svcmore">${svcRest.map(x=>`<span>${esc(x[0])} <b class="num">${x[1]}</b></span>`).join("")}</div><p class="more">A task counts once for each service it uses.</p></div>`)];
   }
   return head("dist",sub)+`<div class="cov">${cells.join("")}</div>`;
 }
