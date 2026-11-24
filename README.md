@@ -152,7 +152,7 @@ If you use SWE-Cloud, please cite:
   author       = {Wang, Yawei and Li, Sida and Lu, Bryan and Xiong, Siheng and Tan, Sijun and Xu, Panpan and Huan, Luke},
   year         = {2026},
   url          = {https://github.com/awslabs/swe-cloud},
-  note         = {Equal contribution: Yawei Wang, Sida Li}
+  note         = {Equal contribution: Yawei Wang and Sida Li. Special thanks to Sida Li and Sijun Tan from Mobius for their contributions.}
 }
 ```
 
