@@ -42,7 +42,7 @@ cp .env.example .env
 ```
 
 Then fill `.env`, and never print a key back:
-- Bedrock: `AWS_BEARER_TOKEN_BEDROCK`, or leave it empty to use the AWS credential chain. The identity needs `bedrock:InvokeModel` and `bedrock:InvokeModelWithResponseStream`. The profile uses `us-east-1`.
+- Bedrock: `AWS_BEARER_TOKEN_BEDROCK`, or leave it empty to use the AWS credential chain. The identity needs `bedrock:InvokeModel` and `bedrock:InvokeModelWithResponseStream`. The region defaults to `us-east-1`; see `docs/MODELS.md` for how an environment region overrides it.
 - OpenRouter: `OPENROUTER_API_KEY`.
 
 ## Step 3. Check

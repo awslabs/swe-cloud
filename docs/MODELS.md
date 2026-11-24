@@ -46,7 +46,7 @@ AWS_REGION_NAME = "us-east-1"
 environment = "docker"
 ```
 
-The region is us-east-1 unless `AWS_REGION` is already set in the environment; a region set only in `~/.aws/config` is not used. Each job manifest records the profile's environment as the run saw it (`env`), so the region is on record.
+The region is us-east-1 unless `AWS_REGION` or `AWS_REGION_NAME` is already set in the environment; `AWS_REGION_NAME` has higher priority. A region set only in `~/.aws/config` is not used. Each job manifest records the profile's environment as the run saw it (`env`), so the region is on record.
 
 To use another LiteLLM provider, add a file such as `profiles/my-provider.toml`. Set `route` to the provider's LiteLLM prefix, `api_key_env` to the environment variable that holds its key, and `api_key_required = true`. Then pass `--profile my-provider` and the model id on that provider.
 
