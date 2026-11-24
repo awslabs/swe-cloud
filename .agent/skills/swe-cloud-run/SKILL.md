@@ -23,12 +23,13 @@ Tell the user this once, before step 1. Only the tested column carries a promise
 2. **Model:**
    - Bedrock: an inference-profile id, starting with `global.` or `us.`. A bare foundation-model id is rejected.
    - OpenRouter: an OpenRouter model id (required; the profile has no default model).
-   - Reasoning style, only if the model needs it: `effort` (default; Claude and OpenAI models on Bedrock), `openai` (providers that take a `reasoning` object), or `none` (no effort setting; not comparable with the protocol's `xhigh`). See `docs/MODELS.md`.
+   - Reasoning style, only if the model needs it: `effort` (default; Claude and OpenAI models on Bedrock), `openai` (providers that take a `reasoning` object), or `none` (sends no effort; the model uses its own default). See `docs/MODELS.md`.
+   - Effort: `--effort xhigh` (default) or `--effort high`. To compare with the leaderboard, use the effort of the entry you compare with, and do not use `--reasoning none`.
 3. **Split:** issue-fixing (`if`, 1 h per task), program-construction (`pc`, 4 h per task), or both (two jobs, one per split).
 4. **Run shape:** `oracle` (reference solutions, validates the host), `smoke` (2 tasks, 1 attempt, checks the route) or `full` (every task, 3 attempts; the only reportable shape). Recommend oracle, then smoke, then full.
 5. **Concurrency:** size `--n-concurrent` from `docs/COMPUTE.md` (about 2 vCPU and 3 to 4 GB RAM per trial, twice that for tasks with engines; above about 25 trials add Docker network pools). Ask about the host if you cannot inspect it.
 
-Record the answers as `PROFILE` (`bedrock-docker` or `openrouter`), `MODEL`, `REASONING`, `SPLIT`, `N`.
+Record the answers as `PROFILE` (`bedrock-docker` or `openrouter`), `MODEL`, `REASONING`, `EFFORT`, `SPLIT`, `N`.
 
 ## Step 2. Set up (same for every route)
 
@@ -48,7 +49,7 @@ Then fill `.env`, and never print a key back:
 ## Step 3. Check
 
 ```bash
-uv run --locked swecloud check --profile $PROFILE --model $MODEL --reasoning $REASONING --egress
+uv run --locked swecloud check --profile $PROFILE --model $MODEL --reasoning $REASONING --effort $EFFORT --egress
 ```
 
 It confirms the Docker daemon, sends one request with the protocol's own LLM settings, and runs a probe task that passes only if the sandbox has no network. Stop on any failure and fix it first: a rejected parameter here means every trial would fail.
@@ -60,9 +61,9 @@ Validate the host once per split, then run:
 ```bash
 uv run --locked swecloud run --profile $PROFILE --split $SPLIT --preset oracle --n-concurrent $N
 uv run --locked swecloud run --profile $PROFILE --split $SPLIT --model $MODEL --reasoning $REASONING \
-    --preset smoke --n-concurrent $N
+    --effort $EFFORT --preset smoke --n-concurrent $N
 uv run --locked swecloud run --profile $PROFILE --split $SPLIT --model $MODEL --reasoning $REASONING \
-    --n-concurrent $N --job-name <name>
+    --effort $EFFORT --n-concurrent $N --job-name <name>
 ```
 
 - Every oracle task should score 1. One that does not is broken on this host, not hard: report it, do not start a full run on top of it.
