@@ -235,3 +235,61 @@ table.lb tbody tr:nth-child(3) td.rk{color:#9a3412}
 .donut .dl{font-weight:500}
 .clg li>b{font-weight:600}
 .clg small{color:var(--muted)}
+
+/* ---------- Phones and narrow tablets (desktop layout unchanged) ---------- */
+@media (max-width:980px){
+  /* storyboards: once the three steps stack, keep each step's box, caption and AWS card together */
+  .sbg>.pn:nth-child(1){order:1}.sbg>.cap:nth-child(6){order:2}.sbg>.lane-c:nth-child(12){order:3}
+  .sbg>.pn:nth-child(3){order:4}.sbg>.cap:nth-child(8){order:5}.sbg>.lane-c:nth-child(14){order:6}
+  .sbg>.pn:nth-child(5){order:7}.sbg>.cap:nth-child(10){order:8}.sbg>.lane-c:nth-child(16){order:9}
+  .sbg>.lane-h{display:none}
+  .sbg>.cap{margin-top:-2px}
+  .sbg>.lane-c{margin-bottom:18px}
+  .sbg>.lane-c::before{content:"Emulated AWS";font:600 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--aws-ink);opacity:.75}
+}
+@media (max-width:640px){
+  /* header: keep the site links, drop the wordmark so they fit on one row */
+  .t-aws .shead{padding:0 12px;gap:8px}
+  .t-aws .shead nav{display:flex!important;margin-left:auto;gap:0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .t-aws .shead nav::-webkit-scrollbar{display:none}
+  .t-aws .shead nav button,.t-aws .shead nav a{font-size:13px;padding:6px 8px;white-space:nowrap}
+  .t-aws .shead .logo>span{display:none}
+  .t-aws .crumbs{padding:12px 16px 0}
+  /* hero */
+  .t-aws .comp[data-comp="mast"]{padding:20px 0 8px}
+  .t-aws .mh-A .logo{font-size:34px}
+  .t-aws .mh-A .mh-slogan{font-size:26px}
+  .t-aws .mh-lede{font-size:15px;line-height:1.6}
+  /* section cards */
+  .t-aws .comp{padding:20px 16px}
+  .t-aws .comp-h{font-size:21px}
+  .covc{padding:16px}
+  /* leaderboard: compact tabs on one line; the table keeps rank, model, score and cost */
+  .lb-top{gap:10px}
+  .t-aws .seg button{font-size:12px;padding:5px 8px;white-space:nowrap}
+  .t-aws .seg{max-width:100%}
+  /* the three leaderboard views don't fit a phone row: the bar scrolls sideways */
+  .t-aws .lb-top>.seg{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .t-aws .lb-top>.seg::-webkit-scrollbar{display:none}
+  .t-aws .lb-top>.seg button{flex:none}
+  table.lb:not(.lbB){min-width:0;font-size:13px}
+  table.lb:not(.lbB) th:nth-child(3),table.lb:not(.lbB) td:nth-child(3),
+  table.lb:not(.lbB) th:nth-child(4),table.lb:not(.lbB) td:nth-child(4),
+  table.lb:not(.lbB) th:nth-child(5),table.lb:not(.lbB) td:nth-child(5){display:none}
+  table.lb th,table.lb td{padding:9px 7px}
+  table.lb th{white-space:normal;font-size:11px}
+  table.lb td.md{white-space:normal}
+  .cellbar .bar{display:none}
+  /* score vs cost chart: name only the frontier models; tap a point for the rest */
+  .sc-svg .pl:not(.f){display:none}
+  .sc-svg .ld{display:none}
+  .sc-tip{min-width:0;max-width:240px}
+  /* how to run: commands use the full width and scroll sideways instead of wrapping */
+  .pB li{gap:10px}
+  .pB li::before{display:none}
+  .pB .pbody{grid-column:1/-1}
+  .cmd pre{white-space:pre;overflow-x:auto;padding:36px 14px 12px}
+  .cmd .cl{padding-left:0;text-indent:0}
+  /* Q&A */
+  .faq-a{padding-left:4px;padding-right:4px}
+}
