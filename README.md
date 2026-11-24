@@ -156,6 +156,10 @@ If you use SWE-Cloud, please cite:
 }
 ```
 
+## Acknowledgements
+
+SWE-Cloud tasks emulate AWS services locally via [Floci](https://github.com/floci-io/floci) (MIT), an open-source AWS emulator pinned at `floci/floci:2.2.0`, and we thank its maintainers. The tasks are also grounded in publicly documented failures and real open-source programs; we are grateful to their authors, and each task credits its sources in its own README and in [tasks/SOURCES.md](tasks/SOURCES.md).
+
 ## Security and license
 
 Agents run model-generated commands, so use a dedicated VM and credentials limited to model invocation. See [SECURITY.md](SECURITY.md). Apache License 2.0; see [LICENSE](LICENSE) and [NOTICE](NOTICE).
