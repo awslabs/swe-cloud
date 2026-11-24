@@ -1,5 +1,5 @@
 {
-  "_comment": "The citation, filled in when the paper is out. The section stays hidden until then (\"hidden\": [\"cite\"] in site.json).",
-  "bibtex": "",
-  "text": ""
+  "_comment": "The citation shown at the bottom of the front page (and as the README's Citation section). Keep the two in step.",
+  "bibtex": "@misc{swecloud2026,\n  title        = {SWE-Cloud: Can coding agents fix and build programs that run on AWS?},\n  author       = {Wang, Yawei and Li, Sida and Lu, Bryan and Xiong, Siheng and Tan, Sijun and Xu, Panpan and Huan, Luke},\n  year         = {2026},\n  url          = {https://github.com/awslabs/swe-cloud},\n  note         = {Equal contribution: Yawei Wang, Sida Li}\n}",
+  "text": "Yawei Wang*, Sida Li*, Bryan Lu, Siheng Xiong, Sijun Tan, Panpan Xu and Luke Huan. SWE-Cloud: Can coding agents fix and build programs that run on AWS? 2026. https://github.com/awslabs/swe-cloud. *Equal contribution."
 }
