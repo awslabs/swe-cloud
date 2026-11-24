@@ -23,7 +23,8 @@ body{background:#fafafa}
   radial-gradient(1100px 520px at 50% -140px,rgba(99,102,241,.16),transparent 70%),
   radial-gradient(700px 380px at 85% 40px,rgba(14,165,233,.10),transparent 70%),
   var(--bg)}
-::selection{background:#c7d2fe}
+/* Selected text is always dark on the light highlight, including gradient text (color:transparent) and light text on dark panels */
+::selection{background:#c7d2fe;color:#0b0d12;-webkit-text-fill-color:#0b0d12}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
 .site a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:3px}
 
