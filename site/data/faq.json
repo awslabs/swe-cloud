@@ -12,7 +12,7 @@
     },
     {
       "q": "How is a run scored?",
-      "a": "<p>Each task gets three attempts. An attempt passes only when every hidden test passes and the attempt ends normally. pass@1 is passes divided by attempts, averaged over tasks. The headline SWE-Cloud Score is 0.6 × issue-fixing pass@1 + 0.4 × program-construction pass@1. The program-construction view also reports almost@1, which credits a program that passes at least 95% of its hidden tests.</p>"
+      "a": "<p>Each task gets three attempts. An attempt passes only when every hidden test passes and the attempt ends normally. pass@1 is passes divided by attempts, averaged over tasks. The headline SWE-Cloud Score is w_IF × issue-fixing pass@1 + w_PC × program-construction pass@1, where w is each task type's proportion of all tasks. The program-construction view also reports almost@1, which credits a program that passes at least 95% of its hidden tests.</p>"
     },
     {
       "q": "Why one agent harness, and not Claude Code, Codex or other vendor agents?",
