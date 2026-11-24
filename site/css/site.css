@@ -636,3 +636,13 @@ svg.wire .st{font:600 11px var(--font);fill:var(--aws-ink)}
 .faq-a code{font:500 .88em var(--mono);background:var(--pn-bg);border:1px solid var(--line);border-radius:4px;padding:0 4px}
 /* wave 8b: grounding cards without the lead line */
 .gflow{grid-row:span 4}
+
+/* Tab switches: each tab's click area is a slightly larger rectangle, not the rounded pill */
+.t-aws .seg{overflow:visible}
+.t-aws .seg button{position:relative;user-select:none;-webkit-user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.t-aws .seg button::before{content:"";position:absolute;top:-8px;bottom:-8px;left:-1px;right:-1px}
+.t-aws .seg button:first-child::before{left:-8px}
+.t-aws .seg button:last-child::before{right:-8px}
+.t-aws .seg button[aria-pressed="false"]:active{background:#d5d8dd}
+.t-aws .seg button[aria-pressed="true"]{cursor:default}
+.t-aws .seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
