@@ -142,6 +142,20 @@ flowchart LR
 - [Compute](docs/COMPUTE.md): per-trial reservations and host sizing
 - [Task format](docs/TASKS.md): task folders, `task.toml` fields, release checks
 
+## Citation
+
+If you use SWE-Cloud, please cite:
+
+```bibtex
+@misc{swecloud2026,
+  title        = {SWE-Cloud: Can coding agents fix and build programs that run on AWS?},
+  author       = {Wang, Yawei and Li, Sida and Lu, Bryan and Xiong, Siheng and Tan, Sijun and Xu, Panpan and Huan, Luke},
+  year         = {2026},
+  url          = {https://github.com/awslabs/swe-cloud},
+  note         = {Equal contribution: Yawei Wang, Sida Li}
+}
+```
+
 ## Security and license
 
 Agents run model-generated commands, so use a dedicated VM and credentials limited to model invocation. See [SECURITY.md](SECURITY.md). Apache License 2.0; see [LICENSE](LICENSE) and [NOTICE](NOTICE).
