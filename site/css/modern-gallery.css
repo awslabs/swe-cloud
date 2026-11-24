@@ -24,3 +24,13 @@
 .md th,.md td{border-bottom-color:#f0f0f3}
 .gerr{border-radius:14px}
 @media (prefers-reduced-motion:reduce){.tcard:hover{transform:none}}
+
+/* ---------- Phones (desktop layout unchanged) ---------- */
+@media (max-width:640px){
+  .md{padding:20px 16px;border-radius:16px;font-size:14.5px}
+  /* task diagrams keep a readable size and scroll sideways */
+  .md p:has(>img){overflow-x:auto;margin-left:-4px;margin-right:-4px}
+  .md p>img{width:640px;max-width:none}
+  .md table{font-size:13px}
+  .md td:first-child{white-space:normal}
+}
