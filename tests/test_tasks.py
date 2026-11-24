@@ -148,10 +148,9 @@ def test_the_readmes_count_the_tasks_in_the_repository():
     readme = (config.ROOT / "README.md").read_text()
     assert f"badge/tasks-{sum(counts.values())}-" in readme, "README.md: tasks badge"
     total, fixing, construction = sum(counts.values()), counts["issue-fixing"], counts["program-construction"]
-    assert f"a benchmark of {total} tasks" in readme, "README.md: intro"
-    assert f"In {fixing} tasks the agent fixes" in readme and f"In {construction} it rebuilds" in readme, "README.md: intro"
-    assert f"| Tasks | {fixing}, in [`tasks/issue-fixing/`]" in readme, "README.md: How the tasks work (issue fixing)"
-    assert f"| {construction}, in [`tasks/program-construction/`]" in readme, "README.md: How the tasks work (program construction)"
+    assert f"pass@1 over all {total} tasks: {fixing} issue-fixing (IF) and {construction} program-construction (PC)" in readme, "README.md: Leaderboard"
+    assert f"| Issue fixing | {fixing} |" in readme, "README.md: Tasks (issue fixing)"
+    assert f"| Program construction | {construction} |" in readme, "README.md: Tasks (program construction)"
     listing = (config.TASKS / "README.md").read_text()
     for split, n in counts.items():
         assert f"| `{split}` | `{config.splits()[split]['alias']}` | {n} |" in listing, f"tasks/README.md: {split}"
@@ -271,18 +270,11 @@ def test_the_sources_list_is_up_to_date():
     assert sources.PATH.read_text() == sources.render(), "tasks/SOURCES.md is stale: run `uv run --locked python -m swecloud.sources`"
 
 
-def test_the_readme_counts_the_task_sources():
+def test_the_task_sources_have_known_kinds():
     from collections import Counter
 
     kinds = {split: Counter(tomllib.loads((t / "task.toml").read_text())["metadata"]["source"]["kind"] for t in _tasks(split)) for split in SPLITS}
     fixing, n_fixing, n_construction = kinds["issue-fixing"], len(_tasks("issue-fixing")), len(_tasks("program-construction"))
-    readme = (config.ROOT / "README.md").read_text()
-    for claim in (
-        f"{fixing['issue'] + fixing['pull-request']} of the {n_fixing} tasks follow a public issue or pull request",
-        f"the other {fixing['design'] + fixing['article'] + fixing['postmortem'] + fixing['paper']} follow a published design, an engineering article, an incident postmortem or a paper",
-        f"Each of the {n_construction} tasks reconstructs an open-source program",
-    ):
-        assert claim in readme, f"README.md, How the tasks are grounded: expected {claim!r}"
     assert sum(fixing.values()) == n_fixing and set(fixing) <= {"issue", "pull-request", "design", "article", "postmortem", "paper"}
     assert kinds["program-construction"] == Counter(program=n_construction)
 

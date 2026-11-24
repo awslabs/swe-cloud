@@ -174,7 +174,7 @@ const HARNESS="Terminus 2";
 const TBDC=`<td class="r num tbd">TBD</td>`;
 const p1=v=>(v*100).toFixed(1)+"%", usd=v=>"$"+v.toFixed(2);
 function lbFoot(){const parts=[];
-  if(view==="ALL")parts.push(`* <b>SWE-Cloud Score</b> = ${LB.score.w_if} × issue-fixing pass@1 + ${LB.score.w_pc} × program-construction pass@1.`);
+  if(view==="ALL")parts.push(`* <b>SWE-Cloud Score</b> = w<sub>IF</sub> × issue-fixing pass@1 + w<sub>PC</sub> × program-construction pass@1, where w is each task type's proportion of all tasks.`);
   if(view==="PC")parts.push(`* <b>almost@1</b>: share of attempts that pass at least ${Math.round(LB.score.almost_threshold*100)}% of the hidden tests.`);
   if(view!=="ALL")parts.push("<b>pass@1</b> (dark bar): mean success rate over three attempts per task. <b>pass@3</b> (light bar): share of tasks solved in at least one of the three.");
   parts.push("<b>Cost</b>: estimated API cost per attempt in USD, at list prices from a pinned LiteLLM price table.");
@@ -189,7 +189,7 @@ function rLeaderboard(){
   const v=V("leaderboard");
   const fn=(t,s="*")=>`<span class="fn" tabindex="0" data-tip="${t}" aria-label="${t}">${s}</span>`;
   const HH=`<th>Harness${fn("Harbor's Terminus 2 plus our bug fixes (src/swecloud/agents/terminus.py)","†")}</th>`;
-  const mainH=view==="ALL"?"SWE-Cloud Score"+fn(`SWE-Cloud Score = ${LB.score.w_if} × issue-fixing pass@1 + ${LB.score.w_pc} × program-construction pass@1`):"pass@1 / pass@3";
+  const mainH=view==="ALL"?"SWE-Cloud Score"+fn(`SWE-Cloud Score = w_IF × issue-fixing pass@1 + w_PC × program-construction pass@1, where w is each task type's proportion of all tasks`):"pass@1 / pass@3";
   const almostH=view==="PC"?`<th class="r">almost@1${fn(`almost@1: share of attempts that pass at least ${Math.round(LB.score.almost_threshold*100)}% of the hidden tests`)}</th>`:"";
   const almostC=r=>view==="PC"?(r.AL==null?TBDC:`<td class="r num">${p1(r.AL)}</td>`):"";
   const main=(r,wide)=>view==="ALL"?scoreCell(r,wide):duoCell(r,wide);
@@ -397,7 +397,7 @@ const SCKEY=`<div class="sc-key"><span><i class="k-fl"></i>Pareto frontier</span
 const modeSeg=()=>`<div class="seg seg-mode" role="group" aria-label="Leaderboard display"><button data-lbmode="table" aria-pressed="${lbMode==="table"}">▤ Table</button><button data-lbmode="chart" aria-pressed="${lbMode==="chart"}">◩ Score vs cost</button></div>`;
 function lbChart(){return `<div class="sc-host" data-chart="${view}"></div>${SCKEY}`}
 function chartFoot(){const parts=[];
-  if(view==="ALL")parts.push(`* <b>SWE-Cloud Score</b> = ${LB.score.w_if} × issue-fixing pass@1 + ${LB.score.w_pc} × program-construction pass@1.`);
+  if(view==="ALL")parts.push(`* <b>SWE-Cloud Score</b> = w<sub>IF</sub> × issue-fixing pass@1 + w<sub>PC</sub> × program-construction pass@1, where w is each task type's proportion of all tasks.`);
   else parts.push("<b>pass@1</b>: mean success rate over three attempts per task.");
   parts.push(`<b>Cost</b>: estimated API cost per attempt in USD, at list prices from a pinned LiteLLM price table, on a log scale${view==="ALL"?"; overall averages the 100 tasks (60 issue fixing, 40 program construction)":""}.`);
   parts.push("<b>Pareto frontier</b>: the models that no other model beats on both score and cost. Hover a model for its numbers.");

@@ -105,6 +105,10 @@ def apply_profile_env(prof: dict, environ: dict[str, str]) -> list[str]:
     for alias in llm.get("api_key_aliases", []):
         if not environ.get(key) and environ.get(alias):
             environ[key] = environ[alias]
+    # Keep both in sync; AWS_REGION_NAME is given higher priority.
+    region = environ.get("AWS_REGION_NAME") or environ.get("AWS_REGION")
+    if region:
+        environ["AWS_REGION"] = environ["AWS_REGION_NAME"] = region
     for name, value in {**protocol()["env"], **llm.get("env", {})}.items():
         environ.setdefault(name, value)
     missing = [key] if llm.get("api_key_required") and not environ.get(key) else []
