@@ -238,7 +238,7 @@ const flatLegend=arr=>`<ul class="clg flat">${arr.map((x,i)=>`<li><span class="s
 const COVTXT={
   IF:["Issue fixing: what breaks","60 tasks, grouped by the kind of production failure the agent has to fix."],
   PC:["Program construction: what gets rebuilt","40 tasks, grouped by the kind of software the agent rebuilds."],
-  SVC:["AWS services covered","23 services across all 100 tasks, counted from each task's tags and emulated locally."]
+  SVC:["AWS services covered","23 services across all 100 tasks, counted from each task's tags and emulated locally with <a href=\"https://github.com/floci-io/floci\">Floci</a>."]
 };
 function covCell(k,body){return `<div class="covc"><h3>${COVTXT[k][0]}</h3><p>${COVTXT[k][1]}</p>${body}</div>`}
 function rDist(){
